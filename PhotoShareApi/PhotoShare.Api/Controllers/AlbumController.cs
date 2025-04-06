@@ -1,21 +1,16 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Writers;
 using PhotoShare.Api.PostModels;
 using PhotoShare.Core.DTOs;
 using PhotoShare.Core.IServices;
-using PhotoShare.Core.Models;
-using PhotoShare.Service.Services;
 using System.Security.Claims;
 
 namespace PhotoShare.Api.Controllers
 {
     [ApiController]
     [Route("api/albums")]
-    [Authorize]
+    //[Authorize]
     public class AlbumController : ControllerBase
     {
         private readonly IAlbumService _albumService;
@@ -41,7 +36,7 @@ namespace PhotoShare.Api.Controllers
             {
                 // Log the exception (optional)
                 // _logger.LogError(ex, "Error retrieving all albums.");
-                return StatusCode(500, "An error occurred while retrieving the albums."); 
+                return StatusCode(500, "An error occurred while retrieving the albums.");
             }
         }
 
@@ -208,8 +203,7 @@ namespace PhotoShare.Api.Controllers
         }
 
 
-
-        [HttpPut("{id}")]
+        [HttpPut("restore/{id}")]
         public async Task<IActionResult> RestoreAlbum(int id)
         {
             if (id < 1)
@@ -227,11 +221,41 @@ namespace PhotoShare.Api.Controllers
                 await _albumService.RestoreAlbumAsync(id, userId);
                 return Ok("Album restored successfully.");
             }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound("Album not found: " + ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid("You do not have permission to restore this album: " + ex.Message);
+            }
             catch (Exception ex)
             {
                 // Log the exception (optional)
                 // _logger.LogError(ex, "Error restoring album with ID {Id}", id);
-                return StatusCode(500, "An error occurred while restoring the album."); 
+                return StatusCode(500, "An error occurred while restoring the album.");
+            }
+        }
+
+
+        [HttpGet("recycle")]
+        public async Task<IActionResult> GetRecycleAlbums()
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
+
+            try
+            {
+                var albums = await _albumService.GetRecycleAlbumsAsync(userId);
+                return Ok(albums);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while retrieving recycle albums.");
             }
         }
 

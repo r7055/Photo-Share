@@ -11,5 +11,7 @@ namespace PhotoShare.Core.IServices
     public interface IPhotoService : IService<PhotoDto>
     {
         Task<IEnumerable<PhotoDto>> GetPhotosByAlbumId(int albumId);
+        Task<IEnumerable<Photo>> GetPhotosByAlbumIdAndUserIdAsync(int albumId, int userId);
+        Task<IEnumerable<Photo>> GetSharedPhotosByAlbumIdAndUserIdAsync(int albumId, int userId);
     }
 }

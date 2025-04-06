@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using PhotoShare.Api;
 using PhotoShare.Core.IRepositories;
 using PhotoShare.Core.IServices;
-using PhotoShare.Data;
-using PhotoShare.Data.Repositories;
 using PhotoShare.Service.Services;
 using PhotoShare.Core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,6 +12,7 @@ using Amazon.Extensions.NETCore.Setup;
 using Microsoft.Extensions.Options;
 using PhotoShare.Services;
 using Microsoft.OpenApi.Models;
+using PhotoShare.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +24,8 @@ builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IPhotoShareRepository, PhotoShareRepository>();
 builder.Services.AddScoped<IAlbumShareRepository, AlbumShareRepository>();
-
+builder.Services.AddScoped<IAlbumPhotoRepository, AlbumPhotoRepository>();
+//builder.Services.AddScoped<IPhotoTagRepository, PhotoTagRepository>();
 
 
 builder.Services.AddScoped<IAlbumService, AlbumService>();
@@ -88,7 +88,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-Console.WriteLine(builder.Configuration["ConnectionStrings:PhotoShareContext"]);
 var connectionString = builder.Configuration["ConnectionStrings:PhotoShareContext"];
 builder.Services.AddDbContext<PhotoShareContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options => options.CommandTimeout(60)));

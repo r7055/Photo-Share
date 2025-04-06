@@ -38,10 +38,23 @@ namespace PhotoShare.Service.Services
 
         public async Task<TagDto> CreateAsync(TagDto tagDto)
         {
-            var tag = _mapper.Map<Tag>(tagDto);
-            var res = await _repositoryManager.Tag.AddAsync(tag);
-            return _mapper.Map<TagDto>(res);
+            try
+            {
+                var tag = _mapper.Map<Tag>(tagDto);
+                tag.UpdatedAt = DateTime.Now;
+                tag.CreatedAt = DateTime.Now;
+                var res = await _repositoryManager.Tag.AddAsync(tag);
+                await _repositoryManager.SaveAsync(); 
+                return _mapper.Map<TagDto>(res);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (you can use a logging framework)
+                // throw a custom exception or handle it as needed
+                throw new ApplicationException("An error occurred while creating the tag.", ex);
+            }
         }
+
 
         public async Task<TagDto> UpdateAsync(TagDto tagDto)
         {
@@ -65,5 +78,27 @@ namespace PhotoShare.Service.Services
             //or he have the permission to delete the tag
             await _repositoryManager.Tag.DeleteAsync(id);
         }
+
+        public async Task<ICollection<TagDto>> GetUserTags(int userId)
+        {
+            try
+            {
+                var tags = await _repositoryManager.Tag.GetUserTags(userId);
+
+                if (tags == null || !tags.Any())
+                {
+                    return new List<TagDto>(); 
+                }
+
+                return _mapper.Map<ICollection<TagDto>>(tags);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                // _logger.LogError(ex, "An error occurred while retrieving user tags.");
+                throw new Exception("An error occurred while processing your request.", ex);
+            }
+        }
+
     }
 }

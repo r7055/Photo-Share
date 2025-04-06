@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Photo } from '../types/photo';
-// import { PhotoPostModel } from '../types/photoPostModel';
+// import { photo } from '../types/photo';
 
 const baseUrl = 'http://localhost:5141/api/photos';
 const uploadUrl = 'http://localhost:5141/api/upload/presigned-url';
@@ -99,17 +99,31 @@ export const deletePhoto = createAsyncThunk('photos/deletePhoto',
 
 // Async thunk for adding a photo
 export const addPhoto = createAsyncThunk('photos/addPhoto',
-    async ({ token, photoPostModel }: { token: string; photoPostModel: Photo }, thunkAPI) => {
+    async ({ token, photo }: { token: string; photo: Photo }, thunkAPI) => {
         try {
-            const response = await axios.post<Photo>(baseUrl, photoPostModel, {
+            console.log(token, photo);
+
+            const response = await axios.post<Photo>(baseUrl, photo, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            console.log(response.data);
+
             return response.data;
         } catch (e: any) {
             return thunkAPI.rejectWithValue(e.message);
         }
+    }
+);
+
+export const fetchDownloadUrlsForPhotos = createAsyncThunk('photos/fetchDownloadUrlsForPhotos',
+    async ({ token, photos }: { token: string; photos: Photo[] }, thunkAPI) => {
+        const updatedPhotos = await Promise.all(photos.map(async (photo) => {
+            const downloadUrl = await thunkAPI.dispatch(getDownloadUrl({ token, fileName: photo.name }));
+            return { ...photo, url: downloadUrl.payload }; // הוסף את ה-URL לתמונה
+        }));
+        return updatedPhotos;
     }
 );
 
@@ -151,7 +165,8 @@ const photoSlice = createSlice({
                 state.loading = true;
             })
             .addCase(getPhotosByAlbumId.fulfilled, (state, action) => {
-                state.photos = action.payload; 
+                state.photos = action.payload;
+                  fetchDownloadUrlsForPhotos({ token: sessionStorage.getItem('token')!, photos: action.payload });
                 state.loading = false;
             })
             .addCase(getPhotosByAlbumId.rejected, (state, action) => {
@@ -174,7 +189,7 @@ const photoSlice = createSlice({
             })
             .addCase(deletePhoto.fulfilled, (state, action) => {
                 const id = action.payload;
-                state.photos = state.photos.filter(photo => photo.id !== id); // Remove deleted photo
+                state.photos = state.photos.filter(photo => photo.id !== id);
                 state.loading = false;
             })
             .addCase(deletePhoto.rejected, (state, action) => {
@@ -185,7 +200,7 @@ const photoSlice = createSlice({
                 state.loading = true;
             })
             .addCase(addPhoto.fulfilled, (state, action) => {
-                state.photos.push(action.payload); // Add new photo to state
+                state.photos.push(action.payload);
                 state.loading = false;
             })
             .addCase(addPhoto.rejected, (state, action) => {

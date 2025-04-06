@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PhotoShare.Core.Models;
 
-public partial class Tag
+public partial class Tag : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,7 +17,7 @@ public partial class Tag
 
     public DateTime? UpdatedAt { get; set; }
 
-    public int? usrId { get; set; } = null;
+    public int? UserId { get; set; } = null;
 
     public virtual User? User { get; set; }
 

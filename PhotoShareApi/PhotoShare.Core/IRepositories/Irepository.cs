@@ -13,5 +13,6 @@ namespace PhotoShare.Core.IRepositories
         Task<T> AddAsync(T entity);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(int id);
+        Task DeleteRangeAsync(IEnumerable<int> ids);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PhotoShare.Core.IRepositories;
+using PhotoShare.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PhotoShare.Data.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class, IEntity
     {
 
         protected readonly DbSet<T> _dbSet;
@@ -62,6 +63,12 @@ namespace PhotoShare.Data.Repositories
             //return existingEntity;
             var res = _dbSet.Update(entity);
             return res.Entity;
+        }
+
+        public async Task DeleteRangeAsync(IEnumerable<int> ids)
+        {
+            var albumShares = await _dbSet.Where(val => ids.Contains(val.Id)).ToListAsync();
+            _dbSet.RemoveRange(albumShares);
         }
 
 

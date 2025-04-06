@@ -10,5 +10,7 @@ namespace PhotoShare.Core.IRepositories
 {
     public interface IPhotoRepository : IRepository<Photo>
     {
+        Task<IEnumerable<Photo>> GetPhotosByAlbumIdAndUserIdAsync(int albumId, int userId);
+        Task<IEnumerable<Photo>> GetSharedPhotosByAlbumIdAndUserIdAsync(int albumId, int userId);
     }
 }

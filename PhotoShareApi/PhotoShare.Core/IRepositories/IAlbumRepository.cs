@@ -12,8 +12,9 @@ namespace PhotoShare.Core.IRepositories
     {
         Task<Album> GetAlbumIncludePhotosAsync(int albumId);
         Task<ICollection<Album>> GetAlbumsByParentAsync(int parentId, int userId );
-        Task<Album> GetByIdAsync(int id, int userId);
-
+        //Task<Album> GetByIdAsync(int id, int userId);
+        Task<ICollection<Album>> GetRecycleAlbumsAsync(int userId);
+        
 
     }
 }

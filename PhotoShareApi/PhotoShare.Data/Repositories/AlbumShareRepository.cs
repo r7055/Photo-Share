@@ -15,7 +15,7 @@ namespace PhotoShare.Data.Repositories
 
         public async Task<IEnumerable<AlbumShare>> GetAlbumSharesByUserIdAsync(int userId)
         {
-            return await _dbSet .Where(a => a.UserId == userId&&a.Permission==PermissionType.Read) .ToListAsync();
+            return await _dbSet.Include(albumShare=>albumShare.Album).Where(a => a.UserId == userId&&a.Permission==PermissionType.Read) .ToListAsync();
         }
     }
 

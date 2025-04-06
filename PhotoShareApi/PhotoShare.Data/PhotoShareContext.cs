@@ -8,7 +8,8 @@ public class PhotoShareContext : DbContext
     public DbSet<Photo> Photos { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Role> Roles { get; set; }
-    public DbSet<AlbumPhoto> AlbumPhotos { get; set; }
+    //public DbSet<PhotoTag> PhotoTag { get; set; }
+    public DbSet<AlbumPhoto> AlbumPhoto { get; set; }
     public DbSet<AlbumShare> AlbumShare { get; set; }
     public DbSet<PhotoShare.Core.Models.PhotoShare> PhotoShare { get; set; }
     public PhotoShareContext(DbContextOptions<PhotoShareContext> options)

@@ -15,8 +15,10 @@ namespace PhotoShare.Core
             CreateMap<Album, AlbumDto>().ReverseMap();
             CreateMap<Photo, PhotoDto>().ReverseMap();
             CreateMap<Tag, TagDto>().ReverseMap();
+            //CreateMap<ICollection<Tag>, ICollection<TagDto>>();
             CreateMap<AlbumShare, AlbumShareDto>().ReverseMap();
             CreateMap<PhotoShare.Core.Models.PhotoShare, PhotoShareDto>().ReverseMap();
+            CreateMap<ICollection<AlbumDto>, ICollection<Album>>();
         }
     }
 }

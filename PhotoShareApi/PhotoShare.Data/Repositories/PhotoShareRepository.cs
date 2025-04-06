@@ -17,5 +17,6 @@ namespace PhotoShare.Data.Repositories
         {
             return await _dbSet.Where(p => p.UserId==userId&& p.Permission==PermissionType.Read).ToListAsync();
         }
+
     }
 }

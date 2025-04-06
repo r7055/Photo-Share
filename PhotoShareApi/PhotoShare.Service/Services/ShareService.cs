@@ -32,7 +32,7 @@ namespace PhotoShare.Services
         public async Task<IEnumerable<AlbumDto>> GetAlbumSharesByUser(int userId)
         {
             var shares = await _repositoryManager.AlbumShare.GetAlbumSharesByUserIdAsync(userId);
-            var albumsShares = await Task.WhenAll(shares.Select(s => _repositoryManager.Album.GetByIdAsync(s.AlbumId)));
+            var albumsShares = shares.Select(s => s.Album);
             return _mapper.Map<IEnumerable<AlbumDto>>(albumsShares);
         }
 

@@ -11,6 +11,7 @@ namespace PhotoShare.Core.DTOs
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Url { get; set; }
+        public double Size { get; set; }
         public string Name { get; set; }
         public int AlbumId { get; set; }
         public List<TagDto> Tags { get; set; }

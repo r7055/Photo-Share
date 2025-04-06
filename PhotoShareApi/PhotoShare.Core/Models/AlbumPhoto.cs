@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PhotoShare.Core.Models
 {
-    public class AlbumPhoto
+    public class AlbumPhoto : IEntity
     {
         public int Id { get; set; }
 

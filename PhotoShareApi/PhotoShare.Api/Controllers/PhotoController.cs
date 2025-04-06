@@ -27,9 +27,18 @@ namespace PhotoShare.Api.Controllers
         [HttpGet("{albumId}")]
         public async Task<IActionResult> GetPhotosByAlbumId(int albumId)
         {
-            var photos = await _photoService.GetPhotosByAlbumId(albumId);
-            return Ok(photos);
+            try
+            {
+                var photos = await _photoService.GetPhotosByAlbumId(albumId);
+                return Ok(photos);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return BadRequest(new { Message = ex.Message });
+            }
         }
+
 
         [HttpGet("photo/{id}")]
         public async Task<IActionResult> GetPhotoById(int id)
@@ -71,13 +80,37 @@ namespace PhotoShare.Api.Controllers
             try
             {
                var res= await _photoService.CreateAsync(photoDto);
-                return res==null ? Ok(res) : BadRequest(res);
+                return res!=null ? Ok(res) : BadRequest(res);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex);///change
             }
 
+        }
+
+        [HttpGet("album/{albumId}/user")]
+        public async Task<IActionResult> GetPhotosByAlbumIdAndUserId(int albumId)
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
+            var photos = await _photoService.GetPhotosByAlbumIdAndUserIdAsync(albumId, userId);
+            return Ok(photos);
+        }
+
+        [HttpGet("shared/album/{albumId}/user")]
+        public async Task<IActionResult> GetSharedPhotosByAlbumIdAndUserId(int albumId)
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
+            var sharedPhotos = await _photoService.GetSharedPhotosByAlbumIdAndUserIdAsync(albumId, userId);
+            return Ok(sharedPhotos);
         }
     }
 

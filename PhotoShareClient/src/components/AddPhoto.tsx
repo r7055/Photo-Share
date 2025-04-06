@@ -144,7 +144,7 @@ const AddPhotoComponent = () => {
             albumId: parentId.toString(),
             name: fileName,
           };
-          await dispatch(addPhoto({ token, photoPostModel: photoData }));
+          await dispatch(addPhoto({ token, photo: photoData }));
 
           // Handle success (e.g., show a success message)
         } else {

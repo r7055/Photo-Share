@@ -4,17 +4,22 @@ import { Card, CardContent, Typography, Grid, CircularProgress } from '@mui/mate
 import { fetchSharedAlbums } from '../slices/albumSlice';
 import { AppDispatch, RootState } from '../store/store';
 import { Album } from '../types/album';
+import { useNavigate } from 'react-router-dom';
 
 const SharedAlbums = () => {
     const { sharedAlbums, loading, msg } = useSelector((state: { album: { sharedAlbums: Album[], loading: boolean, msg: string } }) => state.album);
     const dispatch = useDispatch<AppDispatch>();
     const token = sessionStorage.getItem('token');
+    const navigate=useNavigate();
 
     useEffect(() => {
         console.log("sharedAlbums",sharedAlbums,token);
         if (token) {
             dispatch(fetchSharedAlbums({ token }));
         }
+        else(
+            navigate('/auth')
+        )
     }, [dispatch,token]);
 
     if (loading) {

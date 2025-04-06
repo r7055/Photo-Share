@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace PhotoShare.Core.Models;
 
-public partial class Photo
+public partial class Photo : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,7 +28,7 @@ public partial class Photo
 
     [JsonIgnore]
     public virtual ICollection<AlbumPhoto> PhotoAlbums { get; set; } = new List<AlbumPhoto>();
-
+    [JsonIgnore]
     public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
     [JsonIgnore]
     public virtual ICollection<PhotoShare> Users { get; set; } = new List<PhotoShare>();

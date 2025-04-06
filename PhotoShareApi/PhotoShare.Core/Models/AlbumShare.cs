@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace PhotoShare.Core.Models
 {
-    public class AlbumShare
+    public class AlbumShare : IEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

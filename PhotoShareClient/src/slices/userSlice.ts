@@ -47,6 +47,8 @@ const userSlice = createSlice({
         builder
         .addCase(loginUser.fulfilled, (state, action) => {
             state.user = action.payload as User;
+            console.log(state.user);
+            
             state.loading = false;
             state.msg = ''; // נקה את המסר במקרה של הצלחה
         })

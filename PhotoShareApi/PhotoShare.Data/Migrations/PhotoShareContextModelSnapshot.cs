@@ -96,7 +96,7 @@ namespace PhotoShare.Data.Migrations
 
                     b.HasIndex("PhotoId");
 
-                    b.ToTable("AlbumPhotos");
+                    b.ToTable("AlbumPhoto");
                 });
 
             modelBuilder.Entity("PhotoShare.Core.Models.AlbumShare", b =>
@@ -260,9 +260,6 @@ namespace PhotoShare.Data.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("usrId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

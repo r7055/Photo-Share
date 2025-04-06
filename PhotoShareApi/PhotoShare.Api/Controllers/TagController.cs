@@ -25,7 +25,13 @@ namespace PhotoShare.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTag([FromBody] TagPostModel tagPostModel)
         {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
             var tagDto = _mapper.Map<TagDto>(tagPostModel);
+            tagDto.UserId = userId;
             var createdTag = await _tagService.CreateAsync(tagDto);
             return CreatedAtAction(nameof(GetTagById), new { id = createdTag.Id }, createdTag);
         }
@@ -36,6 +42,29 @@ namespace PhotoShare.Api.Controllers
             var tags = await _tagService.GetAllAsync();
             return Ok(tags);
         }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> GetUserTags()
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
+
+            try
+            {
+                var userTags = await _tagService.GetUserTags(userId);
+                return Ok(userTags); // Return the user tags if successful
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                // _logger.LogError(ex, "An error occurred while retrieving user tags.");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTagById(int id)
@@ -64,5 +93,7 @@ namespace PhotoShare.Api.Controllers
             await _tagService.DeleteAsync(id, userId);
             return NoContent();
         }
+
+       
     }
 }

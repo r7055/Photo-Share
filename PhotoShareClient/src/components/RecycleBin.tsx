@@ -1,24 +1,151 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Box, Typography, Card } from '@mui/material';
+// import React, { useEffect } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { Card, CardContent, Typography, Grid, CircularProgress, Button } from '@mui/material';
+// import { fetchRecycleAlbums, restoreAlbum } from '../slices/albumSlice';
+// import { AppDispatch } from '../store/store';
+// import { Album } from '../types/album';
+
+// const RecycleBin: React.FC = () => {
+//     const { recycledAlbums, loading, msg } = useSelector((state: { album: { recycledAlbums: Album[], loading: boolean, msg: string } }) => state.album);
+//     const dispatch = useDispatch<AppDispatch>();
+//     const token = sessionStorage.getItem('token');
+
+//     useEffect(() => {
+//         if (token) {
+//             dispatch(fetchRecycleAlbums({ token }));
+//         }
+//     }, [dispatch, token]);
+
+//     if (loading) {
+//         return <CircularProgress />;
+//     }
+
+//     if (msg) {
+//         return <Typography variant="h6" color="error">{msg}</Typography>;
+//     }
+
+//     const handleRestore = (albumId: number) => {
+//         if (token) {
+//             dispatch(restoreAlbum({ token, albumId }));
+//         }
+//     };
+
+//     return (
+//         <div>
+//             <Typography variant="h4" gutterBottom>סל מיחזור</Typography>
+//             <Grid container spacing={2}>
+//                 {recycledAlbums.length === 0 ? (
+//                     <Typography variant="body1">אין אלבומים שנמחקו.</Typography>
+//                 ) : (
+//                     recycledAlbums.map((album) => (
+//                         <Grid item xs={12} sm={6} md={4} key={album.id}>
+//                             <Card>
+//                                 <CardContent>
+//                                     <Typography variant="h5">{album.title}</Typography>
+//                                     <Button
+//                                         variant="contained"
+//                                         color="primary"
+//                                         onClick={() => handleRestore(album.id!)}
+//                                         sx={{ marginTop: 2 }}
+//                                     >
+//                                         שחזר אלבום
+//                                     </Button>
+//                                 </CardContent>
+//                             </Card>
+//                         </Grid>
+//                     ))
+//                 )}
+//             </Grid>
+//         </div>
+//     );
+// };
+
+// export default RecycleBin;
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Card, CardContent, Typography, Grid, CircularProgress, Button } from '@mui/material';
+import { fetchRecycleAlbums, restoreAlbum, deleteAlbum } from '../slices/albumSlice'; // ודא שהוספת את deleteAlbum
+import { AppDispatch } from '../store/store';
 import { Album } from '../types/album';
+import { useNavigate } from 'react-router-dom';
 
 const RecycleBin: React.FC = () => {
-    const deletedAlbums = useSelector((state: { album: { deletedAlbums: Album[] } }) => state.album.deletedAlbums);
+    const { recycledAlbums, loading, msg } = useSelector((state: { album: { recycledAlbums: Album[], loading: boolean, msg: string } }) => state.album);
+    const dispatch = useDispatch<AppDispatch>();
+    const token = sessionStorage.getItem('token');
+    const navigate=useNavigate();
+    useEffect(() => {
+        console.log("use effect פח מיחזור");
+        
+        if (token) {
+            dispatch(fetchRecycleAlbums({ token }));
+        }
+        else(
+            navigate('/auth')
+        )
+    }, [dispatch, token]);
+
+    if (loading) {
+        return <CircularProgress />;
+    }
+
+    if (msg) {
+        return <Typography variant="h6" color="error">{msg}</Typography>;
+    }
+
+    const handleRestore = (albumId: number) => {
+        if (token) {
+            dispatch(restoreAlbum({ token, albumId }));
+        }
+        else(
+            navigate('/auth')
+        )
+    };
+
+    const handleDelete = (albumId: number) => {
+        if (token) {
+            dispatch(deleteAlbum({ token, albumId })); // קריאה למחיקת האלבום
+        }
+        else(
+            navigate('/auth')
+        )
+    };
 
     return (
-        <Box sx={{ padding: 3 }}>
-            <Typography variant="h4" sx={{ textAlign: 'center', mb: 3 }}>
-                סל מיחזור
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' }}>
-                {deletedAlbums.length > 0 ? deletedAlbums.map(album => (
-                    <Card key={album.id} sx={{ padding: 2, margin: 1 }}>
-                        <Typography>{album.title}</Typography>
-                    </Card>
-                )) : <Typography>אין אלבומים שנמחקו.</Typography>}
-            </Box>
-        </Box>
+        <div>
+            <Typography variant="h4" gutterBottom>סל מיחזור</Typography>
+            <Grid container spacing={2}>
+                {recycledAlbums.length === 0 ? (
+                    <Typography variant="body1">אין אלבומים שנמחקו.</Typography>
+                ) : (
+                    recycledAlbums.map((album) => (
+                        <Grid item xs={12} sm={6} md={4} key={album.id}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h5">{album.title}</Typography>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleRestore(album.id!)}
+                                        sx={{ marginTop: 2 }}
+                                    >
+                                        שחזר אלבום
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={() => handleDelete(album.id!)} // כפתור למחיקה
+                                        sx={{ marginTop: 2, marginLeft: 2 }}
+                                    >
+                                        מחק אלבום
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))
+                )}
+            </Grid>
+        </div>
     );
 };
 

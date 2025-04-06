@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using PhotoShare.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +15,10 @@ namespace PhotoShare.Core.IRepositories
         IUserRepository User { get; }
         ITagRepository Tag { get; }
         IAuthRepository Auth { get; }
+        IAlbumPhotoRepository AlbumPhoto { get; }
         IAlbumShareRepository AlbumShare { get; }
         IPhotoShareRepository PhotoShare { get; }
         Task SaveAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

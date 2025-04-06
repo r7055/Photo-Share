@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PhotoShare.Core.Models
 {
-    public partial class Role
+    public partial class Role : IEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

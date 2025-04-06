@@ -16,7 +16,24 @@ namespace PhotoShare.Data.Repositories
         {
 
         }
-      
+        public async Task<IEnumerable<Photo>> GetPhotosByAlbumIdAndUserIdAsync(int albumId, int userId)
+        {
+            return await _dbSet
+                .Include(p=>p.Tags)
+                .Where(p => p.PhotoAlbums.Any(pa => pa.AlbumId == albumId && pa.IsDeleted == false) &&
+                            p.OwnerId == userId && p.IsDeleted == false)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Photo>> GetSharedPhotosByAlbumIdAndUserIdAsync(int albumId, int userId)
+        {
+            return await _dbSet
+                .Include(p=>p.Tags)
+                .Where(p => p.Users.Any(ps => ps.PhotoId == p.Id && ps.UserId == userId) &&
+                            p.PhotoAlbums.Any(pa => pa.AlbumId == albumId && pa.IsDeleted == false) &&
+                            p.IsDeleted == false)
+                .ToListAsync();
+        }
     }
 
 }

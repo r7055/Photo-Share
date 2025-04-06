@@ -1,4 +1,6 @@
-﻿using PhotoShare.Core.IRepositories;
+﻿using Microsoft.EntityFrameworkCore;
+using PhotoShare.Core.DTOs;
+using PhotoShare.Core.IRepositories;
 using PhotoShare.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,16 @@ namespace PhotoShare.Data.Repositories
         {
 
         }
+
+        public async Task<ICollection<Tag>> GetUserTags(int userId)
+        {
+            return await _dbSet
+                .Where(t => t.UserId == null || t.UserId == userId)
+                .ToListAsync(); 
+
+          
+        }
+
     }
 
 }

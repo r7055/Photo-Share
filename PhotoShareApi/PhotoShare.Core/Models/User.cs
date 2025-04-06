@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PhotoShare.Core.Models;
 
-public partial class User
+public partial class User : IEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,8 +28,5 @@ public partial class User
     public virtual ICollection<AlbumShare> Albums { get; set; } = new List<AlbumShare>();
 
     public virtual ICollection<PhotoShare> Photos { get; set; } = new List<PhotoShare>();
-
-
-
 
 }

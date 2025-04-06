@@ -11,37 +11,40 @@ namespace PhotoShare.Data.Repositories
         }
         public async Task<Album> GetAlbumIncludePhotosAsync(int albumId)
         {
-            return await _dbSet.Include(a => a.AlbumPhotos) 
-                .ThenInclude(ap => ap.Photo) 
+            return await _dbSet.Include(a => a.AlbumPhotos)
+                .ThenInclude(ap => ap.Photo)
                 .Where(a => a.Id == albumId)
                 .FirstOrDefaultAsync();
         }
 
-
-
         public async Task<ICollection<Album>> GetAlbumsByParentAsync(int parentId, int userId)
         {
-            
             if (parentId == 0)
             {
                 return await _dbSet
-              .Include(a => a.Users) 
-              .Where(a => a.ParentId == null && a.Users.Any(u => u.UserId == userId&&u.Permission==PermissionType.Owner)) 
+              .Include(a => a.Users)
+              .Where(a => a.ParentId == null && a.IsDeleted == false &&
+              a.Users.Any(u => u.UserId == userId && u.Permission == PermissionType.Owner))
               .ToListAsync();
             }
-
             return await _dbSet
-                .Include(a => a.Users) 
-                .Where(a => a.ParentId == parentId && a.Users.Any(u => u.UserId == userId&&u.Permission==PermissionType.Owner)) 
+                .Include(a => a.Users)
+                .Where(a => a.ParentId == parentId && a.IsDeleted == false &&
+                a.Users.Any(u => u.UserId == userId && u.Permission == PermissionType.Owner))
                 .ToListAsync();
         }
 
-        public async Task<Album> GetByIdAsync(int id, int userId)
+        public async Task<ICollection<Album>> GetRecycleAlbumsAsync(int userId)
         {
-            return await _dbSet.Include(a => a.Users)
-                .Where(a => a.Id == id && a.Users.Any(albumShare => albumShare.UserId == userId))
-                .FirstOrDefaultAsync();
+            return await _dbSet.Where(a =>a.OwnerId==userId && a.IsDeleted == true).ToListAsync();
         }
+
+        //public async Task<Album> GetByIdAsync(int id, int userId)
+        //{
+        //    return await _dbSet.Include(a => a.Users)
+        //        .Where(a => a.Id == id && a.Users.Any(albumShare => albumShare.UserId == userId))
+        //        .FirstOrDefaultAsync();
+        //}
     }
 
 }

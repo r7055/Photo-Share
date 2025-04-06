@@ -151,12 +151,49 @@ export const shareAlbum = createAsyncThunk('albums/shareAlbum',
     }
 );
 
+export const restoreAlbum = createAsyncThunk('albums/restoreAlbum',
+    async ({ token, albumId }: { token: string; albumId: number }, thunkAPI) => {
+        try {
+            await axios.put(`${url}/restore/${albumId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return albumId; // Return the album ID for further processing
+        } catch (e: any) {
+            return thunkAPI.rejectWithValue(e.message);
+        }
+    }
+);
+
+// Async thunk for fetching recycled albums
+export const fetchRecycleAlbums = createAsyncThunk('albums/fetchRecycleAlbums',
+    async ({ token }: { token: string }, thunkAPI) => {
+        try {
+            console.log("getch recycle albums");
+            
+            const response = await axios.get<Album[]>(`${url}/recycle`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(response.data);
+            
+            
+            return response.data;
+        } catch (e: any) {
+            return thunkAPI.rejectWithValue(e.message);
+        }
+    }
+);
+
 
 const albumsSlice = createSlice({
     name: 'albums',
     initialState: {
         myAlbums: [] as Album[], 
         sharedAlbums: [] as Album[], 
+        recycledAlbums: [] as Album[], 
         loading: false,
         msg: '',
     },
@@ -249,7 +286,7 @@ const albumsSlice = createSlice({
             .addCase(fetchSharedAlbums.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(shareAlbum.fulfilled, (state) => {//(state,action) if is not work!!!
+            .addCase(shareAlbum.fulfilled, (state) => {
                 state.msg = 'Album shared successfully.';
                 state.loading = false;
             })
@@ -259,8 +296,30 @@ const albumsSlice = createSlice({
             })
             .addCase(shareAlbum.pending, (state) => {
                 state.loading = true;
+            })
+            .addCase(restoreAlbum.fulfilled, (state) => {
+                state.msg = 'Album restored successfully.';
+                state.loading = false;
+            })
+            .addCase(restoreAlbum.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Failed to restore album";
+            })
+            .addCase(restoreAlbum.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchRecycleAlbums.fulfilled, (state, action) => {
+                state.recycledAlbums = action.payload;
+                state.loading = false;
+                state.msg = '';
+            })
+            .addCase(fetchRecycleAlbums.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Failed to fetch recycled albums";
+            })
+            .addCase(fetchRecycleAlbums.pending, (state) => {
+                state.loading = true;
             });
-            
     },
 });
 

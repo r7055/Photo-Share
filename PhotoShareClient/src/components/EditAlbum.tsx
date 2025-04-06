@@ -4,6 +4,7 @@ import { AppDispatch } from '../store/store';
 import { updateAlbum } from '../slices/albumSlice';
 import { Album } from '../types/album';
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 interface EditAlbumProps {
     open: boolean;
@@ -15,6 +16,7 @@ const EditAlbum: React.FC<EditAlbumProps> = ({ open, onClose, album }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [title, setTitle] = useState(album.title);
     const [description, setDescription] = useState(album.description);
+    const navigate=useNavigate();
 
     useEffect(() => {
         setTitle(album.title);
@@ -28,6 +30,9 @@ const EditAlbum: React.FC<EditAlbumProps> = ({ open, onClose, album }) => {
             dispatch(updateAlbum({ token, album: updatedAlbum }));
             onClose();
         }
+        else(
+            navigate('/auth')
+        )
     };
 
     return (
