@@ -1,5 +1,5 @@
 import React from 'react';
-import { Toolbar, Typography, Box } from '@mui/material';
+import { Toolbar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const PrivacyPolicy: React.FC = () => {

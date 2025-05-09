@@ -441,7 +441,7 @@ const AlbumOverview: React.FC<{ onSelectAlbum: (albumId: number) => void }> = ({
 
     const handleAlbumClick = (albumId: number, albumTitle: string) => {
         setClickCount(prev => prev + 1);
-
+        
         if (clickTimeout) {
             clearTimeout(clickTimeout);
         }

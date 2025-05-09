@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Typography, Grid, CircularProgress } from '@mui/material';
 import { fetchSharedAlbums } from '../slices/albumSlice';
-import { AppDispatch, RootState } from '../store/store';
+import { AppDispatch } from '../store/store';
 import { Album } from '../types/album';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,7 +38,7 @@ const SharedAlbums = () => {
                     <Typography variant="body1">אין אלבומים ששיתפו אותי.</Typography>
                 ) : (
                     sharedAlbums.map((album) => (
-                        <Grid item size={{ xs: 12, sm: 6, md: 4}} key={album.id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4}} key={album.id}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5">{album.title}</Typography>

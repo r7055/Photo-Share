@@ -90,6 +90,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
 var connectionString = builder.Configuration["ConnectionStrings:PhotoShareContext"];
 builder.Services.AddDbContext<PhotoShareContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options => options.CommandTimeout(60)));
@@ -142,7 +143,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "PhotoShare API V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CV Site api");
         c.RoutePrefix = string.Empty; // To access Swagger at the root
     });
 }

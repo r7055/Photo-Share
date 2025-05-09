@@ -89,11 +89,8 @@
 // export default RecycleBin;
 
 import React from 'react';
-import { useSelector } from 'react-redux';
 import RecycleBinAlbums from './RecycleBinAlbums';
 import RecycleBinPhotos from './RecycleBinPhotos';
-import { Album } from '../types/album';
-import { Photo } from '../types/photo';
 
 const RecycleBin: React.FC = () => {
     // const { recycledAlbums, recycledPhotos } = useSelector((state: { album: { recycledAlbums: Album[], recycledPhotos: Photo[] } }) => state.album);

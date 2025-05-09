@@ -97,12 +97,12 @@ const albumSlice = createSlice({
                 state.loading = false;
                 state.msg = action.error.message || 'Failed to fetch recycled photos';
             })
-            .addCase(restoreAlbum.fulfilled, (state, action) => {
-                // Handle restoring album logic
-            })
-            .addCase(deleteAlbum.fulfilled, (state, action) => {
-                // Handle deleting album logic
-            });
+            // .addCase(restoreAlbum.fulfilled, (state, action) => {
+            //     // Handle restoring album logic
+            // })
+            // .addCase(deleteAlbum.fulfilled, (state, action) => {
+            //     // Handle deleting album logic
+            // });
     },
 });
 

@@ -101,7 +101,7 @@ const PersonalArea: React.FC = () => {
             </Button>
 
             <Grid container spacing={isSidebarOpen ? 2 : 1}>
-                {isSidebarOpen && <Grid item xs={12} md={3}>
+                {isSidebarOpen && <Grid size={{xs:12,md:3}}>
                     <Sidebar
                         onOpenAddAlbum={() => setOpenAddAlbum(true)}
                         onOpenUploadPhoto={() => setOpenUploadPhoto(true)}
@@ -109,7 +109,7 @@ const PersonalArea: React.FC = () => {
                         onRecycleBinClick={handleRecycleBinClick}
                     />
                 </Grid>}
-                <Grid item xs={12} md={9}>
+                <Grid size={{xs:12,md:9}}>
                     <AlbumOverview onSelectAlbum={setSelectedAlbumId} /> {/* Pass the function to set selected album ID */}
                     {selectedAlbumId && <PhotoGallery albumId={selectedAlbumId} />} {/* Render PhotoGallery if an album is selected */}
                 </Grid>

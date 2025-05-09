@@ -217,7 +217,9 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ albumId }) => {
                         <Card sx={{ position: 'relative', overflow: 'hidden', borderRadius: '10px' }}>
                             <img src={photo.url} alt={photo.name} style={{ width: '100%', height: 'auto' }} />
                             <DownloadPhoto photo={photo} />
-                            <DeletePhoto photoId={photo.id} albumId={albumId} /> {/* Pass albumId here */}
+                            {photo.id !== undefined &&  (
+                                <DeletePhoto photoId={photo.id} albumId={albumId} />
+                            )}
                         </Card>
                     </Grid>
                 ))}

@@ -206,7 +206,7 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
     const [showAlbumSuggestion, setShowAlbumSuggestion] = useState(false); // מצב להראות את ההודעה
     const token = sessionStorage.getItem('token');
     const dispatch = useDispatch<AppDispatch>();
-    const tags = useSelector((state: any) => state.tags.tags);
+    const tags = useSelector((state: { tags: { tags: Tag[] } }) => state.tags.tags);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -224,6 +224,7 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
     };
 
     const handleTagChange = (event: any, value: string[]) => {
+        console.log(event, value);
         setSelectedTags(value);
     };
 
@@ -350,12 +351,14 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
                     סגור
                 </Button>
             </DialogActions>
-            <AlbumSuggestion 
-                open={showAlbumSuggestion} 
-                onClose={() => setShowAlbumSuggestion(false)} 
-                imageUrl={imageUrl} 
-                token={token!} 
-            />
+            {imageUrl && (
+                <AlbumSuggestion 
+                    open={showAlbumSuggestion} 
+                    onClose={() => setShowAlbumSuggestion(false)} 
+                    imageUrl={imageUrl} 
+                    token={token!} 
+                />
+            )}
         </Dialog>
     );
 };

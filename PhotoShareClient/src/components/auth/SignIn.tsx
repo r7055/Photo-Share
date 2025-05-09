@@ -25,7 +25,7 @@ const SignIn = () => {
         התחברות
       </Typography>
       <Grid container spacing={3} justifyContent="center" style={{ marginTop: '24px' }}>
-        <Grid item size={{ xs: 12, sm: 6 }}style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Grid size={{ xs: 12, sm: 6 }}style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <form onSubmit={handleSubmit(onSubmit)} style={{ width: '70%' }}>
             <Controller
               name="email"

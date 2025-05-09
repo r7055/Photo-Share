@@ -28,14 +28,16 @@ export default function About() {
   const navigate = useNavigate();
   // background: 'linear-gradient(135deg, #00c6ff, #0072ff, #7209b7, #d400ff)'
   return (
-    <div style={{ minHeight: '100vh', padding: '16px',background: 'linear-gradient(90deg, #1a1f36, #3a4276)', textAlign: 'center' }}>
-     <Slider {...settings} style={{ maxWidth: '800px', margin: '0 auto' }}> {/* הגדרת רוחב מקסימלי */}
-        {images.map((image, index) => (
-          <div key={index}>
-            <img src={image} alt={`Slide ${index}`} style={{ width: '100%', maxHeight: '300px', objectFit: 'contain', borderRadius: '16px' }} />
-          </div>
-        ))}
-      </Slider>
+    <div style={{ minHeight: '100vh', padding: '16px', background: 'linear-gradient(90deg, #1a1f36, #3a4276)', textAlign: 'center' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <Slider {...settings}>
+          {images.map((image, index) => (
+            <div key={index}>
+              <img src={image} alt={`Slide ${index}`} style={{ width: '100%', maxHeight: '300px', objectFit: 'contain', borderRadius: '16px' }} />
+            </div>
+          ))}
+        </Slider>
+      </div>
       <Typography variant="h3" style={{ color: '#ffffff', fontWeight: 'bold', marginTop: '24px', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>PhotoShare - ברוכים הבאים ל</Typography>
       <Typography variant="body1" style={{ color: '#d1e0ff', marginTop: '8px' }}> AI ניהול חכם של התמונות שלך בעזרת טכנולוגיית</Typography>
 
@@ -45,7 +47,7 @@ export default function About() {
         { icon: Group, color: '#7209b7', text: 'זיהוי פנים אוטומטי להקצאת שמות לאנשים בתמונות' },
         { icon: Label, color: '#d400ff', text: 'גיבוי מאובטח בענן ושמירה על הרגעים החשובים שלך' }
         ].map((item, index) => (
-          <Grid item size={{ xs: 12, sm: 6 }}key={index} display="flex" alignItems="center" justifyContent="center" style={{ color: '#ffffff' }}>
+          <Grid size={{ xs: 12, sm: 6 }} key={index} display="flex" alignItems="center" justifyContent="center" style={{ color: '#ffffff' }}>
             <item.icon style={{ color: item.color, fontSize: '50px' }} />
             <Typography style={{ marginLeft: '8px' }}>{item.text}</Typography>
           </Grid>

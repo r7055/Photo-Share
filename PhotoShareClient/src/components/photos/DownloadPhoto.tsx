@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { getDownloadUrl } from "../../slices/photoSlice"; // Adjust the import path as needed
 import { AppDispatch } from '../../store/store';

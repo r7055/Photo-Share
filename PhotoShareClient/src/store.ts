@@ -1,12 +1,11 @@
-import { configureStore } from '@reduxjs/toolkit';
-import languageReducer from './slices/languageSlice';
-// ...existing code...
+// import { configureStore } from '@reduxjs/toolkit';
+// // ...existing code...
 
-const store = configureStore({
-    reducer: {
-        // ...existing reducers...
-    },
-    // ...existing code...
-});
+// const store = configureStore({
+//     reducer: {
+//         // ...existing reducers...
+//     },
+//     // ...existing code...
+// });
 
-export default store;
+// export default store;

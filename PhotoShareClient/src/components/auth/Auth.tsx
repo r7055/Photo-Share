@@ -123,7 +123,7 @@ const Auth = () => {
             </Typography>
 
             <Grid container spacing={3} justifyContent="center" style={{ marginTop: '24px' }}>
-                <Grid item size={{ xs: 12, sm: 6 }}style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Grid size={{ xs: 12, sm: 6 }}style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Button variant="contained" onClick={() => navigate("/auth/signin")} style={{
                         background: 'linear-gradient(135deg, #00c6ff, #0072ff, #7209b7, #d400ff)',
                         color: '#fff',
@@ -156,10 +156,10 @@ const Auth = () => {
             </Grid>
 
             <Grid container spacing={2} justifyContent="center" style={{ marginTop: '24px' }}>
-                <Grid item>
+                <Grid>
                     <Button onClick={() => handleLanguageChange('en')} style={{ color: '#ffffff' }}>English</Button>
                 </Grid>
-                <Grid item>
+                <Grid>
                     <Button onClick={() => handleLanguageChange('he')} style={{ color: '#ffffff' }}>עברית</Button>
                 </Grid>
             </Grid>

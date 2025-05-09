@@ -60,7 +60,7 @@ const RecycleBinPhotos: React.FC = () => {
                     <Typography variant="body1">אין תמונות שנמחקו.</Typography>
                 ) : (
                     recycledPhotos.map((photo) => (
-                        <Grid item xs={12} sm={6} md={4} key={photo.id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4}} key={photo.id}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5">{photo.name}</Typography>
@@ -68,7 +68,7 @@ const RecycleBinPhotos: React.FC = () => {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        onClick={() => handleRestore(photo.id!, photo.albumId!)} 
+                                        onClick={() => handleRestore(photo.id!, Number(photo.albumId)!)} 
                                         sx={{ marginTop: 2 }}
                                     >
                                         שחזר תמונה

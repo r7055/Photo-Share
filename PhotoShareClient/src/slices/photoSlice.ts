@@ -99,8 +99,7 @@ export const getRecyclePhotos = createAsyncThunk(
 );
 
 // Async thunk for restoring a photo
-export const restorePhoto = createAsyncThunk(
-    'photos/restorePhoto',
+export const restorePhoto = createAsyncThunk('photos/restorePhoto',
     async ({ token, photoId, albumId }: { token: string; photoId: number; albumId: number }, thunkAPI) => {
         try {
             console.log("restorePhoto", token, photoId, albumId); // Debugging line
@@ -176,7 +175,7 @@ const photoSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(uploadPhoto.fulfilled, (state, action) => {
-                state.photos.push(action.payload);
+                state.photos.push(action.payload); 
                 state.loading = false;
                 state.msg = '';
             })
@@ -187,7 +186,7 @@ const photoSlice = createSlice({
             .addCase(uploadPhoto.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getDownloadUrl.fulfilled, (state, action) => {
+            .addCase(getDownloadUrl.fulfilled, (_, action) => {
                 const downloadUrl = action.payload;
                 // Handle the download URL as needed
             })
@@ -209,7 +208,7 @@ const photoSlice = createSlice({
             .addCase(getPhotosByAlbumId.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getPhotoById.fulfilled, (state, action) => {
+            .addCase(getPhotoById.fulfilled, (_, action) => {
                 const photo = action.payload;
                 // Handle the fetched photo as needed
             })
@@ -232,7 +231,7 @@ const photoSlice = createSlice({
             .addCase(deletePhoto.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(addPhoto.fulfilled, (state, action) => {
+            .addCase(addPhoto.fulfilled, (state,) => {
                 // state.photos.push(action.payload);
                 state.loading = false;
             })
@@ -255,7 +254,7 @@ const photoSlice = createSlice({
             .addCase(getRecyclePhotos.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(restorePhoto.fulfilled, (state, action) => {
+            .addCase(restorePhoto.fulfilled, (state,) => {
                 state.loading = false;
                 state.msg = "Photo restored successfully";
             })

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Snackbar, Alert } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { addPhoto } from '../../slices/photoSlice';
 
 interface AlbumSuggestionProps {
     open: boolean;

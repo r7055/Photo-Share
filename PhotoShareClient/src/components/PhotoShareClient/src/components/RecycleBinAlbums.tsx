@@ -53,7 +53,7 @@ const RecycleBinAlbums: React.FC = () => {
                     <Typography variant="body1">אין אלבומים שנמחקו.</Typography>
                 ) : (
                     recycledAlbums.map((album) => (
-                        <Grid item size={{ xs: 12, sm: 6, md: 4 }} key={album.id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={album.id}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5">{album.title}</Typography>

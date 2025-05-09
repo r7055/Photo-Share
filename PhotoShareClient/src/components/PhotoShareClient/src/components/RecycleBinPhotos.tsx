@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Typography, Grid, CircularProgress, Button } from '@mui/material';
-import { fetchRecyclePhotos, restorePhoto, deletePhoto } from '../slices/albumSlice'; // Ensure you have added deletePhoto
+import { fetchRecyclePhotos } from '../slices/albumSlice'; // Ensure you have added deletePhoto
+import { restorePhoto, deletePhoto } from '../slices/photoSlice'; // Ensure you have added deletePhoto
 import { AppDispatch } from '../store/store';
 import { Photo } from '../types/album'; // Assuming you have a Photo type defined
 import { useNavigate } from 'react-router-dom';
@@ -54,7 +55,7 @@ const RecycleBinPhotos: React.FC = () => {
                     <Typography variant="body1">אין תמונות שנמחקו.</Typography>
                 ) : (
                     recycledPhotos.map((photo) => (
-                        <Grid item size={{ xs: 12, sm: 6, md: 4 }} key={photo.id}>
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={photo.id}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5">{photo.title}</Typography>
