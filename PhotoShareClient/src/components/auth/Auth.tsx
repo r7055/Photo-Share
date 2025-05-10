@@ -100,7 +100,7 @@
 // export default Auth;
 
 import { Typography, Grid, Button } from '@mui/material';
-import { Outlet, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLanguage } from '../../slices/languageSlice';
 

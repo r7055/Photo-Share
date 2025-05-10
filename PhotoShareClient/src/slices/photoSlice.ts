@@ -103,10 +103,10 @@ export const restorePhoto = createAsyncThunk('photos/restorePhoto',
     async ({ token, photoId, albumId }: { token: string; photoId: number; albumId: number }, thunkAPI) => {
         try {
             console.log("restorePhoto", token, photoId, albumId); // Debugging line
-            
+
             await axios.post(
                 `${baseUrl}/restore`,
-                photoId ,
+                photoId,
                 {
                     params: { albumId },
                     headers: {
@@ -123,17 +123,23 @@ export const restorePhoto = createAsyncThunk('photos/restorePhoto',
 
 // Async thunk for deleting a photo
 export const deletePhoto = createAsyncThunk('photos/deletePhoto',
-    async ({ token, id }: { token: string; id: number }, thunkAPI) => {
+    async ({ token, id, albumId }: { token: string; id: number, albumId: number }) => {
         try {
             await axios.delete(`${baseUrl}/${id}`, {
+                params: { albumId },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
             return id; // Return the deleted photo ID
         } catch (e: any) {
-            return thunkAPI.rejectWithValue(e.message);
-        }
+            await axios.delete(`${baseUrl}/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return id; // Return the deleted photo ID
+        } 
     }
 );
 
@@ -174,8 +180,9 @@ const photoSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(uploadPhoto.fulfilled, (state, action) => {
-                state.photos.push(action.payload); 
+            .addCase(uploadPhoto.fulfilled, (state) => {
+                // const photo = action.payload;
+                // state.photos.push();
                 state.loading = false;
                 state.msg = '';
             })
@@ -186,8 +193,8 @@ const photoSlice = createSlice({
             .addCase(uploadPhoto.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getDownloadUrl.fulfilled, (_, action) => {
-                const downloadUrl = action.payload;
+            .addCase(getDownloadUrl.fulfilled, (_) => {
+                // const downloadUrl = action.payload;
                 // Handle the download URL as needed
             })
             .addCase(getDownloadUrl.rejected, (state, action) => {
@@ -208,8 +215,7 @@ const photoSlice = createSlice({
             .addCase(getPhotosByAlbumId.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getPhotoById.fulfilled, (_, action) => {
-                const photo = action.payload;
+            .addCase(getPhotoById.fulfilled, (_) => {
                 // Handle the fetched photo as needed
             })
             .addCase(getPhotoById.rejected, (state, action) => {
@@ -231,8 +237,8 @@ const photoSlice = createSlice({
             .addCase(deletePhoto.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(addPhoto.fulfilled, (state,) => {
-                // state.photos.push(action.payload);
+            .addCase(addPhoto.fulfilled, (state,action) => {
+                state.photos.push(action.payload);
                 state.loading = false;
             })
             .addCase(addPhoto.rejected, (state, action) => {
@@ -243,7 +249,7 @@ const photoSlice = createSlice({
                 state.loading = true;
             })
             .addCase(getRecyclePhotos.fulfilled, (state, action) => {
-                console.log("Recycle photos fetched: ", action.payload); 
+                console.log("Recycle photos fetched: ", action.payload);
                 state.recycledPhotos = action.payload;
                 state.loading = false;
             })
@@ -265,7 +271,6 @@ const photoSlice = createSlice({
             .addCase(restorePhoto.pending, (state) => {
                 state.loading = true;
             });
-    
     },
 });
 

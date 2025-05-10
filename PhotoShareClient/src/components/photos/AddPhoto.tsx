@@ -103,23 +103,28 @@
 
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { uploadPhoto, getDownloadUrl, addPhoto, deletePhoto } from '../slices/photoSlice';
+import { uploadPhoto, getDownloadUrl, addPhoto } from '../../slices/photoSlice';
 import { AppDispatch } from '../../store/store';
+import { useParams } from 'react-router-dom';
 
 
 
 const AddPhotoComponent = () => {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const token = sessionStorage.getItem('token');
+  const { albumId } = useParams<{ albumId: string }>();
+
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
+ const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setFile(event.target.files[0]);
+    }
+};
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!file) return;
 
@@ -128,28 +133,42 @@ const AddPhotoComponent = () => {
 
     try {
       // 1. Upload photo to AWS
+      if (!token) {
+        throw new Error('Token is null. Cannot upload photo.');
+      }
       const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file }));
 
       if (uploadResponse.meta.requestStatus === 'fulfilled') {
         // 2. Get the download URL
+        
+        if (!token) {
+          throw new Error('Token is null. Cannot get download URL.');
+        }
         const downloadResponse = await dispatch(getDownloadUrl({ token, fileName }));
 
         if (downloadResponse.meta.requestStatus === 'fulfilled') {
-          const downloadUrl = downloadResponse.payload;
+          const downloadUrl = downloadResponse.payload as string;
 
           // 3. Add photo to the database
           const photoData = {
             url: downloadUrl,
             size: file.size,
-            albumId: parentId.toString(),
+            albumId: Number(albumId) || 0,
             name: fileName,
           };
-          await dispatch(addPhoto({ token, photo: photoData }));
+          if (token) {
+            await dispatch(addPhoto({ token, photo: photoData }));
+          } else {
+            console.error('Token is null. Cannot add photo.');
+          }
 
           // Handle success (e.g., show a success message)
         } else {
           // If getting download URL failed, delete the uploaded photo
-          await dispatch(deletePhoto({ token, id: uploadResponse.payload.fileName }));
+          if(token){
+            // const uploadPayload = uploadResponse.payload as ;
+            // await dispatch(deletePhoto({ token, id: Number(uploadPayload.fileName) }));
+          }
           // Handle error (e.g., show an error message)
         }
       }

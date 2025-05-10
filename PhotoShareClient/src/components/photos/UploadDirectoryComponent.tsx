@@ -120,10 +120,9 @@
 // export default UploadDirectoryComponent;
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { uploadPhoto, getDownloadUrl, addPhoto, deletePhoto } from '../../slices/photoSlice';
+import { uploadPhoto } from '../../slices/photoSlice';
 import { AppDispatch } from '../../store/store';
 import { Box, Button, Typography, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { useParams } from 'react-router-dom';
 
 interface UploadDirectoryComponentProps {
   open: boolean;
@@ -131,7 +130,6 @@ interface UploadDirectoryComponentProps {
 }
 
 const UploadDirectoryComponent: React.FC<UploadDirectoryComponentProps> = ({ open, onClose }) => {
-  const { albumId } = useParams<{ albumId: string }>();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -160,21 +158,18 @@ const UploadDirectoryComponent: React.FC<UploadDirectoryComponentProps> = ({ ope
         const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file })) as { meta: { requestStatus: string }, payload: { fileName: string } };
 
         if (uploadResponse.meta.requestStatus === 'fulfilled') {
-          const downloadResponse = await dispatch(getDownloadUrl({ token, fileName }));
+          // const downloadResponse = await dispatch(getDownloadUrl({ token, fileName }));
 
-          if (downloadResponse.meta.requestStatus === 'fulfilled') {
-            const downloadUrl = downloadResponse.payload as string;
-            newImageUrls.push(downloadUrl);
-            const photoData = {
-              url: downloadUrl,
-              size: file.size,
-              albumId: albumId || '',
-              name: fileName,
-            };
-            await dispatch(addPhoto({ token, photo: photoData }));
-          } else {
-            await dispatch(deletePhoto({ token, id: Number((uploadResponse.payload as { fileName: string }).fileName) }));
-          }
+          // if (downloadResponse.meta.requestStatus === 'fulfilled') {
+          //   const downloadUrl = downloadResponse.payload as string;
+          //   newImageUrls.push(downloadUrl);
+          //   await dispatch(addPhoto({ token, photo: { url: downloadUrl, size: file.size, albumId: albumId || '', name: fileName } }));
+          // } else {
+          //   await dispatch(deletePhoto({
+          //     token, id: ,
+          //     albumId: albumId ? Number(albumId) : undefined,
+          //   }));
+          // }
         }
       }
       setImageUrls(newImageUrls);
@@ -196,7 +191,7 @@ const UploadDirectoryComponent: React.FC<UploadDirectoryComponentProps> = ({ ope
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
           <input
             type="file"
-            webkitdirectory="true"
+            // webkitdirectory="true"
             onChange={handleFileChange}
             required
             multiple

@@ -1,12 +1,12 @@
 import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo-blue-small.jpg';
-import { useSelector } from 'react-redux';
-import { User } from '../types/user';
+// import { useSelector } from 'react-redux';
+// import { User } from '../types/user';
 import { useEffect } from 'react';
 
 const AppLayout = () => {
-    const userState = useSelector((state: { User: { user: User, loading: boolean, msg: string } }) => state.User);
+    // const userState = useSelector((state: { User: { user: User, loading: boolean, msg: string } }) => state.User);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
 

@@ -69,9 +69,12 @@ namespace PhotoShare.Service.Services
                     var res = await _repositoryManager.Photo.AddAsync(photo);
                     await _repositoryManager.SaveAsync();
 
-                    var photoAlbum = new AlbumPhoto() { AlbumId = photoDto.AlbumId, PhotoId = res.Id };
-                    await _repositoryManager.AlbumPhoto.AddAsync(photoAlbum);
-                    await _repositoryManager.SaveAsync();
+                    if (photoDto.AlbumId != 0)
+                    {
+                        var photoAlbum = new AlbumPhoto() { AlbumId = photoDto.AlbumId, PhotoId = res.Id };
+                        await _repositoryManager.AlbumPhoto.AddAsync(photoAlbum);
+                        await _repositoryManager.SaveAsync();
+                    }
 
                     var tags = _mapper.Map<ICollection<Core.Models.Tag>>(photoDto.Tags);
                     await AddTagsToPhoto(res, tags);
@@ -223,7 +226,7 @@ namespace PhotoShare.Service.Services
             return _mapper.Map<IEnumerable<PhotoDto>>(AlbumsPhotos);
         }
 
-        public async Task  RestorePhotoAsync(int photoId, int albumId, int userId)
+        public async Task RestorePhotoAsync(int photoId, int albumId, int userId)
         {
             var photo = await _repositoryManager.Photo.GetByIdAsync(photoId);
             if (photo == null)

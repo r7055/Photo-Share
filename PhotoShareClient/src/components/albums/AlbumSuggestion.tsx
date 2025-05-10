@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Snackbar, Alert } from '@mui/material';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 
 interface AlbumSuggestionProps {
     open: boolean;
     onClose: () => void;
     imageUrl: string;
-    token: string;
+    
 }
 
-const AlbumSuggestion: React.FC<AlbumSuggestionProps> = ({ open, onClose, imageUrl, token }) => {
+const AlbumSuggestion: React.FC<AlbumSuggestionProps> = ({ open, onClose, imageUrl }) => {
     const [suggestedAlbum, setSuggestedAlbum] = useState<string | null>(null);
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     useEffect(() => {
         if (open && imageUrl) {

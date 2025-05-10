@@ -4,7 +4,7 @@ export interface Photo {
     id?: number;
     url: string;
     size: number;
-    albumId: string;
+    albumId: number;
     name: string;
     tags?: Tag[];
 }

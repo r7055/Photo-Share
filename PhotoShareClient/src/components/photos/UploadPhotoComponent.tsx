@@ -190,6 +190,7 @@ import {
 } from '@mui/material';
 import { Tag } from '../../types/tag';
 import AlbumSuggestion from '../albums/AlbumSuggestion'; // הוספת הקומפוננטה
+import { Photo } from '../../types/photo';
 
 interface UploadPhotoComponentProps {
     open: boolean;
@@ -197,7 +198,6 @@ interface UploadPhotoComponentProps {
 }
 
 const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClose }) => {
-    const { parentId } = useParams<{ parentId: string }>();
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -208,6 +208,8 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
     const dispatch = useDispatch<AppDispatch>();
     const tags = useSelector((state: { tags: { tags: Tag[] } }) => state.tags.tags);
     const navigate = useNavigate();
+    const { albumId } = useParams<{ albumId: string }>();
+
 
     useEffect(() => {
         if (token) {
@@ -257,20 +259,23 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
                         const foundTag = tags.find((tag: Tag) => tag.name === tagName);
                         return foundTag ? { name: foundTag.name, id: foundTag.id } : null;
                     }).filter(tag => tag !== null);
+                    console.log('albumId in upload photo', albumId);
                     
                     const photoData = {
                         url: downloadUrl,
                         size: file.size,
-                        albumId: parentId?.toString() || 'defaultAlbumId',
+                        albumId: Number(albumId) || 0,
                         name: fileName,
                         tags: photoTags
                     };
+                    console.log('photoData', photoData);
+                    
                     await dispatch(addPhoto({ token, photo: photoData }));
                     setImageUrl(downloadUrl);
                     setShowAlbumSuggestion(true); // לפתוח את ההודעה לאחר ההעלאה
                 } else {
-                    const uploadPayload = uploadResponse.payload as { fileName: string };
-                    await dispatch(deletePhoto({ token, id: Number(uploadPayload.fileName) }));
+                    const uploadPayload = uploadResponse.payload as { Photo: Photo };
+                    await dispatch(deletePhoto({ token, id: uploadPayload.Photo.id ?? 0, albumId: Number(albumId) || 0 }));
                 }
             }
         } catch (error) {
@@ -356,7 +361,6 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
                     open={showAlbumSuggestion} 
                     onClose={() => setShowAlbumSuggestion(false)} 
                     imageUrl={imageUrl} 
-                    token={token!} 
                 />
             )}
         </Dialog>

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Typography, Grid, CircularProgress, Button } from '@mui/material';
 import { AppDispatch } from '../store/store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Photo } from '../types/photo';
 import { deletePhoto, getRecyclePhotos, restorePhoto } from '../slices/photoSlice';
 
@@ -10,6 +10,8 @@ const RecycleBinPhotos: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const token = sessionStorage.getItem('token');
     const navigate = useNavigate();
+    const { albumId } = useParams<{ albumId: string }>();
+
 
     const { recycledPhotos, loading, msg } = useSelector((state: { photo: { recycledPhotos: Photo[], loading: boolean, msg: string } }) => state.photo);
     
@@ -41,9 +43,9 @@ const RecycleBinPhotos: React.FC = () => {
         }
     };
 
-    const handleDelete = (photoId: number) => {
+    const handleDelete = (photoId: number,albumId:number) => {
         if (token) {
-            dispatch(deletePhoto({ token, id: photoId }));
+            dispatch(deletePhoto({ token, id: photoId, albumId:albumId }));
         } else {
             navigate('/auth');
         }
@@ -76,7 +78,7 @@ const RecycleBinPhotos: React.FC = () => {
                                     <Button
                                         variant="contained"
                                         color="secondary"
-                                        onClick={() => handleDelete(photo.id!)}
+                                        onClick={() => albumId && handleDelete(photo.id!, Number(albumId))}
                                         sx={{ marginTop: 2, marginLeft: 2 }}
                                     >
                                         מחק תמונה
