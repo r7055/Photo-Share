@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PhotoShare.Api;
 using PhotoShare.Core.IRepositories;
 using PhotoShare.Core.IServices;
@@ -43,19 +43,35 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddAutoMapper(typeof(MappingPostProfile), typeof(MappingProfile));
 
 builder.Services.AddControllers();
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+
+Console.WriteLine(builder.Configuration["ConnectionStrings:PhotoShareContext"]);
+
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
+Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
 
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddSingleton<IAmazonS3>(serviceProvider =>
 {
     var options = serviceProvider.GetRequiredService<IOptions<AWSOptions>>().Value;
 
-    // ����� Credentials ����� ����
+    // הגדרת Credentials באופן ידני
     var credentials = new Amazon.Runtime.BasicAWSCredentials(
         builder.Configuration["AWS:AccessKey"],
         builder.Configuration["AWS:SecretKey"]
     );
 
-    // ����� Region
+    // הגדרת Region
     var region = Amazon.RegionEndpoint.GetBySystemName(builder.Configuration["AWS:Region"]);
 
     return new AmazonS3Client(credentials, region);
@@ -136,8 +152,8 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.MapOpenApi();
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
@@ -146,12 +162,12 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "CV Site api");
         c.RoutePrefix = string.Empty; // To access Swagger at the root
     });
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+//}
+//else
+//{
+//    app.UseExceptionHandler("/Home/Error");
+//    app.UseHsts();
+//}
 
 // app.UseHttpsRedirection();
 
