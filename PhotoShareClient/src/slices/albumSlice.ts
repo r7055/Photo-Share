@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Album, AlbumSharePostModel } from '../types/album';
 
 const url = 'http://localhost:5141/api/albums';
-
+const urlReal='https://photo-share-xko7.onrender.com/api/albums';
 
 // Async thunk for fetching albums
 //angular 
