@@ -1,0 +1,63 @@
+  <div class="settings-page">
+      <div class="page-header">
+        <h1>הגדרות מערכת</h1>
+      </div>
+      
+      <div class="settings-container">
+        <div class="settings-sidebar">
+          <div class="settings-nav">
+            @for (category of settingsCategories; track category) {
+              <button 
+                class="nav-item" 
+                [class.active]="activeCategory === category"
+                (click)="setActiveCategory(category)"
+              >
+                {{ getCategoryLabel(category) }}
+              </button>
+            }
+          </div>
+        </div>
+        
+        <div class="settings-content">
+          <h2>{{ getCategoryLabel(activeCategory) }}</h2>
+          
+          <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+            @for (setting of getSettingsByCategory(activeCategory); track setting.key) {
+              <div class="setting-item">
+                <label [for]="setting.key">{{ setting.description }}</label>
+                
+                @if (setting.type  === 'text' || setting.type  === 'number') {
+                  <input 
+                    [ ]="setting.  === 'number' ? 'number' : 'text'" 
+                    [id]="setting.key" 
+                    [formControlName]="setting.key"
+                  >
+                } @else if (setting.type  === 'boolean') {
+                  <div class="toggle-switch">
+                    <input 
+                     type  ="checkbox" 
+                      [id]="setting.key" 
+                      [formControlName]="setting.key"
+                    >
+                    <label [for]="setting.key" class="toggle-label"></label>
+                  </div>
+                } @else if (setting.type  === 'select' && setting.options) {
+                  <select [id]="setting.key" [formControlName]="setting.key">
+                    @for (option of setting.options; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                }
+              </div>
+            }
+            
+            <div class="form-actions">
+              <button  type="button" class="reset-btn" (click)="resetSettings()">איפוס</button>
+              <button  type="submit" class="save-btn" [disabled]="settingsForm.pristine || saving">
+                {{ saving ? 'שומר...' : 'שמור הגדרות' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,190 @@
+<div class="users-page">
+  <div class="page-header">
+    <h1>ניהול משתמשים</h1>
+    <button class="add-btn" (click)="openAddUserModal()">
+      <i class="material-icons">add</i>
+      הוסף משתמש
+    </button>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="חפש לפי שם, דוא״ל או תפקיד..." [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()" />
+    <i class="material-icons search-icon">search</i>
+  </div>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>סטטוס:</label>
+      <select [(ngModel)]="filterStatus" (change)="applySearch()">
+        <option value="">הכל</option>
+        <option value="active">פעילים</option>
+        <option value="inactive">לא פעילים</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>תפקיד:</label>
+      <select [(ngModel)]="filterRole" (change)="applySearch()">
+        <option value="">הכל</option>
+        <option *ngFor="let role of roles" [value]="role.roleName">{{ role.roleName === 'admin' ? 'מנהל' : 'משתמש' }}
+        </option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>נרשמו מתאריך:</label>
+      <input type="date" [(ngModel)]="filterFromDate" (change)="applySearch()" />
+    </div>
+    <div class="filter-group">
+      <label>עד תאריך:</label>
+      <input type="date" [(ngModel)]="filterToDate" (change)="applySearch()" />
+    </div>
+    <div class="filter-group">
+      <label>הצג:</label>
+      <select [(ngModel)]="filterSort" (change)="applySearch()">
+        <option value="newest">החדשים ביותר</option>
+        <option value="oldest">הוותיקים ביותר</option>
+        <option value="lastLoginDesc">כניסה אחרונה - אחרונים למעלה</option>
+        <option value="lastLoginAsc">כניסה אחרונה - ראשונים למעלה</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>מצטרפים אחרונים:</label>
+      <button type="button" (click)="filterLast('week')">שבוע אחרון</button>
+      <button type="button" (click)="filterLast('month')">חודש אחרון</button>
+      <button type="button" (click)="clearQuickFilter()">נקה</button>
+    </div>
+  </div>
+
+
+
+  <div class="users-table-container">
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>טוען משתמשים...</p>
+    </div>
+
+    <table *ngIf="!loading && filteredUsers.length > 0" class="users-table">
+      <thead>
+        <tr>
+          <th>שם פרטי</th>
+          <th>שם משפחה</th>
+          <th>דוא"ל</th>
+          <th>תפקיד</th>
+          <th>סטטוס</th>
+          <th>תאריך הצטרפות</th>
+          <th>כניסה אחרונה</th>
+          <th>פעולות</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers">
+          <td>{{ user.firstName }}</td>
+          <td>{{ user.lastName }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="badge badge-admin" *ngIf="user.role?.roleName === 'admin'">מנהל</span>
+            <span class="badge badge-user" *ngIf="user.role?.roleName !== 'admin'">משתמש</span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="user.status ? 'badge-active' : 'badge-inactive'">
+              {{ user.status ? 'פעיל' : 'לא פעיל' }}
+            </span>
+          </td>
+          <td>{{ formatDate(user.createAt) }}</td>
+          <td>{{ user.lastLogin ? formatDate(user.lastLogin) : 'לא התחבר' }}</td>
+          <td class="actions-cell">
+            <button class="action-btn edit-btn" (click)="openEditUserModal(user)">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteUser(user)">
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loading && filteredUsers.length === 0" class="empty-state">
+      <i class="material-icons">people</i>
+      <p>לא נמצאו משתמשים תואמים</p>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div class="modal" [class.show]="showModal">
+    <div class="modal-backdrop" (click)="closeModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ isEditMode ? 'ערוך משתמש' : 'הוסף משתמש חדש' }}</h2>
+        <button class="close-btn" (click)="closeModal()">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+        <div class="form-group">
+          <label for="firstName">שם פרטי</label>
+          <input type="text" id="firstName" formControlName="firstName">
+          <div *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched" class="error-message">
+            שם פרטי נדרש
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="lastName">שם משפחה</label>
+          <input type="text" id="lastName" formControlName="lastName">
+          <div *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched" class="error-message">
+            שם משפחה נדרש
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">דוא"ל</label>
+          <input type="email" id="email" formControlName="email">
+          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="error-message">
+            <span *ngIf="userForm.get('email')?.errors?.['required']">דוא"ל נדרש</span>
+            <span *ngIf="userForm.get('email')?.errors?.['email']">דוא"ל לא תקין</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            סיסמה
+            <span *ngIf="isEditMode">(השאר ריק לשמירת הסיסמה הנוכחית)</span>
+          </label>
+          <input type="password" id="password" formControlName="password">
+          <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched" class="error-message">
+            <span *ngIf="userForm.get('password')?.errors?.['required']">סיסמה נדרשת</span>
+            <span *ngIf="userForm.get('password')?.errors?.['minlength']">סיסמה חייבת להכיל לפחות 6 תווים</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="roleId">תפקיד</label>
+          <select id="roleId" formControlName="roleId">
+            <option *ngFor="let role of roles" [value]="role.id">{{ role.roleName === 'admin' ? 'מנהל' : 'משתמש' }}
+            </option>
+          </select>
+        </div>
+
+        <div *ngIf="isEditMode" class="form-group">
+          <label for="status">סטטוס</label>
+          <select id="status" formControlName="status">
+            <option value="active">פעיל</option>
+            <option value="inactive">לא פעיל</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeModal()">ביטול</button>
+          <button type="submit" class="submit-btn" [disabled]="userForm.invalid || loading">
+            <span *ngIf="loading" class="spinner"></span>
+            {{ isEditMode ? 'עדכן' : 'הוסף' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

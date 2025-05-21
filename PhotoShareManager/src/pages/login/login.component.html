@@ -1,0 +1,46 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>PhotoShare Admin</h1>
+      <p>התחבר למערכת הניהול</p>
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">דוא"ל</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+        />
+        <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+          <div *ngIf="f['email'].errors['required']">דוא"ל נדרש</div>
+          <div *ngIf="f['email'].errors['email']">דוא"ל לא תקין</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">סיסמה</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+        />
+        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+          <div *ngIf="f['password'].errors['required']">סיסמה נדרשת</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <button [disabled]="loading" class="login-btn">
+          <span *ngIf="loading" class="spinner"></span>
+          התחבר
+        </button>
+      </div>
+      
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a [routerLink]="['/dashboard']" [class.active]="isActive('/dashboard')">
+          <i class="material-icons">dashboard</i>
+          <span>לוח בקרה</span>
+        </a>
+      </li>
+      
+      <!-- <li class="nav-item" *ngIf="isAdmin()"> -->
+      <li class="nav-item">
+        <a [routerLink]="['/users']" [class.active]="isActive('/users')">
+          <i class="material-icons">people</i>
+          <span>משתמשים</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a [routerLink]="['/albums']" [class.active]="isActive('/albums')">
+          <i class="material-icons">photo_album</i>
+          <span>אלבומים</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a [routerLink]="['/photos']" [class.active]="isActive('/photos')">
+          <i class="material-icons">photo</i>
+          <span>תמונות</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a [routerLink]="['/tags']" [class.active]="isActive('/tags')">
+          <i class="material-icons">label</i>
+          <span>תגיות</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a [routerLink]="['/shares']" [class.active]="isActive('/shares')">
+          <i class="material-icons">share</i>
+          <span>שיתופים</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a [routerLink]="['/recycle-bin']" [class.active]="isActive('/recycle-bin')">
+          <i class="material-icons">delete</i>
+          <span>סל מיחזור</span>
+        </a>
+      </li>
+      
+      <!-- <li class="nav-item" *ngIf="isAdmin()"> -->
+      <li class="nav-item" >
+        <a [routerLink]="['/analytics']" [class.active]="isActive('/analytics')">
+          <i class="material-icons">insert_chart</i>
+          <span>ניתוח נתונים</span>
+        </a>
+      </li>
+      
+      <!-- <li class="nav-item" *ngIf="isAdmin()"> -->
+      <li class="nav-item" >
+        <a [routerLink]="['/reports']" [class.active]="isActive('/reports')">
+          <i class="material-icons">assessment</i>
+          <span>דוחות</span>
+        </a>
+      </li>
+      
+      <!-- <li class="nav-item" *ngIf="isAdmin()"> -->
+      <li class="nav-item">
+        <a [routerLink]="['/settings']" [class.active]="isActive('/settings')">
+          <i class="material-icons">settings</i>
+          <span>הגדרות</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>

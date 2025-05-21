@@ -1,0 +1,110 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+<div class="dashboard-page">
+  <div class="page-header">
+    <h1>לוח בקרה</h1>
+  </div>
+  
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>טוען נתונים...</p>
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  
+  <div *ngIf="!loading && !error" class="dashboard-content">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon users-icon">
+          <i class="material-icons">people</i>
+        </div>
+        <div class="stat-content">
+          <h3>משתמשים</h3>
+          <div class="stat-value">{{ stats.users }}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon albums-icon">
+          <i class="material-icons">photo_album</i>
+        </div>
+        <div class="stat-content">
+          <h3>אלבומים</h3>
+          <div class="stat-value">{{ stats.albums }}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon photos-icon">
+          <i class="material-icons">photo</i>
+        </div>
+        <div class="stat-content">
+          <h3>תמונות</h3>
+          <div class="stat-value">{{ stats.photos }}</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon storage-icon">
+          <i class="material-icons">storage</i>
+        </div>
+        <div class="stat-content">
+          <h3>אחסון</h3>
+          <div class="stat-value">{{ stats.storage.toFixed(4) }} GB</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recent Content -->
+    <div class="recent-content">
+      <div class="recent-albums">
+        <div class="section-header">
+          <h2>אלבומים אחרונים</h2>
+          <a [routerLink]="['/albums']" class="view-all">הצג הכל</a>
+        </div>
+        
+        <div class="items-list">
+          <div *ngFor="let album of recentAlbums" class="item-card">
+            <div class="item-image">
+              <img [src]="album.coverUrl || 'icons-folder-64.png'" alt="{{ album.title }}">
+            </div>
+            <div class="item-details">
+              <h4>{{ album.title }}</h4>
+              <p>{{ album.photoCount }} תמונות</p>
+              <p class="item-date">{{ formatDate(album.createdAt) }}</p>
+            </div>
+          </div>
+          
+          <div *ngIf="recentAlbums.length === 0" class="empty-state">
+            <p>אין אלבומים להצגה</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="recent-photos">
+        <div class="section-header">
+          <h2>תמונות אחרונות</h2>
+          <a [routerLink]="['/photos']" class="view-all">הצג הכל</a>
+        </div>
+        
+        <div class="items-list">
+          <div *ngFor="let photo of recentPhotos" class="item-card">
+            <div class="item-image">
+              <img [src]="photo.url" alt="{{ photo.name }}">
+            </div>
+            <div class="item-details">
+              <h4>{{ photo.name }}</h4>
+              <p>{{ formatFileSize(photo.size) }}</p>
+              <p class="item-date">{{ formatDate(photo.createdAt) }}</p>
+            </div>
+          </div>
+          
+          <div *ngIf="recentPhotos.length === 0" class="empty-state">
+            <p>אין תמונות להצגה</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

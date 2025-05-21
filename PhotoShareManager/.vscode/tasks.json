@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
+      " ": "npm",
       "script": "start",
       "isBackground": true,
       "problemMatcher": {
-        "owner": "typescript",
+        "owner": " script",
         "pattern": "$tsc",
         "background": {
           "activeOnStart": true,
@@ -21,11 +21,11 @@
       }
     },
     {
-      "type": "npm",
+      " ": "npm",
       "script": "test",
       "isBackground": true,
       "problemMatcher": {
-        "owner": "typescript",
+        "owner": " script",
         "pattern": "$tsc",
         "background": {
           "activeOnStart": true,

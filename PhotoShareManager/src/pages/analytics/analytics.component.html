@@ -1,0 +1,159 @@
+    <div class="analytics-page">
+      <div class="page-header">
+        <h1>ניתוח נתונים</h1>
+        
+        <form [formGroup]="filterForm" class="filter-form">
+          <div class="form-group">
+            <label for="dateRange">טווח תאריכים:</label>
+            <select id="dateRange" formControlName="dateRange">
+              <option value="7">7 ימים אחרונים</option>
+              <option value="30">30 ימים אחרונים</option>
+              <option value="90">90 ימים אחרונים</option>
+              <option value="365">שנה אחרונה</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      
+      <div class="analytics-grid">
+        <div class="chart-card">
+          <h2>פעילות משתמשים</h2>
+          <div class="chart-container">
+            <canvas id="userActivityChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h2>העלאות תמונות</h2>
+          <div class="chart-container">
+            <canvas id="uploadsChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h2>שיתופים</h2>
+          <div class="chart-container">
+            <canvas id="sharesChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h2>אחסון</h2>
+          <div class="chart-container">
+            <canvas id="storageChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stats-section">
+        <h2>סטטיסטיקות מערכת</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon users-icon">
+              <i class="material-icons">people</i>
+            </div>
+            <div class="stat-content">
+              <h3>משתמשים</h3>
+              <div class="stat-numbers">
+                <div class="stat-main">{{ stats.totalUsers }}</div>
+                <div class="stat-change positive">+{{ stats.newUsers }} השבוע</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon photos-icon">
+              <i class="material-icons">photo</i>
+            </div>
+            <div class="stat-content">
+              <h3>תמונות</h3>
+              <div class="stat-numbers">
+                <div class="stat-main">{{ stats.totalPhotos }}</div>
+                <div class="stat-change positive">+{{ stats.newPhotos }} השבוע</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon albums-icon">
+              <i class="material-icons">photo_album</i>
+            </div>
+            <div class="stat-content">
+              <h3>אלבומים</h3>
+              <div class="stat-numbers">
+                <div class="stat-main">{{ stats.totalAlbums }}</div>
+                <div class="stat-change positive">+{{ stats.newAlbums }} השבוע</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon storage-icon">
+              <i class="material-icons">storage</i>
+            </div>
+            <div class="stat-content">
+              <h3>אחסון</h3>
+              <div class="stat-numbers">
+                <div class="stat-main">{{ stats.totalStorage }} GB</div>
+                <div class="stat-change neutral">{{ stats.storageUsedPercent }}% מנוצל</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="top-items-section">
+        <h2>פריטים פופולריים</h2>
+        
+        <div class="top-items-grid">
+          <div class="top-item-card">
+            <h3>אלבומים פופולריים</h3>
+            <ul class="top-items-list">
+              @for (album of topAlbums; track album.id) {
+                <li class="top-item">
+                  <span class="item-name">{{ album.name }}</span>
+                  <span class="item-count">{{ album.views }} צפיות</span>
+                </li>
+              }
+            </ul>
+          </div>
+          
+          <div class="top-item-card">
+            <h3>תמונות פופולריות</h3>
+            <ul class="top-items-list">
+              @for (photo of topPhotos; track photo.id) {
+                <li class="top-item">
+                  <span class="item-name">{{ photo.name }}</span>
+                  <span class="item-count">{{ photo.views }} צפיות</span>
+                </li>
+              }
+            </ul>
+          </div>
+          
+          <div class="top-item-card">
+            <h3>משתמשים פעילים</h3>
+            <ul class="top-items-list">
+              @for (user of topUsers; track user.id) {
+                <li class="top-item">
+                  <span class="item-name">{{ user.name }}</span>
+                  <span class="item-count">{{ user.uploads }} העלאות</span>
+                </li>
+              }
+            </ul>
+          </div>
+          
+          <div class="top-item-card">
+            <h3>תגיות פופולריות</h3>
+            <ul class="top-items-list">
+              @for (tag of topTags; track tag.id) {
+                <li class="top-item">
+                  <span class="item-name">{{ tag.name }}</span>
+                  <span class="item-count">{{ tag.count }} פריטים</span>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>

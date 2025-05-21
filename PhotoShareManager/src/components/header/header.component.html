@@ -1,0 +1,13 @@
+<header class="header">
+  <div class="logo">
+    <h1>PhotoShare Admin</h1>
+  </div>
+  
+  <div class="user-menu" *ngIf="authService.currentUser">
+    <span class="user-name">{{ authService.currentUser!.name }}</span>
+    <button class="logout-btn" (click)="logout()">
+      <i class="material-icons">exit_to_app</i>
+      התנתק
+    </button>
+  </div>
+</header>

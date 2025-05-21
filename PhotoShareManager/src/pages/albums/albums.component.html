@@ -1,0 +1,100 @@
+<div class="albums-page">
+  <div class="page-header">
+    <h1>ניהול אלבומים</h1>
+    <button class="add-btn" (click)="openAddAlbumModal()">
+      <i class="material-icons">add</i>
+      הוסף אלבום
+    </button>
+  </div>
+  
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  
+  <div class="albums-grid">
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>טוען אלבומים...</p>
+    </div>
+    
+    <div *ngIf="!loading && albums.length > 0" class="albums-list">
+      <div *ngFor="let album of albums" class="album-card">
+        <div class="album-cover">
+          <img [src]="album.coverUrl || 'icons-folder-64.png'" alt="{{ album.title }}">
+          <div class="album-badge" *ngIf="album.isPublic">ציבורי</div>
+        </div>
+        <div class="album-details">
+          <h3>{{ album.title }}</h3>
+          <p class="album-description">{{ album.description || 'אין תיאור' }}</p>
+          <div class="album-meta">
+            <span>{{ album.photoCount }} תמונות</span>
+            <span>{{ formatDate(album.createdAt) }}</span>
+          </div>
+        </div>
+        <div class="album-actions">
+          <button class="action-btn view-btn" (click)="viewAlbumPhotos(album)">
+            <i class="material-icons">photo_library</i>
+            <span>תמונות</span>
+          </button>
+          <button class="action-btn edit-btn" (click)="openEditAlbumModal(album)">
+            <i class="material-icons">edit</i>
+            <span>ערוך</span>
+          </button>
+          <button class="action-btn delete-btn" (click)="deleteAlbum(album)">
+            <i class="material-icons">delete</i>
+            <span>מחק</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div *ngIf="!loading && albums.length === 0" class="empty-state">
+      <i class="material-icons">photo_album</i>
+      <p>אין אלבומים להצגה</p>
+      <button class="add-btn" (click)="openAddAlbumModal()">הוסף אלבום חדש</button>
+    </div>
+  </div>
+  
+  <!-- Album Modal -->
+  <div class="modal" [class.show]="showModal">
+    <div class="modal-backdrop" (click)="closeModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>{{ isEditMode ? 'ערוך אלבום' : 'הוסף אלבום חדש' }}</h2>
+        <button class="close-btn" (click)="closeModal()">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+      
+      <form [formGroup]="albumForm" (ngSubmit)="onSubmit()" class="album-form">
+        <div class="form-group">
+          <label for="name">שם האלבום</label>
+          <input type="text" id="name" formControlName="name">
+          <div *ngIf="albumForm.get('name')?.invalid && albumForm.get('name')?.touched" class="error-message">
+            שם האלבום נדרש
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">תיאור</label>
+          <textarea id="description" formControlName="description" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" formControlName="isPublic">
+            אלבום ציבורי
+          </label>
+          <small>אלבומים ציבוריים נגישים לכל המשתמשים ללא צורך בשיתוף</small>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeModal()">ביטול</button>
+          <button type="submit" class="submit-btn" [disabled]="albumForm.invalid || loading">
+            <span *ngIf="loading" class="spinner"></span>
+            {{ isEditMode ? 'עדכן' : 'הוסף' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

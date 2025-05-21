@@ -1,0 +1,207 @@
+<div class="photos-page">
+  <div class="page-header">
+    <div class="header-left">
+      <h1>ניהול תמונות</h1>
+      <div *ngIf="currentAlbumId" class="album-filter">
+        <span>מציג תמונות מאלבום: </span>
+        <span class="album-name">{{ getAlbumName(currentAlbumId!) }}
+        </span>
+        <button class="clear-filter-btn" [routerLink]="['/photos']">
+          <i class="material-icons">close</i>
+          הצג הכל
+        </button>
+      </div>
+    </div>
+    <button class="add-btn" (click)="openUploadModal()">
+      <i class="material-icons">cloud_upload</i>
+      העלה תמונות
+    </button>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div class="photos-grid">
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>טוען תמונות...</p>
+    </div>
+
+    <div *ngIf="!loading && photos.length > 0" class="photos-list">
+      <div *ngFor="let photo of photos" class="photo-card">
+        <div class="photo-image" (click)="openViewModal(photo)">
+          <img [src]="photo.url || '/assets/placeholder-photo.jpg'" alt="{{ photo.name }}">
+        </div>
+        <div class="photo-details">
+          <h3>{{ photo.name }}</h3>
+          <div class="photo-meta">
+            <span>{{ formatFileSize(photo.size) }}</span>
+            <span>{{ formatDate(photo.createdAt) }}</span>
+          </div>
+        </div>
+        <div class="photo-actions">
+          <button class="action-btn edit-btn" (click)="openPhotoModal(photo)">
+            <i class="material-icons">edit</i>
+          </button>
+          <button class="action-btn delete-btn" (click)="deletePhoto(photo)">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && photos.length === 0" class="empty-state">
+      <i class="material-icons">photo</i>
+      <p>אין תמונות להצגה</p>
+      <button class="add-btn" (click)="openUploadModal()">העלה תמונות</button>
+    </div>
+  </div>
+
+  <!-- Photo Edit Modal -->
+  <div class="modal" [class.show]="showPhotoModal">
+    <div class="modal-backdrop" (click)="closePhotoModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ערוך תמונה</h2>
+        <button class="close-btn" (click)="closePhotoModal()">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <form [formGroup]="photoForm" (ngSubmit)="updatePhoto()" class="photo-form">
+        <div class="form-group">
+          <label for="name">שם התמונה</label>
+          <input type="text" id="name" formControlName="name">
+          <div *ngIf="photoForm.get('name')?.invalid && photoForm.get('name')?.touched" class="error-message">
+            שם התמונה נדרש
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">תיאור</label>
+          <textarea id="description" formControlName="description" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="albumId">אלבום</label>
+          <select id="albumId" formControlName="albumId">
+            <option *ngFor="let album of albums" [value]="album.id">{{ album.title }}</option>
+          </select>
+          <div *ngIf="photoForm.get('albumId')?.invalid && photoForm.get('albumId')?.touched" class="error-message">
+            אלבום נדרש
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closePhotoModal()">ביטול</button>
+          <button type="submit" class="submit-btn" [disabled]="photoForm.invalid || loading">
+            <span *ngIf="loading" class="spinner"></span>
+            עדכן
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal" [class.show]="showUploadModal">
+    <div class="modal-backdrop" (click)="closeUploadModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>העלאת תמונות</h2>
+        <button class="close-btn" (click)="closeUploadModal()">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <form [formGroup]="uploadForm" (ngSubmit)="uploadPhotos()" class="upload-form">
+        <div class="form-group">
+          <label for="uploadAlbumId">אלבום</label>
+          <select id="uploadAlbumId" formControlName="albumId">
+            <option *ngFor="let album of albums" [value]="album.id">{{ album.title }}</option>
+          </select>
+          <div *ngIf="uploadForm.get('albumId')?.invalid && uploadForm.get('albumId')?.touched" class="error-message">
+            אלבום נדרש
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="files">בחר תמונות</label>
+          <input type="file" id="files" (change)="onFileSelect($event)" accept="image/*" multiple>
+          <div *ngIf="uploadForm.get('files')?.invalid && uploadForm.get('files')?.touched" class="error-message">
+            יש לבחור לפחות תמונה אחת
+          </div>
+        </div>
+
+        <div *ngIf="uploading" class="progress-container">
+          <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+          <div class="progress-text">{{ uploadProgress }}%</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeUploadModal()">ביטול</button>
+          <button type="submit" class="submit-btn" [disabled]="uploadForm.invalid || uploading">
+            <span *ngIf="uploading" class="spinner"></span>
+            העלה
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Photo Modal -->
+  <div class="modal" [class.show]="showViewModal">
+    <div class="modal-backdrop" (click)="closeViewModal()"></div>
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h2>{{ selectedPhoto?.name }}</h2>
+        <button class="close-btn" (click)="closeViewModal()">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <div class="photo-view-content">
+        <div class="photo-view-image">
+          <img [src]="selectedPhoto?.url || '/assets/placeholder-photo.jpg'" alt="{{ selectedPhoto?.name }}">
+        </div>
+
+        <div class="photo-view-details">
+          <div class="detail-item">
+            <span class="detail-label">שם:</span>
+            <span class="detail-value">{{ selectedPhoto?.name }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">תיאור:</span>
+            <span class="detail-value">{{ selectedPhoto?.description || 'אין תיאור' }}</span>
+          </div>
+
+          <!-- <div class="detail-item">
+            <span class="detail-label">אלבום:</span>
+            <span class="detail-value">{{ getAlbumName(selectedPhoto!.albumId) }}</span>
+          </div> -->
+
+          <div class="detail-item">
+            <span class="detail-label">גודל:</span>
+            <span class="detail-value">{{ selectedPhoto ? formatFileSize(selectedPhoto.size) : '' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">מידות:</span>
+            <span class="detail-value">{{ selectedPhoto?.width }} x {{ selectedPhoto?.height }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">תאריך העלאה:</span>
+            <span class="detail-value">{{ selectedPhoto ? formatDate(selectedPhoto.createdAt) : '' }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">עודכן:</span>
+            <span class="detail-value">{{ selectedPhoto ? formatDate(selectedPhoto.updatedAt) : '' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
