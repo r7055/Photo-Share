@@ -1,7 +1,12 @@
-import { Component, OnInit } from "@angular/core"
-import { CommonModule } from "@angular/common"
-import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms"
-import { Chart } from "chart.js/auto"
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { Chart } from "chart.js/auto";
+import { UserDto, UserService } from "../../services/user.service";
+import { TagService, TagDto } from "../../services/tag.service"; 
+import { AlbumDto, AlbumService } from "../../services/album.service";
+import { PhotoDto, PhotoService } from "../../services/photo.service";
+import { StatisticsService, StatisticsDto } from "../../services/statistics.service"; 
 
 @Component({
   selector: "app-analytics",
@@ -11,265 +16,417 @@ import { Chart } from "chart.js/auto"
   styleUrls: ["./analytics.component.scss"],
 })
 export class AnalyticsComponent implements OnInit {
-  filterForm: FormGroup
+  filterForm: FormGroup;
+  users: UserDto[] = [];
+  topTags: TagDto[] = []; 
+  topAlbums: AlbumDto[] = []; 
+  topPhotos: PhotoDto[] = []; 
+  topUsers: UserDto[] = []; 
+  stats: StatisticsDto | undefined; 
 
-  stats = {
-    totalUsers: 1245,
-    newUsers: 87,
-    totalPhotos: 24689,
-    newPhotos: 342,
-    totalAlbums: 1876,
-    newAlbums: 53,
-    totalStorage: 256.8,
-    storageUsedPercent: 64,
-  }
-
-  topAlbums = [
-    { id: 1, name: "טיול משפחתי 2023", views: 1245 },
-    { id: 2, name: "חתונה של דני ורותי", views: 987 },
-    { id: 3, name: "טיול בצפון", views: 876 },
-    { id: 4, name: "מסיבת יום הולדת", views: 754 },
-    { id: 5, name: "חופשה באילת", views: 621 },
-  ]
-
-  topPhotos = [
-    { id: 1, name: "שקיעה בים", views: 2341 },
-    { id: 2, name: "הנוף מהפסגה", views: 1876 },
-    { id: 3, name: "משפחה על החוף", views: 1654 },
-    { id: 4, name: "ארוחת ערב חגיגית", views: 1432 },
-    { id: 5, name: "זריחה בהרים", views: 1298 },
-  ]
-
-  topUsers = [
-    { id: 1, name: "יוסי כהן", uploads: 342 },
-    { id: 2, name: "מיכל לוי", uploads: 287 },
-    { id: 3, name: "דוד אברהם", uploads: 243 },
-    { id: 4, name: "רונית שמעוני", uploads: 198 },
-    { id: 5, name: "אבי גולן", uploads: 176 },
-  ]
-
-  topTags = [
-    { id: 1, name: "משפחה", count: 876 },
-    { id: 2, name: "טבע", count: 754 },
-    { id: 3, name: "חופשה", count: 687 },
-    { id: 4, name: "אוכל", count: 543 },
-    { id: 5, name: "חיות", count: 432 },
-  ]
+  // Error handling
+  errorMessage: string = '';
+  hasError: boolean = false;
+  isLoading: boolean = false;
 
   private charts: { [key: string]: Chart } = {}
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private tagService: TagService,
+    private albumService: AlbumService,
+    private photoService: PhotoService,
+    private userService: UserService,
+    private statisticsService: StatisticsService
+  ) {
     this.filterForm = this.fb.group({
       dateRange: ["30"],
-    })
+    });
   }
 
   ngOnInit(): void {
-    this.initCharts()
+    // טוען את הנתונים הסטטיסטיים הכלליים
+    this.loadStatistics(30);
+    
+    // טוען את הרשימות המובילות
+    this.loadTopLists();
 
+    // מאזין לשינויים בטווח התאריכים
     this.filterForm.get("dateRange")?.valueChanges.subscribe((value) => {
-      this.updateCharts(Number.parseInt(value, 10))
-    })
+      const days = Number.parseInt(value, 10);
+      this.loadStatistics(days);
+      this.updateCharts(days);
+    });
   }
 
-  initCharts(): void {
-    setTimeout(() => {
-      this.createUserActivityChart()
-      this.createUploadsChart()
-      this.createSharesChart()
-      this.createStorageChart()
-    }, 100)
+  loadStatistics(days: number): void {
+    this.isLoading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.statisticsService.getStatistics(days).subscribe({
+      next: (statistics) => {
+        this.stats = statistics;
+        this.isLoading = false;
+        console.log('Statistics:', this.stats);
+        
+        // אתחול התרשימים לאחר קבלת הנתונים
+        setTimeout(() => {
+          this.initCharts(days);
+        }, 100);
+      },
+      error: (error) => {
+        console.error('Error loading statistics:', error);
+        this.isLoading = false;
+        this.hasError = true;
+        this.errorMessage = 'שגיאה בטעינת הנתונים הסטטיסטיים. אנא נסה שוב מאוחר יותר.';
+      }
+    });
   }
 
-  createUserActivityChart(): void {
-    const ctx = document.getElementById("userActivityChart") as HTMLCanvasElement
+  loadTopLists(): void {
+    // טוען את הרשימות המובילות
+    this.tagService.getTopTags().subscribe((tags) => {
+      this.topTags = tags; 
+    });
 
-    if (!ctx) return
+    this.albumService.getTopAlbums().subscribe((albums) => {
+      this.topAlbums = albums; 
+    });
 
-    this.charts['userActivity'] = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: this.generateDateLabels(30),
-        datasets: [
-          {
-            label: "כניסות למערכת",
-            data: this.generateRandomData(30, 50, 200),
-            borderColor: "#3498db",
-            backgroundColor: "rgba(52, 152, 219, 0.1)",
-            tension: 0.4,
-            fill: true,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    })
+    this.photoService.getTopPhotos().subscribe((photos) => {
+      this.topPhotos = photos; 
+    });
+
+    this.userService.getTopUsers().subscribe((users) => { 
+      this.topUsers = users; 
+      console.log('Top Users:', this.topUsers); 
+    });
   }
 
-  createUploadsChart(): void {
-    const ctx = document.getElementById("uploadsChart") as HTMLCanvasElement
-
-    if (!ctx) return
-
-    this.charts['uploads'] = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: this.generateDateLabels(30),
-        datasets: [
-          {
-            label: "העלאות תמונות",
-            data: this.generateRandomData(30, 5, 50),
-            backgroundColor: "#e74c3c",
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    })
+  initCharts(days: number): void {
+    this.createUserActivityChart(days);
+    this.createUploadsChart(days);
+    this.createSharesChart(days);
+    this.createStorageChart();
   }
 
-  createSharesChart(): void {
-    const ctx = document.getElementById("sharesChart") as HTMLCanvasElement
+  createUserActivityChart(days: number): void {
+    const ctx = document.getElementById("userActivityChart") as HTMLCanvasElement;
+    if (!ctx) return;
 
-    if (!ctx) return
+    // מחק תרשים קיים אם קיים
+    if (this.charts['userActivity']) {
+      this.charts['userActivity'].destroy();
+    }
 
-    this.charts['shares'] = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: this.generateDateLabels(30),
-        datasets: [
-          {
-            label: "שיתופי אלבומים",
-            data: this.generateRandomData(30, 1, 20),
-            borderColor: "#2ecc71",
-            backgroundColor: "transparent",
-            tension: 0.4,
+    // קבלת נתונים אמיתיים מהשרת
+    this.statisticsService.getUserActivityData(days).subscribe({
+      next: (data) => {
+        this.charts['userActivity'] = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: this.generateDateLabels(days),
+            datasets: [
+              {
+                label: "כניסות למערכת",
+                data: data,
+                borderColor: "#3498db",
+                backgroundColor: "rgba(52, 152, 219, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
           },
-          {
-            label: "שיתופי תמונות",
-            data: this.generateRandomData(30, 5, 30),
-            borderColor: "#f39c12",
-            backgroundColor: "transparent",
-            tension: 0.4,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
           },
-        ],
+        });
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
+      error: (error) => {
+        console.error('Error loading user activity data:', error);
+        this.showChartError(ctx, 'שגיאה בטעינת נתוני פעילות משתמשים');
+      }
+    });
+  }
+
+  createUploadsChart(days: number): void {
+    const ctx = document.getElementById("uploadsChart") as HTMLCanvasElement;
+    if (!ctx) return;
+
+    // מחק תרשים קיים אם קיים
+    if (this.charts['uploads']) {
+      this.charts['uploads'].destroy();
+    }
+
+    this.statisticsService.getUploadsData(days).subscribe({
+      next: (data) => {
+        this.charts['uploads'] = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: this.generateDateLabels(days),
+            datasets: [
+              {
+                label: "העלאות תמונות",
+                data: data,
+                backgroundColor: "#e74c3c",
+              },
+            ],
           },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
           },
-        },
+        });
       },
-    })
+      error: (error) => {
+        console.error('Error loading uploads data:', error);
+        this.showChartError(ctx, 'שגיאה בטעינת נתוני העלאות');
+      }
+    });
+  }
+
+  createSharesChart(days: number): void {
+    const ctx = document.getElementById("sharesChart") as HTMLCanvasElement;
+    if (!ctx) return;
+
+    // מחק תרשים קיים אם קיים
+    if (this.charts['shares']) {
+      this.charts['shares'].destroy();
+    }
+
+    this.statisticsService.getSharesData(days).subscribe({
+      next: (data) => {
+        this.charts['shares'] = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: this.generateDateLabels(days),
+            datasets: [
+              {
+                label: "שיתופי אלבומים",
+                data: data.sharesAlbums,
+                borderColor: "#2ecc71",
+                backgroundColor: "transparent",
+                tension: 0.4,
+              },
+              {
+                label: "שיתופי תמונות",
+                data: data.sharesPhotos,
+                borderColor: "#f39c12",
+                backgroundColor: "transparent",
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      },
+      error: (error) => {
+        console.error('Error loading shares data:', error);
+        this.showChartError(ctx, 'שגיאה בטעינת נתוני שיתופים');
+      }
+    });
   }
 
   createStorageChart(): void {
-    const ctx = document.getElementById("storageChart") as HTMLCanvasElement
+    const ctx = document.getElementById("storageChart") as HTMLCanvasElement;
+    if (!ctx) return;
 
-    if (!ctx) return
+    // מחק תרשים קיים אם קיים
+    if (this.charts['storage']) {
+      this.charts['storage'].destroy();
+    }
 
-    this.charts['storage'] = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: ["בשימוש", "פנוי"],
-        datasets: [
-          {
-            data: [this.stats.storageUsedPercent, 100 - this.stats.storageUsedPercent],
-            backgroundColor: ["#3498db", "#ecf0f1"],
-            borderWidth: 0,
+    this.statisticsService.getStorageData().subscribe({
+      next: (data) => {
+        this.charts['storage'] = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: ["בשימוש", "פנוי"],
+            datasets: [
+              {
+                data: [data.storageUsedPercent, 100 - data.storageUsedPercent],
+                backgroundColor: ["#3498db", "#ecf0f1"],
+                borderWidth: 0,
+              },
+            ],
           },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "bottom",
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+            cutout: "70%",
           },
-        },
-        cutout: "70%",
+        });
       },
-    })
+      error: (error) => {
+        console.error('Error loading storage data:', error);
+        this.showChartError(ctx, 'שגיאה בטעינת נתוני אחסון');
+      }
+    });
   }
 
   updateCharts(days: number): void {
-    // Update user activity chart
-    if (this.charts['userActivity']) {
-      this.charts['userActivity'].data.labels = this.generateDateLabels(days);
-      this.charts['userActivity'].data.datasets[0].data = this.generateRandomData(days, 50, 200);
-      this.charts['userActivity'].update();
-    }
+    // עדכון תרשים פעילות משתמשים
+    this.statisticsService.getUserActivityData(days).subscribe({
+      next: (data) => {
+        if (this.charts['userActivity']) {
+          this.charts['userActivity'].data.labels = this.generateDateLabels(days);
+          this.charts['userActivity'].data.datasets[0].data = data;
+          this.charts['userActivity'].update();
+        }
+      },
+      error: (error) => {
+        console.error('Error updating user activity chart:', error);
+        this.hasError = true;
+        this.errorMessage = 'שגיאה בעדכון תרשים פעילות משתמשים';
+      }
+    });
 
+    // עדכון תרשים העלאות
+    this.statisticsService.getUploadsData(days).subscribe({
+      next: (data) => {
+        if (this.charts['uploads']) {
+          this.charts['uploads'].data.labels = this.generateDateLabels(days);
+          this.charts['uploads'].data.datasets[0].data = data;
+          this.charts['uploads'].update();
+        }
+      },
+      error: (error) => {
+        console.error('Error updating uploads chart:', error);
+        this.hasError = true;
+        this.errorMessage = 'שגיאה בעדכון תרשים העלאות';
+      }
+    });
 
-    // Update uploads chart
-    if (this.charts['uploads']) {
-      this.charts['uploads'].data.labels = this.generateDateLabels(days)
-      this.charts['uploads'].data.datasets[0].data = this.generateRandomData(days, 5, 50)
-      this.charts['uploads'].update()
-    }
+    // עדכון תרשים שיתופים
+    this.statisticsService.getSharesData(days).subscribe({
+      next: (data) => {
+        if (this.charts['shares']) {
+          this.charts['shares'].data.labels = this.generateDateLabels(days);
+          this.charts['shares'].data.datasets[0].data = data.sharesAlbums;
+          this.charts['shares'].data.datasets[1].data = data.sharesPhotos;
+          this.charts['shares'].update();
+        }
+      },
+      error: (error) => {
+        console.error('Error updating shares chart:', error);
+        this.hasError = true;
+        this.errorMessage = 'שגיאה בעדכון תרשים שיתופים';
+      }
+    });
+  }
 
-    // Update shares chart
-    if (this.charts['shares']) {
-      this.charts['shares'].data.labels = this.generateDateLabels(days)
-      this.charts['shares'].data.datasets[0].data = this.generateRandomData(days, 1, 20)
-      this.charts['shares'].data.datasets[1].data = this.generateRandomData(days, 5, 30)
-      this.charts['shares'].update()
+  // פונקציה להצגת הודעת שגיאה במקום תרשים
+  private showChartError(ctx: HTMLCanvasElement, errorMessage: string): void {
+    const canvasContainer = ctx.parentElement;
+    if (canvasContainer) {
+      // מסתיר את הקנבס
+      ctx.style.display = 'none';
+      
+      // יוצר הודעת שגיאה
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'chart-error';
+      errorDiv.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+        background-color: #f8f9fa;
+        border: 2px dashed #e9ecef;
+        border-radius: 8px;
+        color: #6c757d;
+        font-size: 16px;
+        text-align: center;
+        padding: 20px;
+      `;
+      errorDiv.innerHTML = `
+        <div>
+          <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+          <div>${errorMessage}</div>
+          <button onclick="window.location.reload()" 
+                  style="margin-top: 16px; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            נסה שוב
+          </button>
+        </div>
+      `;
+      
+      // מוסיף את הודעת השגיאה
+      canvasContainer.appendChild(errorDiv);
     }
+  }
+
+  // פונקציה לניקוי הודעות שגיאה
+  clearChartErrors(): void {
+    const errorElements = document.querySelectorAll('.chart-error');
+    errorElements.forEach(element => element.remove());
+    
+    // מציג בחזרה את הקנבסים
+    const canvases = document.querySelectorAll('canvas');
+    canvases.forEach(canvas => canvas.style.display = 'block');
+    
+    this.hasError = false;
+    this.errorMessage = '';
   }
 
   generateDateLabels(days: number): string[] {
-    const labels: string[] = []
-    const today = new Date()
+    const labels: string[] = [];
+    const today = new Date();
 
     for (let i = days - 1; i >= 0; i--) {
-      const date = new Date(today)
-      date.setDate(date.getDate() - i)
-      labels.push(date.toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit" }))
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      labels.push(date.toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit" }));
     }
 
-    return labels
+    return labels;
   }
 
   generateRandomData(count: number, min: number, max: number): number[] {
-    const data: number[] = []
+    const data: number[] = [];
 
     for (let i = 0; i < count; i++) {
-      data.push(Math.floor(Math.random() * (max - min + 1)) + min)
+      data.push(Math.floor(Math.random() * (max - min + 1)) + min);
     }
 
-    return data
+    return data;
   }
 }

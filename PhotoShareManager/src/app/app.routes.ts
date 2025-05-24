@@ -13,6 +13,7 @@ import { PhotosComponent } from "../pages/photos/photos.component"
 // import { TagsComponent } from "../pages/tags/tags.component"
 import { RecycleBinComponent } from "../pages/recycle-bin/recycle-bin.component"
 import { AnalyticsComponent } from "../pages/analytics/analytics.component"
+import { TagsComponent } from "../pages/tags/tags.component"
 
 
 export const routes: Routes = [
@@ -27,7 +28,7 @@ export const routes: Routes = [
       { path: "users", component: UsersComponent},
       { path: "albums", component: AlbumsComponent },
       { path: "photos", component: PhotosComponent },
-      // { path: "tags", component: TagsComponent },
+      { path: "tags", component: TagsComponent },
       { path: "shares", component: UsersComponent },
       { path: "recycle-bin", component: RecycleBinComponent },
       // { path: "settings", component: TagsComponent, canActivate: [AdminGuard] },

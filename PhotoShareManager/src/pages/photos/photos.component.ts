@@ -215,22 +215,22 @@ export class PhotosComponent implements OnInit {
     })
   }
 
-  deletePhoto(photo: PhotoDto): void {
-    if (confirm(`האם אתה בטוח שברצונך למחוק את התמונה ${photo.name}?`)) {
-      this.loading = true
-      this.photoService.deletePhoto(photo.id).subscribe({
-        next: () => {
-          this.success = "Photo deleted successfully"
-          this.loadPhotos()
-          this.loading = false
-        },
-        error: (error) => {
-          this.error = "Failed to delete photo"
-          this.loading = false
-        },
-      })
-    }
+ deletePhoto(photo: PhotoDto): void {
+  if (confirm(`האם אתה בטוח שברצונך למחוק את התמונה ${photo.name}?`)) {
+    this.loading = true
+    this.photoService.deletePhoto(photo.id, photo.albumId).subscribe({
+      next: () => {
+        this.success = "Photo deleted successfully"
+        this.loadPhotos()
+        this.loading = false
+      },
+      error: (error) => {
+        this.error = "Failed to delete photo"
+        this.loading = false
+      },
+    })
   }
+}
 
   addTagToPhoto(photoId: number, tagId: number): void {
     this.tagService.addTagToPhoto(photoId, tagId).subscribe({

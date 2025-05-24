@@ -1,12 +1,12 @@
-import { Component,  OnInit } from "@angular/core"
-import {  FormBuilder,  FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
-import  { AlbumService, AlbumDto, CreateAlbumDto, UpdateAlbumDto } from "../../services/album.service"
-import  { Router } from "@angular/router"
+import { Component, OnInit } from "@angular/core"
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
+import { AlbumService, AlbumDto, CreateAlbumDto, UpdateAlbumDto } from "../../services/album.service"
+import { Router } from "@angular/router"
 import { CommonModule } from "@angular/common"
 
 @Component({
   selector: "app-albums",
-  imports: [CommonModule , ReactiveFormsModule ],
+  imports: [CommonModule, ReactiveFormsModule],
   standalone: true,
   templateUrl: "./albums.component.html",
   styleUrls: ["./albums.component.scss"],
@@ -32,7 +32,6 @@ export class AlbumsComponent implements OnInit {
     this.albumForm = this.formBuilder.group({
       name: ["", Validators.required],
       description: [""],
-      isPublic: [false],
     })
   }
 
@@ -57,7 +56,7 @@ export class AlbumsComponent implements OnInit {
   openAddAlbumModal(): void {
     this.isEditMode = false
     this.selectedAlbum = null
-    this.resetForm()
+    // this.resetForm()
     this.showModal = true
   }
 
@@ -68,7 +67,6 @@ export class AlbumsComponent implements OnInit {
     this.albumForm.patchValue({
       name: album.title,
       description: album.description,
-      isPublic: album.isPublic,
     })
 
     this.showModal = true
@@ -76,13 +74,14 @@ export class AlbumsComponent implements OnInit {
 
   closeModal(): void {
     this.showModal = false
+    this.albumForm.reset()
   }
 
-  resetForm(): void {
-    this.albumForm.reset({
-      isPublic: false,
-    })
-  }
+  // resetForm(): void {
+  //   this.albumForm.reset({
+  //     isPublic: false,
+  //   })
+  // }
 
   onSubmit(): void {
     if (this.albumForm.invalid) {
@@ -94,10 +93,11 @@ export class AlbumsComponent implements OnInit {
     this.success = ""
 
     if (this.isEditMode && this.selectedAlbum) {
+
       const updateData: UpdateAlbumDto = {
-        name: this.albumForm.value.name,
+        title: this.albumForm.value.name,
         description: this.albumForm.value.description,
-        isPublic: this.albumForm.value.isPublic,
+        parentId: this.selectedAlbum.parentId,
       }
 
       this.albumService.updateAlbum(this.selectedAlbum.id, updateData).subscribe({
@@ -114,9 +114,8 @@ export class AlbumsComponent implements OnInit {
       })
     } else {
       const createData: CreateAlbumDto = {
-        name: this.albumForm.value.name,
+        title: this.albumForm.value.name,
         description: this.albumForm.value.description,
-        isPublic: this.albumForm.value.isPublic,
       }
 
       this.albumService.createAlbum(createData).subscribe({

@@ -21,6 +21,7 @@ export interface UserDto {
   createAt: string
   lastLogin: string
   status: boolean
+  countUpload : number
 }
 
 export interface CreateUserDto {
@@ -55,6 +56,7 @@ export class UserService {
   }
 
   createUser(user: CreateUserDto): Observable<UserDto> {
+    console.log("user create", user)
     return this.http.post<UserDto>(`${environment.apiUrl}/api/users`, user)
   }
 
@@ -64,5 +66,9 @@ export class UserService {
 
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/api/users/${id}`)
+  }
+
+   getTopUsers(): Observable<UserDto[]> {
+    return this.http.get<UserDto[]>(`${environment.apiUrl}/api/users/top`);
   }
 }
