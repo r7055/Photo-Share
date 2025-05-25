@@ -11,6 +11,6 @@ namespace PhotoShare.Core.IRepositories
     public interface ITagRepository : IRepository<Tag>
     {
         Task<ICollection<Tag>> GetUserTags(int userId);
-
+        Task<Tag> GetTagIncludePhotoAsync(int id);
     }
 }

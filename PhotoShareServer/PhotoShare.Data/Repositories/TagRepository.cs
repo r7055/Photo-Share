@@ -22,9 +22,14 @@ namespace PhotoShare.Data.Repositories
             return await _dbSet
                 .Where(t => t.UserId == null || t.UserId == userId)
                 .ToListAsync(); 
-
-          
         }
+
+        public async Task<Tag> GetTagIncludePhotoAsync(int id)
+        {
+            return await _dbSet.Include(t => t.Photos) 
+                .FirstOrDefaultAsync(t => t.Id == id);
+        }
+
 
     }
 

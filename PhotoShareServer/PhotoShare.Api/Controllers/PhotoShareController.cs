@@ -29,7 +29,7 @@ namespace PhotoShare.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> ShareImage([FromBody] PhotoSharePostModel postModel)
+        public async Task<ActionResult> SharePhoto([FromBody] PhotoSharePostModel postModel)
         {
             if (postModel == null) return BadRequest("Invalid request data.");
 
@@ -45,5 +45,19 @@ namespace PhotoShare.Api.Controllers
 
             return Ok(new { message = "Image shared successfully." });
         }
+
+        //[HttpGet("statistics")]
+        //public async Task<IActionResult> GetPhotoShareStatistics()
+        //{
+        //    var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //    if (!int.TryParse(userIdString, out int userId) || userId < 1)
+        //    {
+        //        return BadRequest("User ID is not valid.");
+        //    }
+
+        //    var statistics = await _shareService.GetPhotoShareStatisticsAsync();
+        //    return Ok(statistics);
+        //}
+
     }
 }

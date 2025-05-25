@@ -19,9 +19,15 @@ public partial class User : IEntity
 
     public string PasswordHash { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public DateTime LastLogin { get; set; }
+    public bool status { get; set; }
+
+    public int CountUpload { get; set; }
+
 
     public virtual ICollection<Role> Roles { get; set; }=new List<Role>();
 

@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace PhotoShare.Core.IServices
 {
-    public interface IUserService:IService<UserDto>
+    public interface IUserService : IService<UserDto>
     {
-        
+        Task<StatisticsDto> GetUserStatisticsAsync();
+        Task AddUploadToUser(int userId);
+        Task<IEnumerable<UserDto>> GetTopUsersAsync();
+
+
     }
 }

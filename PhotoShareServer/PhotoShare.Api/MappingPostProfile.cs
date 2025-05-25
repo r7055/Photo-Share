@@ -14,8 +14,12 @@ namespace PhotoShare.Api
             CreateMap<TagPostModel, TagDto>();
             CreateMap<UserRegisterPostModel, UserDto>();
             CreateMap<UserLoginPostModel, UserDto>();
-            CreateMap<AlbumSharePostModel, AlbumShareDto>();
+            //CreateMap<AlbumSharePostModel, AlbumShareDto>();
             CreateMap<PhotoSharePostModel, PhotoShareDto>();
+            CreateMap<UpdatePhotoPostModel, PhotoDto>();
+            CreateMap<AlbumSharePostModel, AlbumShareDto>()
+               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message ?? string.Empty))
+               .ForMember(dest => dest.UserId, opt => opt.Ignore());
         }
     }
 }

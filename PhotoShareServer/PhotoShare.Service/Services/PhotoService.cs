@@ -18,12 +18,14 @@ namespace PhotoShare.Service.Services
     public class PhotoService : IPhotoService
     {
         private readonly IRepositoryManager _repositoryManager;
+        private readonly IDownloadService _downloadService;
         private readonly IMapper _mapper;
 
-        public PhotoService(IRepositoryManager repositoryManager, IMapper mapper)
+        public PhotoService(IRepositoryManager repositoryManager, IMapper mapper, IDownloadService downloadService)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
+            _downloadService = downloadService;
         }
 
         public async Task<IEnumerable<PhotoDto>> GetPhotosByAlbumId(int albumId)
@@ -34,8 +36,15 @@ namespace PhotoShare.Service.Services
             {
                 throw new Exception("Album not found or has no photos.");
             }
-
             var photos = album.AlbumPhotos.Select(ap => ap.Photo);
+            foreach (var photo in photos)
+            {
+                photo.CountViews++;
+                photo.Url = await _downloadService.GetDownloadUrlAsync(photo.Name);
+            }
+            album.CountViews++;
+            await _repositoryManager.SaveAsync();
+
 
             return _mapper.Map<IEnumerable<PhotoDto>>(photos);
         }
@@ -49,6 +58,8 @@ namespace PhotoShare.Service.Services
         public async Task<PhotoDto> GetByIdAsync(int id, int userId)
         {
             var photo = await _repositoryManager.Photo.GetByIdAsync(id);
+            photo.CountViews++;
+            await _repositoryManager.SaveAsync();
             //check if the photo.userId is the owner of the photo
             //or he have the permission to get the photo
             return _mapper.Map<PhotoDto>(photo);
@@ -71,8 +82,13 @@ namespace PhotoShare.Service.Services
 
                     if (photoDto.AlbumId != 0)
                     {
-                        var photoAlbum = new AlbumPhoto() { AlbumId = photoDto.AlbumId, PhotoId = res.Id };
+                        var photoAlbum = new AlbumPhoto() { AlbumId = photoDto.AlbumId, PhotoId = res.Id, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now };
                         await _repositoryManager.AlbumPhoto.AddAsync(photoAlbum);
+                        await _repositoryManager.SaveAsync();
+                    }
+                    else
+                    {
+                        await _repositoryManager.AlbumPhoto.AddAsync(new AlbumPhoto() { PhotoId = res.Id, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                         await _repositoryManager.SaveAsync();
                     }
 
@@ -84,7 +100,10 @@ namespace PhotoShare.Service.Services
                     {
                         PhotoId = res.Id,
                         UserId = photoDto.UserId,
-                        Permission = PermissionType.Owner
+                        Permission = PermissionType.Owner,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        IsDeleted = false
                     });
                     await _repositoryManager.SaveAsync();
 
@@ -116,13 +135,14 @@ namespace PhotoShare.Service.Services
                 var existingTag = await _repositoryManager.Tag.GetByIdAsync(tag.Id);
                 if (existingTag != null)
                 {
+                    existingTag.Count++;
                     existingTag.Photos.Add(photo);
                 }
-                else
-                {
-                    tag.Photos.Add(photo);
-                    await _repositoryManager.Tag.AddAsync(tag);
-                }
+                //else
+                //{
+                //    tag.Photos.Add(photo);
+                //    await _repositoryManager.Tag.AddAsync(tag);
+                //}
             }
         }
 
@@ -141,7 +161,7 @@ namespace PhotoShare.Service.Services
             return _mapper.Map<PhotoDto>(updatePhoto);
         }
 
-        public async Task DeletePhotoAsync(int id, int albumId, int userId)
+        public async Task<PhotoDto> DeletePhotoAsync(int id, int albumId, int userId)
         {
             var photo = await _repositoryManager.Photo.GetByIdAsync(id);
             if (photo == null)
@@ -167,7 +187,7 @@ namespace PhotoShare.Service.Services
                 albumPhoto.DeletedAt = DateTime.Now;
                 await _repositoryManager.AlbumPhoto.UpdateAsync(albumPhoto);
                 await _repositoryManager.SaveAsync();
-                return;
+                return _mapper.Map<PhotoDto>(photo);
             }
 
 
@@ -191,6 +211,7 @@ namespace PhotoShare.Service.Services
                 //};
                 //await s3Client.DeleteObjectAsync(deleteObjectRequest);
             }
+            return _mapper.Map<PhotoDto>(photo);
         }
         public async Task<IEnumerable<Photo>> GetPhotosByAlbumIdAndUserIdAsync(int albumId, int userId)
         {
@@ -201,24 +222,24 @@ namespace PhotoShare.Service.Services
         {
             return await _repositoryManager.Photo.GetSharedPhotosByAlbumIdAndUserIdAsync(albumId, userId);
         }
-        public async Task DeleteAsync(int id, int userId)
-        {
-            var photo = await _repositoryManager.Photo.GetByIdAsync(id);
-            if (photo == null)
-            {
-                throw new Exception("Photo not found");
-            }
+        //public async Task DeleteAsync(int id, int userId)
+        //{
+        //    var photo = await _repositoryManager.Photo.GetByIdAsync(id);
+        //    if (photo == null)
+        //    {
+        //        throw new Exception("Photo not found");
+        //    }
 
-            // Check if the user is the owner of the photo or has permission to delete it
-            if (photo.OwnerId != userId)
-            {
-                throw new Exception("You do not have permission to delete this photo.");
-            }
+        //    // Check if the user is the owner of the photo or has permission to delete it
+        //    if (photo.OwnerId != userId)
+        //    {
+        //        throw new Exception("You do not have permission to delete this photo.");
+        //    }
 
-            // Delete the photo from the repository
-            await _repositoryManager.Photo.DeleteAsync(id);
-            await _repositoryManager.SaveAsync();
-        }
+        //    // Delete the photo from the repository
+        //    await _repositoryManager.Photo.DeleteAsync(id);
+        //    await _repositoryManager.SaveAsync();
+        //}
 
         public async Task<IEnumerable<PhotoDto>> GetRecyclePhotosAsync(int userId)
         {
@@ -251,6 +272,13 @@ namespace PhotoShare.Service.Services
             albumPhoto.DeletedAt = null;
             await _repositoryManager.AlbumPhoto.UpdateAsync(albumPhoto);
             await _repositoryManager.SaveAsync();
+        }
+
+        
+
+        public Task<PhotoDto> DeleteAsync(int id, int userId)
+        {
+            throw new NotImplementedException();
         }
 
         //public async Task<PhotoDto> CopyAsync(int photoId, int AlbumId)//ctrl c
@@ -293,6 +321,29 @@ namespace PhotoShare.Service.Services
 
         //    return _mapper.Map<PhotoDto>(photo);
         //}
+        public async Task<IEnumerable<PhotoDto>> GetTopPhotoAsync()
+        {
+            var photos = await _repositoryManager.Photo.GetAllAsync();
+            var topPhotos = photos.OrderByDescending(p=>p.CountViews).Take(5);
+
+            return _mapper.Map<IEnumerable<PhotoDto>>(topPhotos);
+        }
+        public async Task<StatisticsDto> GetUploadStatisticsAsync()
+        {
+            var totalPhotos = await _repositoryManager.Photo.CountAsync();
+            var newPhotos = await _repositoryManager.Photo.CountAsync(p => p.CreatedAt >= DateTime.Now.AddDays(-30));
+
+            return new StatisticsDto
+            {
+                TotalPhotos = totalPhotos,
+                NewPhotos = newPhotos
+            };
+        }
+
+        Task IPhotoService.DeletePhotoAsync(int id, int albumId, int userId)
+        {
+            return DeletePhotoAsync(id, albumId, userId);
+        }
     }
 
 }

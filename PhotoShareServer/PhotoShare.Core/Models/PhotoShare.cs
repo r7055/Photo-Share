@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+// PhotoShare Model - עדכון
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -19,7 +21,13 @@ namespace PhotoShare.Core.Models
         public int PhotoId { get; set; }
         [JsonIgnore]
         public Photo? Photo { get; set; }
-        public PermissionType Permission { get; set; }
 
+        public PermissionType Permission { get; set; }
+        public string Message { get; set; } = string.Empty; 
+
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

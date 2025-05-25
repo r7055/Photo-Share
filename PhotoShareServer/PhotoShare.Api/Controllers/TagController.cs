@@ -31,7 +31,8 @@ namespace PhotoShare.Api.Controllers
                 return BadRequest("User ID is not valid.");
             }
             var tagDto = _mapper.Map<TagDto>(tagPostModel);
-            tagDto.UserId = userId;
+            if(tagPostModel.UserId!=0)
+                tagDto.UserId = userId;
             var createdTag = await _tagService.CreateAsync(tagDto);
             return CreatedAtAction(nameof(GetTagById), new { id = createdTag.Id }, createdTag);
         }
@@ -93,7 +94,12 @@ namespace PhotoShare.Api.Controllers
             await _tagService.DeleteAsync(id, userId);
             return NoContent();
         }
+        [HttpGet("top")]
+        public async Task<IActionResult> GetTopTags()
+        {
+            var tags = await _tagService.GetTopTagsAsync();
+            return Ok(tags);
+        }
 
-       
     }
 }

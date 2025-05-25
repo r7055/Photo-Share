@@ -17,7 +17,7 @@ namespace PhotoShare.Data.Repositories
 
         public async Task<AlbumPhoto> GetAlbumPhotoByAlbumIdAndPhotoId(int albumId, int photoId)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.AlbumId == albumId && x.PhotoId == photoId);
+            return await _dbSet.FirstOrDefaultAsync(x => x.AlbumId == (albumId==0?null:albumId) && x.PhotoId == photoId);
         }
 
         public async Task<IEnumerable<AlbumPhoto>> GetAlbumPhotosByPhotoId(int photoId)

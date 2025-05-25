@@ -4,5 +4,6 @@
     {
         public int AlbumId { get; set; }
         public string UserEmailForSharing { get; set; } = null!;
+        public string Message { get; set; } = string.Empty;
     }
 }

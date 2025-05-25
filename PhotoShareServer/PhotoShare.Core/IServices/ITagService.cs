@@ -11,6 +11,7 @@ namespace PhotoShare.Core.IServices
     public interface ITagService:IService<TagDto>
     {
         Task<ICollection<TagDto>> GetUserTags(int userId);
+        Task<IEnumerable<TagDto>> GetTopTagsAsync();
 
     }
 }

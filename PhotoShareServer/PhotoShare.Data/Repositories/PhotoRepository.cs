@@ -5,6 +5,7 @@ using PhotoShare.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,17 @@ namespace PhotoShare.Data.Repositories
         {
 
         }
+
+        public async Task<int> CountAsync(Expression< Func<Photo, bool>> expression)
+        {
+            return await _dbSet.CountAsync(expression);
+        }
+
+        public Task<int> CountAsync()
+        {
+            return _dbSet.CountAsync();
+        }
+
         public async Task<IEnumerable<Photo>> GetPhotosByAlbumIdAndUserIdAsync(int albumId, int userId)
         {
             return await _dbSet

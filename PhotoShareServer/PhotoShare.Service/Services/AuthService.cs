@@ -37,8 +37,11 @@ namespace PhotoShare.Service.Services
             if (await ValidateUser(usernameOrEmail, password))
             {
                 var user = await _repositoryManager.User.GetByUserEmailAsync(usernameOrEmail);
+                user.LastLogin= DateTime.Now;
+                await _repositoryManager.SaveAsync();
                 var resultDto = _mapper.Map<UserDto>(user);
                 var token = GenerateJwtToken(resultDto, user.Roles);
+                
                 return new RegisterViewModel
                 {
                     User = _mapper.Map<UserDto>(user),
@@ -60,10 +63,11 @@ namespace PhotoShare.Service.Services
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
+                status=true,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Roles = new List<Role> { new Role { RoleName = "Editor",Description= "description" } }
+                Roles = new List<Role> { new Role { RoleName = "Editor", Description = "description" } }
             };
 
             var result = await _repositoryManager.User.AddAsync(user);
@@ -71,6 +75,8 @@ namespace PhotoShare.Service.Services
             {
                 return null;
             }
+            result.status = true;
+            result.LastLogin = DateTime.UtcNow;
             await _repositoryManager.SaveAsync();
 
             var resultDto = _mapper.Map<UserDto>(result);

@@ -13,6 +13,9 @@ namespace PhotoShare.Core.DTOs
         public string Url { get; set; }
         public double Size { get; set; }
         public string Name { get; set; }
+        public DateTime CreateAt { get; set; }
+        public DateTime UpdateAt { get; set; }
+        public int CountViews { get; set; }
         public int AlbumId { get; set; }
         public List<TagDto> Tags { get; set; }
     }

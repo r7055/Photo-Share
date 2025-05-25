@@ -5,6 +5,7 @@ using PhotoShare.Api.PostModels;
 using PhotoShare.Core.DTOs;
 using PhotoShare.Core.IServices;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace PhotoShare.Api.Controllers
 {
@@ -15,11 +16,13 @@ namespace PhotoShare.Api.Controllers
     {
         private readonly IAlbumService _albumService;
         private readonly IMapper _mapper;
+        private readonly IPhotoService _photoService;
 
-        public AlbumController(IAlbumService albumService, IMapper mapper)
+        public AlbumController(IAlbumService albumService, IMapper mapper, IPhotoService photoService)
         {
             _albumService = albumService;
             _mapper = mapper;
+            _photoService = photoService;
         }
 
         [HttpGet]
@@ -39,6 +42,28 @@ namespace PhotoShare.Api.Controllers
                 return StatusCode(500, "An error occurred while retrieving the albums.");
             }
         }
+        [HttpGet("{albumId}/photos")]
+        public async Task<IActionResult> GetAlbumWithImages(int albumId)
+        {
+            try
+            {
+                var albums = await _photoService.GetPhotosByAlbumId(albumId);
+
+                if (albums == null || !albums.Any())
+                {
+                    return NotFound();
+                }
+
+                return Ok(albums);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                // _logger.LogError(ex, "An error occurred while retrieving photos for album {AlbumId}", albumId);
+
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
 
         [HttpPost]
@@ -52,7 +77,7 @@ namespace PhotoShare.Api.Controllers
             }
 
             var albumDto = _mapper.Map<AlbumDto>(albumPostModel);
-            albumDto.UserId = userId;
+            albumDto.OwnerId = userId;
 
             try
             {
@@ -102,9 +127,6 @@ namespace PhotoShare.Api.Controllers
                 return StatusCode(500, "An unexpected error occurred: " + ex.Message);
             }
         }
-
-
-
 
 
         [HttpGet("{id}")]
@@ -159,8 +181,8 @@ namespace PhotoShare.Api.Controllers
 
             try
             {
-                await _albumService.DeleteAsync(id, userId);
-                return NoContent(); 
+               var album= await _albumService.DeleteAsync(id, userId);
+                return Ok(album);
             }
             catch (Exception ex)
             {
@@ -187,7 +209,7 @@ namespace PhotoShare.Api.Controllers
             try
             {
                 var albumDto = _mapper.Map<AlbumDto>(albumPostModel);
-                albumDto.UserId = userId;
+                albumDto.OwnerId = userId;
                 albumDto.Id = id;
 
                 var updateAlbum = await _albumService.UpdateAsync(albumDto);
@@ -258,6 +280,30 @@ namespace PhotoShare.Api.Controllers
                 return StatusCode(500, "An error occurred while retrieving recycle albums.");
             }
         }
+
+        [HttpGet("top")]
+        public async Task<IActionResult> GetTopAlbums()
+        {
+            try
+            {
+                var topAlbums = await _albumService.GetTopAlbumsAsync();
+
+                if (topAlbums == null || !topAlbums.Any())
+                {
+                    return NotFound("No top albums found.");
+                }
+
+                return Ok(topAlbums);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (logging mechanism not shown here)
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+     
+
 
     }
 }

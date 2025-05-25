@@ -13,8 +13,8 @@ namespace PhotoShare.Core.IServices
     {
         Task<ICollection<Album>> GetAlbumsByParentAsync(int parentId,int userId);
         Task RestoreAlbumAsync(int id, int userId);
-
         Task<ICollection<AlbumDto>> GetRecycleAlbumsAsync(int userId);
-
+        Task<StatisticsDto> GetAlbumStatisticsAsync();
+        Task<ICollection<AlbumDto>> GetTopAlbumsAsync();
     }
 }

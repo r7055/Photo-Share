@@ -13,5 +13,6 @@ namespace PhotoShare.Core.IServices
         Task<IEnumerable<PhotoDto>> GetImageSharesByUser(int userId);
         Task CreateAlbumShare(AlbumShareDto albumShareDto);
         Task CreateImageShare(PhotoShareDto imageShareDto);
+        //Task<StatisticsDto> GetPhotoShareStatisticsAsync();
     }
 }

@@ -14,5 +14,6 @@ namespace PhotoShare.Core.DTOs
         public string UserEmailForSharing { get; set; }
         public int UserId { get; set; }
         public PermissionType Permission { get; set; }
+        public string Message { get; set; }
     }
 }

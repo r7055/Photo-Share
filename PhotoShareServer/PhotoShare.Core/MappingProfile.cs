@@ -15,9 +15,12 @@ namespace PhotoShare.Core
             CreateMap<Album, AlbumDto>().ReverseMap();
             CreateMap<Photo, PhotoDto>().ReverseMap();
             CreateMap<Tag, TagDto>().ReverseMap();
-            CreateMap<AlbumShare, AlbumShareDto>().ReverseMap();
             CreateMap<PhotoShare.Core.Models.PhotoShare, PhotoShareDto>().ReverseMap();
+            CreateMap<AlbumShareDto, AlbumShare>();
+
             CreateMap<ICollection<AlbumDto>, ICollection<Album>>();
+    //        CreateMap<Album, AlbumDto>()
+    //.ForMember(dest => dest.Owner, opt => opt.MapFrom(src => new User { Id = src.OwnerId }));
 
             // הוספת מפה בין AlbumPhoto ל-PhotoDto
             CreateMap<AlbumPhoto, PhotoDto>()

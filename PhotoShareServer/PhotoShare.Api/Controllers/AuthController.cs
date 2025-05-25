@@ -35,8 +35,17 @@ namespace PhotoShare.Api.Controllers
                 var createdUser = await _authService.RegisterAsync(userDto);
                 if (createdUser == null)
                 {
-                    return Conflict("This email already exists in the system.");
+                    return Conflict(new
+                    {
+                        error = new
+                        {
+                            code = 409,
+                            message = "User already exists.",
+                            description = "Please use a different email address."
+                        }
+                    });
                 }
+
 
                 return Ok(createdUser);
             }

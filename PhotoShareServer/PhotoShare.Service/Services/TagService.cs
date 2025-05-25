@@ -43,8 +43,10 @@ namespace PhotoShare.Service.Services
                 var tag = _mapper.Map<Tag>(tagDto);
                 tag.UpdatedAt = DateTime.Now;
                 tag.CreatedAt = DateTime.Now;
+                if (tagDto.UserId == 0)
+                    tag.UserId = null;
                 var res = await _repositoryManager.Tag.AddAsync(tag);
-                await _repositoryManager.SaveAsync(); 
+                await _repositoryManager.SaveAsync();
                 return _mapper.Map<TagDto>(res);
             }
             catch (Exception ex)
@@ -71,12 +73,34 @@ namespace PhotoShare.Service.Services
             return _mapper.Map<TagDto>(updateTag);
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<TagDto> DeleteAsync(int id, int userId)
         {
-            var tag = await _repositoryManager.Tag.GetByIdAsync(id);
-            //check if the tag.userId is the owner of the tag
-            //or he have the permission to delete the tag
+            var tag = await _repositoryManager.Tag.GetTagIncludePhotoAsync(id);
+
+            // Check if the tag exists and if the user has permission to delete it
+            if (tag == null)
+            {
+                throw new Exception("Tag not found");
+            }
+
+
+            //admin or userOwner
+            //if (tag.UserId != userId) // Assuming you check ownership
+            //{
+            //    throw new Exception("User does not have permission to delete this tag");
+            //}
+
+            // Remove the tag from all associated photos
+            foreach (var photo in tag.Photos.ToList()) // Use ToList() to avoid modifying the collection while iterating
+            {
+                photo.Tags.Remove(tag);
+            }
+
+            // Now delete the tag
             await _repositoryManager.Tag.DeleteAsync(id);
+            await _repositoryManager.SaveAsync();
+
+            return _mapper.Map<TagDto>(tag);
         }
 
         public async Task<ICollection<TagDto>> GetUserTags(int userId)
@@ -87,7 +111,7 @@ namespace PhotoShare.Service.Services
 
                 if (tags == null || !tags.Any())
                 {
-                    return new List<TagDto>(); 
+                    return new List<TagDto>();
                 }
 
                 return _mapper.Map<ICollection<TagDto>>(tags);
@@ -100,5 +124,14 @@ namespace PhotoShare.Service.Services
             }
         }
 
+        public async Task<IEnumerable<TagDto>> GetTopTagsAsync()
+        {
+            var tags = await _repositoryManager.Tag.GetAllAsync();
+            var topTags = tags.OrderByDescending(t => t.Photos.Count).Take(5); 
+
+            return _mapper.Map<IEnumerable<TagDto>>(topTags);
+        }
+
+      
     }
 }

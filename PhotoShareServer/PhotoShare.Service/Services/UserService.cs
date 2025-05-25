@@ -58,7 +58,7 @@ namespace PhotoShare.Service.Services
             return _mapper.Map<UserDto>(updateUser);
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<UserDto> DeleteAsync(int id, int userId)
         {
 
             var user = await _repositoryManager.User.GetByIdAsync(id);
@@ -82,9 +82,43 @@ namespace PhotoShare.Service.Services
                 // Delete the user
                 await _repositoryManager.User.DeleteAsync(id);
                 await _repositoryManager.SaveAsync();
+                return _mapper.Map<UserDto>(user);
+            }
+            return null;
+        }
+        public async Task<StatisticsDto> GetUserStatisticsAsync()
+        {
+            var totalUsers = await _repositoryManager.User.CountAsync();
+            var newUsers = await _repositoryManager.User.CountAsync(u => u.CreatedAt >= DateTime.Now.AddDays(-30));
+
+            return new StatisticsDto
+            {
+                TotalUsers = totalUsers,
+                NewUsers = newUsers
+            };
+        }
+
+        public async Task AddUploadToUser(int userId)
+        {
+            var user = await _repositoryManager.User.GetByIdAsync(userId);
+            if (user != null)
+            {
+                user.CountUpload++;
+                await _repositoryManager.SaveAsync();
+            }
+            else
+            {
+                throw new Exception("User not found");
             }
         }
 
+        public async Task<IEnumerable<UserDto>> GetTopUsersAsync()
+        {
+            var users = await _repositoryManager.User.GetAllAsync();
+            var topUsers = users.OrderByDescending(u=>u.CountUpload).Take(5);
+
+            return _mapper.Map<IEnumerable<UserDto>>(topUsers);
+        }
     }
 
 }

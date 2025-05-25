@@ -27,6 +27,10 @@ public partial class Album : IEntity
 
     public DateTime? UpdatedAt { get; set; }
 
+    public DateTime? DeletedAt { get; set; }
+   
+    public int CountViews { get; set; }
+
     public Album? Parent { get; set; }
     [JsonIgnore]
     public  ICollection<AlbumPhoto> AlbumPhotos { get; set; } = new List<AlbumPhoto>();

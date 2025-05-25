@@ -17,6 +17,7 @@ namespace PhotoShare.Core.IServices
         Task<IEnumerable<PhotoDto>> GetRecyclePhotosAsync(int userId);
         Task RestorePhotoAsync(int photoId, int albumId, int userId);
 
+        Task<IEnumerable<PhotoDto>> GetTopPhotoAsync();
 
 
         //Task<PhotoDto> CopyAsync(int photoId, int targetAlbumId);

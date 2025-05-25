@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PhotoShare.Core.IRepositories;
 using PhotoShare.Core.Models;
+using System.Linq.Expressions;
 
 namespace PhotoShare.Data.Repositories
 {
@@ -39,6 +40,16 @@ namespace PhotoShare.Data.Repositories
             return await _dbSet.Where(a =>a.OwnerId==userId && a.IsDeleted == true).ToListAsync();
         }
 
+
+        public async Task<int> CountAsync()
+        {
+            return await _dbSet.CountAsync();
+        }
+
+        public async Task<int> CountAsync(Expression<Func<Album, bool>> expression)
+        {
+            return await _dbSet.CountAsync(expression);
+        }
         //public async Task<Album> GetByIdAsync(int id, int userId)
         //{
         //    return await _dbSet.Include(a => a.Users)

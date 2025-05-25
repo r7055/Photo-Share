@@ -26,6 +26,8 @@ public partial class Photo : IEntity
 
     public DateTime? UpdatedAt { get; set; }
 
+    public int CountViews { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<AlbumPhoto> PhotoAlbums { get; set; } = new List<AlbumPhoto>();
     [JsonIgnore]

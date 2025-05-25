@@ -36,6 +36,9 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IShareService, ShareService>();
 builder.Services.AddScoped<IDownloadService, DownloadService>();
+builder.Services.AddScoped<IStatisticsService,StatisticsService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
@@ -43,24 +46,8 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddAutoMapper(typeof(MappingPostProfile), typeof(MappingProfile));
 
 builder.Services.AddControllers();
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-
-Console.WriteLine(builder.Configuration["ConnectionStrings:PhotoShareContext"]);
-
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-Console.WriteLine("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍");
-
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+
 builder.Services.AddSingleton<IAmazonS3>(serviceProvider =>
 {
     var options = serviceProvider.GetRequiredService<IOptions<AWSOptions>>().Value;

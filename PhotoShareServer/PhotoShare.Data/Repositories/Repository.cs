@@ -24,18 +24,19 @@ namespace PhotoShare.Data.Repositories
             return res.Entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<T> DeleteAsync(int id)
         {
             var val =await GetByIdAsync(id);
             if (val != null)
             {
                 _dbSet.Remove(val);
             }
+            return val;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+                return await _dbSet.ToListAsync();
         }
 
         public async Task<T> GetByIdAsync(int id)

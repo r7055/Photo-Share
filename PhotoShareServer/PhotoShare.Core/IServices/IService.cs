@@ -13,7 +13,7 @@ namespace PhotoShare.Core.IServices
         Task<T> GetByIdAsync(int id,int userId);
         Task<T> CreateAsync(T val);
         Task<T> UpdateAsync(T val);
-        Task DeleteAsync(int id,int userId);
+        Task<T> DeleteAsync(int id,int userId);
 
     }
 }

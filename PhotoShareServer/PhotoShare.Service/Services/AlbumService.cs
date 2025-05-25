@@ -47,14 +47,24 @@ namespace PhotoShare.Service.Services
             var album = _mapper.Map<Album>(albumDto);
             album.CreatedAt = DateTime.Now;
             album.UpdatedAt = DateTime.Now;
-            album.OwnerId = albumDto.UserId;
+            album.OwnerId = albumDto.OwnerId;
             if (album.ParentId == 0) album.ParentId = null;
+
 
             var albumCreated = await _repositoryManager.Album.AddAsync(album);
             await _repositoryManager.SaveAsync();
 
-            var albumShareDto = new AlbumShareDto { AlbumId = albumCreated.Id, UserId = albumDto.UserId, Permission = PermissionType.Owner };
-            await _repositoryManager.AlbumShare.AddAsync(_mapper.Map<AlbumShare>(albumShareDto));
+            var albumShare = new AlbumShare
+            {
+                AlbumId = albumCreated.Id,
+                UserId = albumDto.OwnerId,
+                Permission = PermissionType.Owner,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                IsDeleted = false
+            };
+
+            await _repositoryManager.AlbumShare.AddAsync(_mapper.Map<AlbumShare>(albumShare));
             await _repositoryManager.SaveAsync();
 
             return _mapper.Map<AlbumDto>(albumCreated);
@@ -68,7 +78,7 @@ namespace PhotoShare.Service.Services
                 throw new InvalidOperationException("Entity not found.");
             }
 
-            if (prevAlbum.OwnerId != albumDto.UserId)
+            if (prevAlbum.OwnerId != albumDto.OwnerId)
             {
                 throw new UnauthorizedAccessException("You do not have permission to update this album.");
             }
@@ -82,7 +92,7 @@ namespace PhotoShare.Service.Services
             return _mapper.Map<AlbumDto>(prevAlbum);
         }
 
-        public async Task DeleteAsync(int id, int userId)
+        public async Task<AlbumDto> DeleteAsync(int id, int userId)
         {
             var album = await _repositoryManager.Album.GetAlbumIncludePhotosAsync(id);
             if (album == null)
@@ -117,9 +127,10 @@ namespace PhotoShare.Service.Services
                 album.IsDeleted = true;
             }
 
+            album.DeletedAt = DateTime.Now;
             await _repositoryManager.SaveAsync();
+            return _mapper.Map<AlbumDto>(album);
         }
-
 
         public async Task RestoreAlbumAsync(int id, int userId)
         {
@@ -147,6 +158,24 @@ namespace PhotoShare.Service.Services
         {
             var albumsRecycle = await _repositoryManager.Album.GetRecycleAlbumsAsync(userId);
             return _mapper.Map<ICollection<AlbumDto>>(albumsRecycle);
+        }
+        public async Task<ICollection<AlbumDto>> GetTopAlbumsAsync()
+        {
+            var albums = await _repositoryManager.Album.GetAllAsync();
+            var topAlbums = albums.OrderByDescending(a => a.CountViews).Take(5);
+
+            return _mapper.Map<ICollection<AlbumDto>>(topAlbums);
+        }
+        public async Task<StatisticsDto> GetAlbumStatisticsAsync()
+        {
+            var totalAlbums = await _repositoryManager.Album.CountAsync();
+            var newAlbums = await _repositoryManager.Album.CountAsync(a => a.CreatedAt >= DateTime.Now.AddDays(-30));
+
+            return new StatisticsDto
+            {
+                TotalAlbums = totalAlbums,
+                NewAlbums = newAlbums
+            };
         }
     }
 }

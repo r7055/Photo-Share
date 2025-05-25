@@ -24,6 +24,24 @@ namespace PhotoShare.Api.Controllers
             _mapper = mapper;
             _downloadService = downloadService;
         }
+        [HttpGet]
+        public async Task<IActionResult> getAllPhotos()
+        {
+            try
+            {
+                var photos = await _photoService.GetAllAsync();
+                foreach (var photo in photos)
+                {
+                    photo.Url = await _downloadService.GetDownloadUrlAsync(photo.Name);
+                }
+                return Ok(photos); // מחזיר את התמונות עם קוד סטטוס 200
+            }
+            catch (Exception ex)
+            {
+                // אם יש שגיאה, מחזירים קוד שגיאה 500 עם הודעת השגיאה
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
         [HttpGet("{albumId}")]
         public async Task<IActionResult> GetPhotosByAlbumId(int albumId)
@@ -31,10 +49,10 @@ namespace PhotoShare.Api.Controllers
             try
             {
                 var photos = await _photoService.GetPhotosByAlbumId(albumId);
-                foreach (var photo in photos)
-                {
-                   photo.Url=await _downloadService.GetDownloadUrlAsync(photo.Name);
-                }
+                //foreach (var photo in photos)
+                //{
+                //   photo.Url=await _downloadService.GetDownloadUrlAsync(photo.Name);
+                //}
                 return Ok(photos);
             }
             catch (Exception ex)
@@ -57,6 +75,7 @@ namespace PhotoShare.Api.Controllers
             {
                 return NotFound();
             }
+            photo.Url=await _downloadService.GetDownloadUrlAsync(photo.Name);   
             return Ok(photo);
         }
 
@@ -95,6 +114,29 @@ namespace PhotoShare.Api.Controllers
 
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePhoto(int id, [FromBody] UpdatePhotoPostModel updatePhoto)
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
+
+            var photoDto = _mapper.Map<PhotoDto>(updatePhoto);
+            photoDto.UserId = userId;
+            photoDto.Id = id;  
+
+            try
+            {
+                var res = await _photoService.UpdateAsync(photoDto);
+                return res != null ? Ok(res) : BadRequest("Update failed");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
         //[HttpGet("album/{albumId}/user")]
         //public async Task<IActionResult> GetPhotosByAlbumIdAndUserId(int albumId)
         //{
@@ -119,7 +161,7 @@ namespace PhotoShare.Api.Controllers
         //    return Ok(sharedPhotos);
         //}
 
-         [HttpGet("recycle")]
+        [HttpGet("recycle")]
         public async Task<IActionResult> GetRecyclePhotos()
         {
             
@@ -164,6 +206,40 @@ namespace PhotoShare.Api.Controllers
             {
                 return BadRequest(new { Message = ex.Message });
             }
+        }
+
+        [HttpGet("top")]
+        public async Task<ActionResult<IEnumerable<PhotoDto>>> GetTopPhotos()
+        {
+            try
+            {
+                var topPhotos = await _photoService.GetTopPhotoAsync();
+
+                if (topPhotos == null || !topPhotos.Any())
+                {
+                    return NotFound(); 
+                }
+
+                return Ok(topPhotos); 
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (logging mechanism can be added here)
+                return StatusCode(500, "Internal server error: " + ex.Message);  
+            }
+        }
+        [HttpGet("upload-statistics")]
+        public async Task<IActionResult> GetUploadStatistics()
+        {
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out int userId) || userId < 1)
+            {
+                return BadRequest("User ID is not valid.");
+            }
+
+            //var statistics = await _photoService.GetUploadStatisticsAsync();
+            //return Ok(statistics);
+            return NoContent();
         }
 
         //[HttpPost("copy")]
