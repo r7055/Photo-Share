@@ -6,12 +6,11 @@ import  { TagService } from "../../services/tag.service"
 import { RouterModule } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { MatIconModule } from '@angular/material/icon';
-import { HeaderComponent } from "../../components/header/header.component"
 import { SidebarComponent } from "../../components/sidebar/sidebar.component"
 
 @Component({
   selector: "app-dashboard",
-  imports: [CommonModule, RouterModule,MatIconModule,HeaderComponent,SidebarComponent],
+  imports: [CommonModule, RouterModule,MatIconModule,SidebarComponent],
   standalone: true,
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
