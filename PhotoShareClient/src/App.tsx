@@ -5,6 +5,7 @@ import store from './store/store'
 
 function App() {
   return (
+    
     <Provider store={store}>
         <AppRouter />
     </Provider>

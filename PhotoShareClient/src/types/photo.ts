@@ -6,6 +6,8 @@ export interface Photo {
     size: number;
     albumId: number;
     name: string;
+    deletedAt?: string;
+    createdAt?: string;
     tags?: Tag[];
 }
 

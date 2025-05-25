@@ -76,11 +76,11 @@ export const deleteAlbum = createAsyncThunk('albums/deleteAlbum',
 
 // Async thunk for fetching albums by parent ID
 export const fetchAlbumsByParent = createAsyncThunk('albums/fetchAlbumsByParent',
-    async ({ token, parentId }: { token: string; parentId: number }, thunkAPI) => {
+    async ({ token, albumId }: { token: string; albumId: number }, thunkAPI) => {
         try {
-            console.log("fetchAlbumsByParent: ",token, parentId);
+            console.log("fetchAlbumsByParent: ",token, albumId);
             
-            const response = await axios.get<Album[]>(`${url}/parent/${parentId}`, {
+            const response = await axios.get<Album[]>(`${url}/parent/${albumId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -98,7 +98,7 @@ export const fetchAlbumsByParent = createAsyncThunk('albums/fetchAlbumsByParent'
 export const updateAlbum = createAsyncThunk('albums/updateAlbum',
     async ({ token, album }: { token: string; album: Album }, thunkAPI) => {
         try {
-            const albumResponse={title:album.title,description:album.description,parentId:album.parentId? album.parentId:0};
+            const albumResponse={title:album.title,description:album.description,albumId:album.parentId? album.parentId:0};
             console.log("update: ",token, album,`${url}/${album.id}`,albumResponse);
             const response = await axios.put(`${url}/${album.id}`, albumResponse, {
                 headers: {

@@ -2,8 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Photo } from '../types/photo';
 // import { photo } from '../types/photo';
-
-const baseUrl = 'http://localhost:5141/api/photos';
+ 
+const baseUrlPhoto = 'http://localhost:5141/api/photos';
 const uploadUrl = 'http://localhost:5141/api/upload/presigned-url';
 const downloadUrl = 'http://localhost:5141/api/download/download-url';
 
@@ -49,11 +49,13 @@ export const getDownloadUrl = createAsyncThunk('photos/getDownloadUrl',
     }
 );
 
+
+
 // Async thunk for getting photos by album ID
 export const getPhotosByAlbumId = createAsyncThunk('photos/getPhotosByAlbumId',
     async ({ token, albumId }: { token: string; albumId: number }, thunkAPI) => {
         try {
-            const response = await axios.get<Photo[]>(`${baseUrl}/${albumId}`, {
+            const response = await axios.get<Photo[]>(`${baseUrlPhoto}/${albumId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -69,7 +71,7 @@ export const getPhotosByAlbumId = createAsyncThunk('photos/getPhotosByAlbumId',
 export const getPhotoById = createAsyncThunk('photos/getPhotoById',
     async ({ token, id }: { token: string; id: number }, thunkAPI) => {
         try {
-            const response = await axios.get<Photo>(`${baseUrl}/photo/${id}`, {
+            const response = await axios.get<Photo>(`${baseUrlPhoto}/photo/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -86,7 +88,7 @@ export const getRecyclePhotos = createAsyncThunk(
     'photos/getRecyclePhotos',
     async ({ token }: { token: string }, thunkAPI) => {
         try {
-            const response = await axios.get<Photo[]>(`${baseUrl}/recycle`, {
+            const response = await axios.get<Photo[]>(`${baseUrlPhoto}/recycle`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -105,7 +107,7 @@ export const restorePhoto = createAsyncThunk('photos/restorePhoto',
             console.log("restorePhoto", token, photoId, albumId); // Debugging line
 
             await axios.post(
-                `${baseUrl}/restore`,
+                `${baseUrlPhoto}/restore`,
                 photoId,
                 {
                     params: { albumId },
@@ -125,7 +127,7 @@ export const restorePhoto = createAsyncThunk('photos/restorePhoto',
 export const deletePhoto = createAsyncThunk('photos/deletePhoto',
     async ({ token, id, albumId }: { token: string; id: number, albumId: number }) => {
         try {
-            await axios.delete(`${baseUrl}/${id}`, {
+            await axios.delete(`${baseUrlPhoto}/${id}`, {
                 params: { albumId },
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -133,7 +135,7 @@ export const deletePhoto = createAsyncThunk('photos/deletePhoto',
             });
             return id; // Return the deleted photo ID
         } catch (e: any) {
-            await axios.delete(`${baseUrl}/${id}`, {
+            await axios.delete(`${baseUrlPhoto}/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -149,7 +151,7 @@ export const addPhoto = createAsyncThunk('photos/addPhoto',
         try {
             console.log(token, photo);
 
-            const response = await axios.post<Photo>(baseUrl, photo, {
+            const response = await axios.post<Photo>(baseUrlPhoto, photo, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -193,9 +195,11 @@ const photoSlice = createSlice({
             .addCase(uploadPhoto.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(getDownloadUrl.fulfilled, (_) => {
+            .addCase(getDownloadUrl.fulfilled, (state) => {
                 // const downloadUrl = action.payload;
                 // Handle the download URL as needed
+                state.loading = false;
+                state.msg = '';
             })
             .addCase(getDownloadUrl.rejected, (state, action) => {
                 state.loading = false;
@@ -204,6 +208,9 @@ const photoSlice = createSlice({
             .addCase(getDownloadUrl.pending, (state) => {
                 state.loading = true;
             })
+
+
+
             .addCase(getPhotosByAlbumId.fulfilled, (state, action) => {
                 state.photos = action.payload;
                 state.loading = false;

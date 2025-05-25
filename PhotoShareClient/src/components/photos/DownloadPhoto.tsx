@@ -1,65 +1,203 @@
-import React from 'react';
-import { IconButton, Tooltip } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { getDownloadUrl } from "../../slices/photoSlice"; // Adjust the import path as needed
-import { AppDispatch } from '../../store/store';
-import DownloadIcon from '@mui/icons-material/Download';
+// // import React from 'react';
+// // import { IconButton, Tooltip } from "@mui/material";
+// // import { useDispatch } from "react-redux";
+// // import { getDownloadUrl } from "../../slices/photoSlice"; // Adjust the import path as needed
+// // import { AppDispatch } from '../../store/store';
+// // import DownloadIcon from '@mui/icons-material/Download';
+
+// // interface DownloadPhotoProps {
+// //     photo: { name: string; url: string };
+// // }
+
+// // const DownloadPhoto: React.FC<DownloadPhotoProps> = ({ photo }) => {
+// //     const dispatch = useDispatch<AppDispatch>();
+// //     const token = sessionStorage.getItem('token');
+
+// //     const handleDownload = async (fileName: string) => {
+// //         if (token) {
+// //             try {
+// //                 const downloadUrl = await dispatch(getDownloadUrl({ token, fileName })).unwrap();
+// //                 const response = await fetch(downloadUrl);
+// //                 const blob = await response.blob();
+// //                 const link = document.createElement('a');
+// //                 link.href = window.URL.createObjectURL(blob);
+// //                 link.download = fileName;
+// //                 document.body.appendChild(link);
+// //                 link.click();
+// //                 document.body.removeChild(link);
+// //                 window.URL.revokeObjectURL(link.href);
+// //             } catch (error) {
+// //                 console.error('Error downloading file:', error);
+// //             }
+// //         } else {
+// //             // Handle case when token is not available (e.g., redirect to auth)
+// //             console.error('Token is not available');
+// //         }
+// //     };
+
+// //     return (
+// //         <>
+// //             <Tooltip title="הורדת תמונה">
+// //                 <IconButton onClick={() => handleDownload(photo.name)}>
+// //                     <DownloadIcon />
+// //                 </IconButton>
+// //             </Tooltip>
+// //         </>
+// //     );
+// // }
+
+// // export default DownloadPhoto;
+
+// import type React from "react"
+// import { IconButton, Tooltip, CircularProgress } from "@mui/material"
+// import { useDispatch } from "react-redux"
+// import { getDownloadUrl } from "../../slices/photoSlice"
+// import type { AppDispatch } from "../../store/store"
+// import DownloadIcon from "@mui/icons-material/Download"
+// import { useState } from "react"
+
+// interface DownloadPhotoProps {
+//   photo: { name: string; url: string }
+// }
+
+// const DownloadPhoto: React.FC<DownloadPhotoProps> = ({ photo }) => {
+//   const dispatch = useDispatch<AppDispatch>()
+//   const token = sessionStorage.getItem("token")
+//   const [isDownloading, setIsDownloading] = useState(false)
+
+//   const handleDownload = async (event: React.MouseEvent, fileName: string) => {
+//     event.stopPropagation()
+
+//     if (token) {
+//       try {
+//         setIsDownloading(true)
+//         const downloadUrl = await dispatch(getDownloadUrl({ token, fileName })).unwrap()
+//         const response = await fetch(downloadUrl)
+//         const blob = await response.blob()
+//         const link = document.createElement("a")
+//         link.href = window.URL.createObjectURL(blob)
+//         link.download = fileName
+//         document.body.appendChild(link)
+//         link.click()
+//         document.body.removeChild(link)
+//         window.URL.revokeObjectURL(link.href)
+//       } catch (error) {
+//         console.error("Error downloading file:", error)
+//       } finally {
+//         setIsDownloading(false)
+//       }
+//     } else {
+//       console.error("Token is not available")
+//     }
+//   }
+
+//   return (
+//     <Tooltip title="Download Photo">
+//       <IconButton
+//         onClick={(e) => handleDownload(e, photo.name)}
+//         size="small"
+//         disabled={isDownloading}
+//         sx={{
+//           bgcolor: "rgba(255,255,255,0.2)",
+//           backdropFilter: "blur(5px)",
+//           color: "white",
+//           "&:hover": {
+//             bgcolor: "rgba(255,255,255,0.3)",
+//           },
+//         }}
+//       >
+//         {isDownloading ? <CircularProgress size={18} color="inherit" /> : <DownloadIcon fontSize="small" />}
+//       </IconButton>
+//     </Tooltip>
+//   )
+// }
+
+// export default DownloadPhoto
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { IconButton, Tooltip, Snackbar, Alert, CircularProgress } from "@mui/material"
+import { useDispatch } from "react-redux"
+import { getDownloadUrl } from "../../slices/photoSlice"
+import type { AppDispatch } from "../../store/store"
+import { Download as DownloadIcon } from "@mui/icons-material"
 
 interface DownloadPhotoProps {
-    photo: { name: string; url: string };
+  photo: { name: string; url: string }
 }
 
 const DownloadPhoto: React.FC<DownloadPhotoProps> = ({ photo }) => {
-    const dispatch = useDispatch<AppDispatch>();
-    const token = sessionStorage.getItem('token');
+  const dispatch = useDispatch<AppDispatch>()
+  const token = sessionStorage.getItem("token")
+  const [loading, setLoading] = useState(false)
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" as "success" | "error" })
 
-    const handleDownload = async (fileName: string) => {
-        if (token) {
-            try {
-                const downloadUrl = await dispatch(getDownloadUrl({ token, fileName })).unwrap();
-                const response = await fetch(downloadUrl);
-                const blob = await response.blob();
-                const link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(link.href);
-            } catch (error) {
-                console.error('Error downloading file:', error);
-            }
-        } else {
-            // Handle case when token is not available (e.g., redirect to auth)
-            console.error('Token is not available');
-        }
-    };
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (token) {
+      setLoading(true)
+      try {
+        const downloadUrl = await dispatch(getDownloadUrl({ token, fileName: photo.name })).unwrap()
+        const response = await fetch(downloadUrl)
+        const blob = await response.blob()
+        const link = document.createElement("a")
+        link.href = window.URL.createObjectURL(blob)
+        link.download = photo.name
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(link.href)
 
-    return (
-        <>
-            {/* <Button
-                variant="text"
-                onClick={() => handleDownload(photo.name)}
-                sx={{
-                    position: 'absolute',
-                    top: 5,
-                    right: 5,
-                    color: '#fff',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    padding: '5px 10px',
-                    borderRadius: '5px',
-                }}
-            >
-                הורדה
-            </Button> */}
+        setSnackbar({
+          open: true,
+          message: "Photo downloaded successfully",
+          severity: "success",
+        })
+      } catch (error) {
+        console.error("Error downloading file:", error)
+        setSnackbar({
+          open: true,
+          message: "Failed to download photo",
+          severity: "error",
+        })
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      console.error("Token is not available")
+      setSnackbar({
+        open: true,
+        message: "Please log in to download photos",
+        severity: "error",
+      })
+    }
+  }
 
-            <Tooltip title="הורדת תמונה">
-                <IconButton onClick={() => handleDownload(photo.name)}>
-                    <DownloadIcon />
-                </IconButton>
-            </Tooltip>
-        </>
-    );
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false })
+  }
+
+  return (
+    <>
+      <Tooltip title="Download Photo">
+        <IconButton size="small" onClick={handleDownload} disabled={loading} sx={{ color: "#3f51b5" }}>
+          {loading ? <CircularProgress size={18} color="inherit" /> : <DownloadIcon fontSize="small" />}
+        </IconButton>
+      </Tooltip>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled" sx={{ width: "100%" }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
+  )
 }
 
-export default DownloadPhoto;
+export default DownloadPhoto
