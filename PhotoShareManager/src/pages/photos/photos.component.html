@@ -12,10 +12,6 @@
         </button>
       </div>
     </div>
-    <button class="add-btn" (click)="openUploadModal()">
-      <i class="material-icons">cloud_upload</i>
-      העלה תמונות
-    </button>
   </div>
 
   <div *ngIf="success" class="alert alert-success">{{ success }}</div>
@@ -97,52 +93,6 @@
           <button type="submit" class="submit-btn" [disabled]="photoForm.invalid || loading">
             <span *ngIf="loading" class="spinner"></span>
             עדכן
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Upload Modal -->
-  <div class="modal" [class.show]="showUploadModal">
-    <div class="modal-backdrop" (click)="closeUploadModal()"></div>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>העלאת תמונות</h2>
-        <button class="close-btn" (click)="closeUploadModal()">
-          <i class="material-icons">close</i>
-        </button>
-      </div>
-
-      <form [formGroup]="uploadForm" (ngSubmit)="uploadPhotos()" class="upload-form">
-        <div class="form-group">
-          <label for="uploadAlbumId">אלבום</label>
-          <select id="uploadAlbumId" formControlName="albumId">
-            <option *ngFor="let album of albums" [value]="album.id">{{ album.title }}</option>
-          </select>
-          <div *ngIf="uploadForm.get('albumId')?.invalid && uploadForm.get('albumId')?.touched" class="error-message">
-            אלבום נדרש
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="files">בחר תמונות</label>
-          <input type="file" id="files" (change)="onFileSelect($event)" accept="image/*" multiple>
-          <div *ngIf="uploadForm.get('files')?.invalid && uploadForm.get('files')?.touched" class="error-message">
-            יש לבחור לפחות תמונה אחת
-          </div>
-        </div>
-
-        <div *ngIf="uploading" class="progress-container">
-          <div class="progress-bar" [style.width.%]="uploadProgress"></div>
-          <div class="progress-text">{{ uploadProgress }}%</div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="cancel-btn" (click)="closeUploadModal()">ביטול</button>
-          <button type="submit" class="submit-btn" [disabled]="uploadForm.invalid || uploading">
-            <span *ngIf="uploading" class="spinner"></span>
-            העלה
           </button>
         </div>
       </form>

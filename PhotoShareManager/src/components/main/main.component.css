@@ -1,0 +1,20 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* גובה מלא של המסך */
+}
+
+.content-container {
+  display: flex;
+  flex: 1; /* תופס את שאר הגובה */
+}
+
+app-sidebar {
+  width: 250px; /* רוחב הסיידבר */
+}
+
+.app-content {
+  flex: 1; /* תופס את שאר הרוחב */
+  padding: 20px; /* רווח פנימי */
+  background-color: #f9f9f9; /* צבע רקע */
+}

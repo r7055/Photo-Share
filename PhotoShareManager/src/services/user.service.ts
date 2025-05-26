@@ -21,15 +21,7 @@ export interface UserDto {
   createAt: string
   lastLogin: string
   status: boolean
-  countUpload : number
-}
-
-export interface CreateUserDto {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  roleId: number
+  countUpload: number
 }
 
 export interface UpdateUserDto {
@@ -45,7 +37,7 @@ export interface UpdateUserDto {
   providedIn: "root",
 })
 export class UserService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getUsers(): Observable<UserDto[]> {
     return this.http.get<UserDto[]>(`${environment.apiUrl}/api/users`)
@@ -53,11 +45,6 @@ export class UserService {
 
   getUser(id: number): Observable<UserDto> {
     return this.http.get<UserDto>(`${environment.apiUrl}/api/users/${id}`)
-  }
-
-  createUser(user: CreateUserDto): Observable<UserDto> {
-    console.log("user create", user)
-    return this.http.post<UserDto>(`${environment.apiUrl}/api/users`, user)
   }
 
   updateUser(id: number, user: UpdateUserDto): Observable<UserDto> {
@@ -68,7 +55,7 @@ export class UserService {
     return this.http.delete<void>(`${environment.apiUrl}/api/users/${id}`)
   }
 
-   getTopUsers(): Observable<UserDto[]> {
+  getTopUsers(): Observable<UserDto[]> {
     return this.http.get<UserDto[]>(`${environment.apiUrl}/api/users/top`);
   }
 }

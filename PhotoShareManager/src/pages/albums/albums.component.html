@@ -79,14 +79,6 @@
           <textarea id="description" formControlName="description" rows="3"></textarea>
         </div>
         
-        <!-- <div class="form-group checkbox-group">
-          <label>
-            <input type="checkbox" formControlName="isPublic">
-            אלבום ציבורי
-          </label>
-          <small>אלבומים ציבוריים נגישים לכל המשתמשים ללא צורך בשיתוף</small>
-        </div> -->
-        
         <div class="form-actions">
           <button type="button" class="cancel-btn" (click)="closeModal()">ביטול</button>
           <button type="submit" class="submit-btn" [disabled]="albumForm.invalid || loading">

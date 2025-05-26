@@ -152,39 +152,6 @@ export class PhotosComponent implements OnInit {
     }
   }
 
-  uploadPhotos(): void {
-    if (this.uploadForm.invalid) {
-      return
-    }
-
-    const albumId = this.uploadForm.value.albumId
-    const files = this.uploadForm.value.files
-
-    this.uploading = true
-    this.error = ""
-    this.success = ""
-
-    // In a real app, you would handle multiple files
-    // Here we're just handling the first file for simplicity
-    const file = files[0]
-
-    this.uploadService.uploadPhoto(albumId, file).subscribe({
-      next: (event) => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          this.uploadProgress = Math.round((100 * event.loaded) / event.total)
-        } else if (event.type === HttpEventType.Response) {
-          this.success = "Photo uploaded successfully"
-          this.loadPhotos()
-          this.closeUploadModal()
-          this.uploading = false
-        }
-      },
-      error: (error) => {
-        this.error = "Failed to upload photo"
-        this.uploading = false
-      },
-    })
-  }
 
   updatePhoto(): void {
     if (this.photoForm.invalid || !this.selectedPhoto) {

@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core"
 import { FormBuilder, FormGroup, Validators } from "@angular/forms"
-import { UserService, UserDto, CreateUserDto, UpdateUserDto, RoleDto } from "../../services/user.service"
+import { UserService, UserDto, RoleDto } from "../../services/user.service"
 import { CommonModule } from "@angular/common"
 import { FormsModule, ReactiveFormsModule } from "@angular/forms"
+import { AuthService } from "../../services/auth.service"
 
 @Component({
   selector: "app-users",
@@ -38,15 +39,15 @@ export class UsersComponent implements OnInit {
   quickFilter: string = "" // 'week' | 'month' | ''
 
   constructor(
-    private userService: UserService,
-    private formBuilder: FormBuilder,
+     private userService: UserService,
+  private authService: AuthService, 
+  private formBuilder: FormBuilder,
   ) {
     this.userForm = this.formBuilder.group({
       firstName: ["", Validators.required],
       lastName: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
       password: ["", [Validators.required, Validators.minLength(6)]],
-      roleId: [null, Validators.required],
       status: ["active"],
     })
   }
@@ -127,64 +128,98 @@ export class UsersComponent implements OnInit {
     this.userForm.get("password")?.updateValueAndValidity()
   }
 
-  onSubmit(): void {
+  // onSubmit(): void {
+  //   if (this.userForm.invalid) {
+  //     return
+  //   }
+
+  //   this.loading = true
+  //   this.error = ""
+  //   this.success = ""
+
+  //   if (this.isEditMode && this.selectedUser) {
+  //     const updateData: UpdateUserDto = {
+  //       firstName: this.userForm.value.firstName,
+  //       lastName: this.userForm.value.lastName,
+  //       email: this.userForm.value.email,
+  //       roleId: this.userForm.value.roleId,
+  //       status: this.userForm.value.status === "active",
+  //     }
+
+  //     // Only include password if provided
+  //     if (this.userForm.value.password) {
+  //       updateData.password = this.userForm.value.password
+  //     }
+
+  //     this.userService.updateUser(this.selectedUser.id, updateData).subscribe({
+  //       next: () => {
+  //         this.success = "User updated successfully"
+  //         this.loadUsers()
+  //         this.closeModal()
+  //         this.loading = false
+  //       },
+  //       error: () => {
+  //         this.error = "Failed to update user"
+  //         this.loading = false
+  //       },
+  //     })
+  //   } else {
+  //     const createData: CreateUserDto = {
+  //       firstName: this.userForm.value.firstName,
+  //       lastName: this.userForm.value.lastName,
+  //       email: this.userForm.value.email,
+  //       password: this.userForm.value.password,
+  //       status: true,
+  //       countUpload: 0
+  //     }
+
+  //     this.userService.createUser(createData).subscribe({
+  //       next: () => {
+  //         this.success = "User created successfully"
+  //         this.loadUsers()
+  //         this.closeModal()
+  //         this.loading = false
+  //       },
+  //       error: () => {
+  //         this.error = "Failed to create user"
+  //         this.loading = false
+  //       },
+  //     })
+  //   }
+  // }
+  
+onSubmit(): void {
     if (this.userForm.invalid) {
-      return
+        return;
     }
 
-    this.loading = true
-    this.error = ""
-    this.success = ""
+    this.loading = true;
+    this.error = "";
+    this.success = "";
 
-    if (this.isEditMode && this.selectedUser) {
-      const updateData: UpdateUserDto = {
-        firstName: this.userForm.value.firstName,
-        lastName: this.userForm.value.lastName,
-        email: this.userForm.value.email,
-        roleId: this.userForm.value.roleId,
-        status: this.userForm.value.status === "active",
-      }
-
-      // Only include password if provided
-      if (this.userForm.value.password) {
-        updateData.password = this.userForm.value.password
-      }
-
-      this.userService.updateUser(this.selectedUser.id, updateData).subscribe({
-        next: () => {
-          this.success = "User updated successfully"
-          this.loadUsers()
-          this.closeModal()
-          this.loading = false
-        },
-        error: () => {
-          this.error = "Failed to update user"
-          this.loading = false
-        },
-      })
-    } else {
-      const createData: CreateUserDto = {
+    const registerData = {
         firstName: this.userForm.value.firstName,
         lastName: this.userForm.value.lastName,
         email: this.userForm.value.email,
         password: this.userForm.value.password,
-        roleId: this.userForm.value.roleId,
-      }
+    };
 
-      this.userService.createUser(createData).subscribe({
+    this.authService.register(registerData.firstName, registerData.lastName, registerData.email, registerData.password).subscribe({
         next: () => {
-          this.success = "User created successfully"
-          this.loadUsers()
-          this.closeModal()
-          this.loading = false
+            this.success = "User registered successfully";
+            this.loadUsers();
+            this.resetForm();
+            this.closeModal();
+            this.loading = false;
+            // Optionally, you can navigate to a different page or refresh the user list
         },
         error: () => {
-          this.error = "Failed to create user"
-          this.loading = false
+            this.error = "Failed to register user";
+            this.loading = false;
         },
-      })
-    }
-  }
+    });
+}
+
 
   deleteUser(user: UserDto): void {
     if (confirm(`האם אתה בטוח שברצונך למחוק את המשתמש ${user.firstName} ${user.lastName}?`)) {

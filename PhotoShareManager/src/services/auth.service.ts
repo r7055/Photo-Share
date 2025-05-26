@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core"
-import  { HttpClient } from "@angular/common/http"
-import  { Router } from "@angular/router"
-import { BehaviorSubject,  Observable } from "rxjs"
+import { HttpClient } from "@angular/common/http"
+import { Router } from "@angular/router"
+import { BehaviorSubject, Observable } from "rxjs"
 import { map } from "rxjs/operators"
 import { environment } from "../environments/environment"
 
@@ -24,7 +24,10 @@ export class AuthService {
     private router: Router,
   ) {
     this.currentUserSubject = new BehaviorSubject<User | null>(
-      JSON.parse(localStorage.getItem("currentUser") || "null"),
+      localStorage.getItem("currentUser")
+        ? JSON.parse(localStorage.getItem("currentUser") || "null")
+        : null,
+      // JSON.parse(|| "null"),
     )
     this.currentUser = this.currentUserSubject.value
   }
@@ -32,6 +35,22 @@ export class AuthService {
   public get currentUserValue(): User | null {
     return this.currentUserSubject.value
   }
+
+ register(firstName: string, lastName: string, email: string, password: string): Observable<User> {
+    console.log("Registering user:", { firstName, lastName, email, password });
+    return this.http.post<any>(`${environment.apiUrl}/api/auth/register`, { 
+        FirstName: firstName, 
+        LastName: lastName, 
+        Email: email, 
+        Password: password 
+    }).pipe(
+        map((response) => {
+            // Optionally handle the response here (e.g., store user details or token)
+            return response.user; // Assuming the response contains the user data
+        }),
+    );
+}
+
 
   login(email: string, password: string): Observable<User> {
     return this.http.post<any>(`${environment.apiUrl}/api/auth/login`, { email, password }).pipe(

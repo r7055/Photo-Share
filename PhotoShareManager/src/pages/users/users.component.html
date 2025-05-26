@@ -161,14 +161,6 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="roleId">תפקיד</label>
-          <select id="roleId" formControlName="roleId">
-            <option *ngFor="let role of roles" [value]="role.id">{{ role.roleName === 'admin' ? 'מנהל' : 'משתמש' }}
-            </option>
-          </select>
-        </div>
-
         <div *ngIf="isEditMode" class="form-group">
           <label for="status">סטטוס</label>
           <select id="status" formControlName="status">
