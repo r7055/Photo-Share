@@ -65,8 +65,8 @@ namespace PhotoShare.Service.Services
                 Email = userDto.Email,
                 status=true,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
                 Roles = new List<Role> { new Role { RoleName = "Editor", Description = "description" } }
             };
 
