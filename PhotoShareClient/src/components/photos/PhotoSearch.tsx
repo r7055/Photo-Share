@@ -1,31 +1,22 @@
-// import { useState } from 'react';
-// import { useDispatch } from 'react-redux';
-// import { AppDispatch } from '../store/store';
-// import { searchAllPhotos } from '../slices/photoSlice';
+import React from "react";
+import { TextField } from "@mui/material";
 
-// const PhotoSearch = () => {
+interface PhotoSearchProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+}
 
-//     const [query, setQuery] = useState('');
-//     const dispatch = useDispatch<AppDispatch>();
-//     const token = sessionStorage.getItem('token');
+const PhotoSearch: React.FC<PhotoSearchProps> = ({ searchTerm, setSearchTerm }) => {
+  return (
+    <TextField
+      label="Search Photos"
+      variant="outlined"
+      fullWidth
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      sx={{ mb: 3 }}
+    />
+  );
+};
 
-//     const handleSearch = () => {
-//         if (token) {
-//             dispatch(searchAllPhotos({ token, query }));
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <input
-//                 type="text"
-//                 value={query}
-//                 onChange={(e) => setQuery(e.target.value)}
-//                 placeholder="Search all photos"
-//             />
-//             <button onClick={handleSearch}>Search</button>
-//         </div>
-//     );
-// };
-
-// export default PhotoSearch;
+export default PhotoSearch;

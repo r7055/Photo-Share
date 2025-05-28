@@ -2,11 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Photo } from '../types/photo';
 // import { photo } from '../types/photo';
- 
+
 const baseUrlPhoto = 'http://localhost:5141/api/photos';
 const uploadUrl = 'http://localhost:5141/api/upload/presigned-url';
 const downloadUrl = 'http://localhost:5141/api/download/download-url';
-
+const shareUrl = 'http://localhost:5141/api/photo-share';
 // Async thunk for uploading a photo
 export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',
     async ({ token, fileName, file }: { token: string; fileName: string; file: File }, thunkAPI) => {
@@ -48,8 +48,6 @@ export const getDownloadUrl = createAsyncThunk('photos/getDownloadUrl',
         }
     }
 );
-
-
 
 // Async thunk for getting photos by album ID
 export const getPhotosByAlbumId = createAsyncThunk('photos/getPhotosByAlbumId',
@@ -141,7 +139,7 @@ export const deletePhoto = createAsyncThunk('photos/deletePhoto',
                 },
             });
             return id; // Return the deleted photo ID
-        } 
+        }
     }
 );
 
@@ -165,7 +163,24 @@ export const addPhoto = createAsyncThunk('photos/addPhoto',
     }
 );
 
-
+// Async thunk for sharing a photo
+export const sharePhoto = createAsyncThunk('photos/sharePhoto',
+    async ({ token, photoId, userEmailForSharing }: { token: string; photoId: number; userEmailForSharing: string }, thunkAPI) => {
+        try {
+            const response = await axios.post(`${shareUrl}/share`, {
+                photoId,
+                userEmailForSharing
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data; // You can return any relevant data if needed
+        } catch (e: any) {
+            return thunkAPI.rejectWithValue(e.message);
+        }
+    }
+);
 
 const photoSlice = createSlice({
     name: 'photos',
@@ -244,7 +259,7 @@ const photoSlice = createSlice({
             .addCase(deletePhoto.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(addPhoto.fulfilled, (state,action) => {
+            .addCase(addPhoto.fulfilled, (state, action) => {
                 state.photos.push(action.payload);
                 state.loading = false;
             })
@@ -276,6 +291,17 @@ const photoSlice = createSlice({
                 state.msg = action.payload as string || "Failed to restore photo";
             })
             .addCase(restorePhoto.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(sharePhoto.fulfilled, (state, _) => {
+                state.loading = false;
+                state.msg = "Photo shared successfully!";
+            })
+            .addCase(sharePhoto.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Failed to share photo";
+            })
+            .addCase(sharePhoto.pending, (state) => {
                 state.loading = true;
             });
     },

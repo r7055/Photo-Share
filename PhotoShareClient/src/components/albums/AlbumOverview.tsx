@@ -573,9 +573,6 @@
 
 // export default AlbumOverview
 
-
-"use client"
-
 import type React from "react"
 import { useEffect, useState, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -995,7 +992,7 @@ const AlbumOverview: React.FC<{ onSelectAlbum: (albumId: number) => void }> = ({
           )}
         </Grid>
       </motion.div>
-
+      
       {/* Edit Album Dialog */}
       {selectedAlbum && (
         <EditAlbum open={isEditDialogOpen} onClose={() => setEditDialogOpen(false)} album={selectedAlbum} />
