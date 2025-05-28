@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: "https://api.photoshare.com",
+  apiUrl: "https://photo-share-api-5sze.onrender.com",
 }
