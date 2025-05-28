@@ -6,10 +6,9 @@
       טוען נתונים...
     </div>
 
-
     <div *ngIf="hasError && !isLoading" class="error-alert">
       {{ errorMessage }}
-      <button (click)="loadStatistics(30); clearChartErrors()">נסה שוב</button>
+      <button class="add-btn" (click)="loadStatistics(30); clearChartErrors()">נסה שוב</button>
     </div>
 
     <form [formGroup]="filterForm" class="filter-form">
@@ -167,3 +166,4 @@
     </div>
   </div>
 </div>
+

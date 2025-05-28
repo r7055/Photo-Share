@@ -1,4 +1,4 @@
-<header class="header">
+<!-- <header class="header">
   <div class="logo">
     <h1>PhotoShare Admin</h1>
   </div>
@@ -10,4 +10,43 @@
       התנתק
     </button>
   </div>
-</header>
+</header> -->
+
+
+  <mat-toolbar color="primary" class="header-toolbar">
+      <button mat-icon-button (click)="menuToggle.emit()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <span class="logo">PhotoShare Admin</span>
+      
+      <span class="spacer"></span>
+      
+      <div class="user-menu" *ngIf="authService.currentUser">
+        <span class="user-name">{{ authService.currentUser!.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="userMenu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>התנתק</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar> 
+
+
+    <!-- <header class="header">
+  <div class="logo">
+    <h1>PhotoShare Admin</h1>
+  </div>
+  
+  <mat-menu #userMenu="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>התנתק</span>
+          </button>
+        </mat-menu>
+</header> -->

@@ -1,20 +1,28 @@
-.main-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* גובה מלא של המסך */
-}
+ .app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-.content-container {
-  display: flex;
-  flex: 1; /* תופס את שאר הגובה */
-}
+    .sidenav-container {
+      flex: 1;
+    }
 
-app-sidebar {
-  width: 250px; /* רוחב הסיידבר */
-}
+    .sidenav {
+      width: 280px;
+      background: #fafafa;
+      border-right: 1px solid #e0e0e0;
+    }
 
-.app-content {
-  flex: 1; /* תופס את שאר הרוחב */
-  padding: 20px; /* רווח פנימי */
-  background-color: #f9f9f9; /* צבע רקע */
-}
+    .main-content {
+      padding: 24px;
+      background: #f5f5f5;
+      min-height: calc(100vh - 64px);
+    }
+
+    @media (max-width: 768px) {
+      .sidenav {
+        width: 100%;
+      }
+    }
+    

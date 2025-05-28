@@ -6,14 +6,30 @@ import  { TagService } from "../../services/tag.service"
 import { RouterModule } from "@angular/router"
 import { CommonModule } from "@angular/common"
 import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from "@angular/material/button"
+import { MatSnackBarModule } from "@angular/material/snack-bar"
+import { MatGridListModule } from "@angular/material/grid-list"
 
 @Component({
   selector: "app-dashboard",
-  imports: [CommonModule, RouterModule,MatIconModule],
+  imports: [
+     CommonModule,
+    RouterModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatGridListModule,
+],
   standalone: true,
   templateUrl: "./dashboard.component.html",
   styleUrls: ["./dashboard.component.scss"],
 })
+
+
 export class DashboardComponent implements OnInit {
   stats = {
     users: 0,
@@ -119,3 +135,63 @@ export class DashboardComponent implements OnInit {
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
   }
 }
+// export const dashboardAnimations = [
+//   trigger('fadeIn', [
+//     transition(':enter', [
+//       style({ opacity: 0 }),
+//       animate('300ms ease-in', style({ opacity: 1 }))
+//     ])
+//   ]),
+  
+//   trigger('slideInFromTop', [
+//     transition(':enter', [
+//       style({ transform: 'translateY(-100%)', opacity: 0 }),
+//       animate('400ms cubic-bezier(0.4, 0, 0.2, 1)', 
+//         style({ transform: 'translateY(0)', opacity: 1 }))
+//     ])
+//   ]),
+  
+//   trigger('slideInFromLeft', [
+//     transition(':enter', [
+//       style({ transform: 'translateX(-100%)', opacity: 0 }),
+//       animate('500ms cubic-bezier(0.4, 0, 0.2, 1)', 
+//         style({ transform: 'translateX(0)', opacity: 1 }))
+//     ])
+//   ]),
+  
+//   trigger('slideInFromRight', [
+//     transition(':enter', [
+//       style({ transform: 'translateX(100%)', opacity: 0 }),
+//       animate('500ms cubic-bezier(0.4, 0, 0.2, 1)', 
+//         style({ transform: 'translateX(0)', opacity: 1 }))
+//     ])
+//   ]),
+  
+//   trigger('staggerIn', [
+//     transition(':enter', [
+//       query('.stat-card', [
+//         style({ opacity: 0, transform: 'translateY(50px)' }),
+//         stagger(100, [
+//           animate('400ms cubic-bezier(0.4, 0, 0.2, 1)', 
+//             style({ opacity: 1, transform: 'translateY(0)' }))
+//         ])
+//       ], { optional: true })
+//     ])
+//   ]),
+  
+//   trigger('cardHover', [
+//     transition(':enter', [
+//       style({ opacity: 0, transform: 'scale(0.8)' }),
+//       animate('300ms cubic-bezier(0.4, 0, 0.2, 1)', 
+//         style({ opacity: 1, transform: 'scale(1)' }))
+//     ])
+//   ]),
+  
+//   trigger('listItemSlide', [
+//     transition(':enter', [
+//       style({ opacity: 0, transform: 'translateX(-20px)' }),
+//       animate('250ms ease-out', 
+//         style({ opacity: 1, transform: 'translateX(0)' }))
+//     ])
+//   ])
+// ];

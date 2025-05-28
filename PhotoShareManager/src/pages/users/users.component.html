@@ -1,4 +1,4 @@
-<div class="users-page">
+<!-- <div class="users-page">
   <div class="page-header">
     <h1>ניהול משתמשים</h1>
     <button class="add-btn" (click)="openAddUserModal()">
@@ -10,55 +10,62 @@
   <div *ngIf="success" class="alert alert-success">{{ success }}</div>
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
-  <div class="search-bar">
-    <input type="text" placeholder="חפש לפי שם, דוא״ל או תפקיד..." [(ngModel)]="searchTerm"
-      (ngModelChange)="onSearchChange()" />
-    <i class="material-icons search-icon">search</i>
-  </div>
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>חפש משתמשים</mat-label>
+          <input matInput placeholder="שם, דוא״ל או תפקיד..." 
+                 [(ngModel)]="searchTerm" 
+                 (ngModelChange)="onSearchChange()">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
 
-  <div class="filters-bar">
-    <div class="filter-group">
-      <label>סטטוס:</label>
-      <select [(ngModel)]="filterStatus" (change)="applySearch()">
-        <option value="">הכל</option>
-        <option value="active">פעילים</option>
-        <option value="inactive">לא פעילים</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>תפקיד:</label>
-      <select [(ngModel)]="filterRole" (change)="applySearch()">
-        <option value="">הכל</option>
-        <option *ngFor="let role of roles" [value]="role.roleName">{{ role.roleName === 'admin' ? 'מנהל' : 'משתמש' }}
-        </option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>נרשמו מתאריך:</label>
-      <input type="date" [(ngModel)]="filterFromDate" (change)="applySearch()" />
-    </div>
-    <div class="filter-group">
-      <label>עד תאריך:</label>
-      <input type="date" [(ngModel)]="filterToDate" (change)="applySearch()" />
-    </div>
-    <div class="filter-group">
-      <label>הצג:</label>
-      <select [(ngModel)]="filterSort" (change)="applySearch()">
-        <option value="newest">החדשים ביותר</option>
-        <option value="oldest">הוותיקים ביותר</option>
-        <option value="lastLoginDesc">כניסה אחרונה - אחרונים למעלה</option>
-        <option value="lastLoginAsc">כניסה אחרונה - ראשונים למעלה</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>מצטרפים אחרונים:</label>
-      <button type="button" (click)="filterLast('week')">שבוע אחרון</button>
-      <button type="button" (click)="filterLast('month')">חודש אחרון</button>
-      <button type="button" (click)="clearQuickFilter()">נקה</button>
-    </div>
-  </div>
+        <mat-form-field appearance="outline">
+          <mat-label>סטטוס</mat-label>
+          <mat-select [(ngModel)]="filterStatus" (selectionChange)="applySearch()">
+            <mat-option value="">הכל</mat-option>
+            <mat-option value="active">פעילים</mat-option>
+            <mat-option value="inactive">לא פעילים</mat-option>
+          </mat-select>
+        </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>תפקיד</mat-label>
+          <mat-select [(ngModel)]="filterRole" (selectionChange)="applySearch()">
+            <mat-option value="">הכל</mat-option>
+            <mat-option *ngFor="let role of roles" [value]="role.roleName">
+              {{ role.roleName === 'admin' ? 'מנהל' : 'משתמש' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>מתאריך</mat-label>
+          <input matInput [matDatepicker]="fromPicker" 
+                 [(ngModel)]="filterFromDate" 
+                 (dateChange)="applySearch()">
+          <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>עד תאריך</mat-label>
+          <input matInput [matDatepicker]="toPicker" 
+                 [(ngModel)]="filterToDate" 
+                 (dateChange)="applySearch()">
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="quick-filters">
+        <button class="btn" (click)="filterLast('week')">שבוע אחרון</button>
+        <button class="btn" (click)="filterLast('month')">חודש אחרון</button>
+        <button class="btn" (click)="clearQuickFilter()">נקה מסננים</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 
   <div class="users-table-container">
     <div *ngIf="loading" class="loading">
@@ -113,7 +120,6 @@
     </div>
   </div>
 
-  <!-- User Modal -->
   <div class="modal" [class.show]="showModal">
     <div class="modal-backdrop" (click)="closeModal()"></div>
     <div class="modal-content">
@@ -178,5 +184,289 @@
         </div>
       </form>
     </div>
+  </div>
+</div> -->
+
+<!-- כותרת ופעולות ראשיות -->
+<div class="header-section">
+  <div class="header-actions">
+    <h2>ניהול משתמשים</h2>
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" (click)="openAddUserModal()">
+        <mat-icon>person_add</mat-icon>
+        הוסף משתמש
+      </button>
+      <button mat-raised-button color="accent" (click)="printTable()" [disabled]="filteredUsers.length === 0">
+        <mat-icon>print</mat-icon>
+        הדפס טבלה
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- סינונים בשורה אחת -->
+<mat-card class="filters-card">
+  <mat-card-content>
+    <div class="filters-row">
+      <!-- חיפוש כללי -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>חיפוש</mat-label>
+        <input matInput 
+               [(ngModel)]="searchTerm" 
+               (input)="onSearchChange()" 
+               placeholder="שם, אימייל או תפקיד">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- סטטוס -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>סטטוס</mat-label>
+        <mat-select [(ngModel)]="filterStatus" (selectionChange)="applySearch()">
+          <mat-option value="">הכל</mat-option>
+          <mat-option value="active">פעיל</mat-option>
+          <mat-option value="inactive">לא פעיל</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- תפקיד -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>תפקיד</mat-label>
+        <mat-select [(ngModel)]="filterRole" (selectionChange)="applySearch()">
+          <mat-option value="">הכל</mat-option>
+          <mat-option *ngFor="let role of roles" [value]="role.roleName">
+            {{role.description}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- מיון -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>מיון לפי</mat-label>
+        <mat-select [(ngModel)]="filterSort" (selectionChange)="applySearch()">
+          <mat-option value="newest">חדשים ביותר</mat-option>
+          <mat-option value="oldest">ישנים ביותר</mat-option>
+          <mat-option value="lastLoginDesc">כניסה אחרונה (חדש לישן)</mat-option>
+          <mat-option value="lastLoginAsc">כניסה אחרונה (ישן לחדש)</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- תאריך מ -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>מתאריך</mat-label>
+        <input matInput 
+               [matDatepicker]="fromPicker" 
+               [(ngModel)]="filterFromDate" 
+               (dateChange)="applySearch()">
+        <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- תאריך עד -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>עד תאריך</mat-label>
+        <input matInput 
+               [matDatepicker]="toPicker" 
+               [(ngModel)]="filterToDate" 
+               (dateChange)="applySearch()">
+        <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- צ'קבוקס לללא כניסה -->
+      <mat-checkbox class="no-login-checkbox" 
+                    [(ngModel)]="filterNoLastLogin" 
+                    (change)="applySearch()">
+        ללא כניסה אחרונה
+      </mat-checkbox>
+    </div>
+
+    <!-- שורה שנייה - פעולות מהירות וסטטיסטיקות -->
+    <div class="quick-actions-row">
+      <div class="quick-filters">
+        <button mat-button 
+                [class.active]="quickFilter === 'week'"
+                (click)="filterLast('week')">
+          שבוע אחרון
+        </button>
+        <button mat-button 
+                [class.active]="quickFilter === 'month'"
+                (click)="filterLast('month')">
+          חודש אחרון
+        </button>
+        <button mat-button (click)="clearQuickFilter()" *ngIf="quickFilter">
+          נקה פילטר מהיר
+        </button>
+        <button mat-button color="warn" (click)="clearAllFilters()">
+          נקה הכל
+        </button>
+      </div>
+
+      <div class="results-info">
+        <span>מציג {{getFilteredCount()}} מתוך {{getTotalCount()}} משתמשים</span>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- הודעות -->
+<div *ngIf="error" class="error-message">
+  <div class="message-content">
+    <mat-icon class="message-icon">error</mat-icon>
+    <span class="message-text">{{error}}</span>
+    <button mat-icon-button class="close-button" (click)="clearError()" aria-label="סגור הודעה">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div *ngIf="success" class="success-message">
+  <div class="message-content">
+    <mat-icon class="message-icon">check_circle</mat-icon>
+    <span class="message-text">{{success}}</span>
+    <button mat-icon-button class="close-button" (click)="clearSuccess()" aria-label="סגור הודעה">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<!-- טבלת משתמשים -->
+<mat-card class="table-card">
+  <mat-card-content>
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+    <div *ngIf="!loading && filteredUsers.length === 0" class="no-data">
+      <mat-icon>person_outline</mat-icon>
+      <p>לא נמצאו משתמשים המקיימים את הקריטריונים</p>
+    </div>
+
+    <div *ngIf="!loading && filteredUsers.length > 0" class="table-container">
+      <table mat-table [dataSource]="filteredUsers" class="users-table">
+        <!-- שם פרטי -->
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef>שם פרטי</th>
+          <td mat-cell *matCellDef="let user">{{user.firstName}}</td>
+        </ng-container>
+
+        <!-- שם משפחה -->
+        <ng-container matColumnDef="lastName">
+          <th mat-header-cell *matHeaderCellDef>שם משפחה</th>
+          <td mat-cell *matCellDef="let user">{{user.lastName}}</td>
+        </ng-container>
+
+        <!-- אימייל -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>אימייל</th>
+          <td mat-cell *matCellDef="let user">{{user.email}}</td>
+        </ng-container>
+
+        <!-- תפקיד -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>תפקיד</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="role-badge" [class]="'role-' + user.role?.roleName">
+              {{user.role?.description || user.role?.roleName}}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- סטטוס -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>סטטוס</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="status-badge" [class]="user.status ? 'status-active' : 'status-inactive'">
+              {{user.status ? 'פעיל' : 'לא פעיל'}}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- תאריך הרשמה -->
+        <ng-container matColumnDef="createAt">
+          <th mat-header-cell *matHeaderCellDef>תאריך הרשמה</th>
+          <td mat-cell *matCellDef="let user">{{formatDate(user.createAt)}}</td>
+        </ng-container>
+
+        <!-- כניסה אחרונה -->
+        <ng-container matColumnDef="lastLogin">
+          <th mat-header-cell *matHeaderCellDef>כניסה אחרונה</th>
+          <td mat-cell *matCellDef="let user">
+            {{user.lastLogin ? formatDate(user.lastLogin) : 'אף פעם'}}
+          </td>
+        </ng-container>
+
+        <!-- פעולות -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>פעולות</th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button color="primary" (click)="openEditUserModal(user)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteUser(user)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- מודל הוספה/עריכה -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          {{isEditMode ? 'עריכת משתמש' : 'הוספת משתמש חדש'}}
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>שם פרטי</mat-label>
+              <input matInput formControlName="firstName" required>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>שם משפחה</mat-label>
+              <input matInput formControlName="lastName" required>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>אימייל</mat-label>
+            <input matInput formControlName="email" type="email" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>סיסמה</mat-label>
+            <input matInput formControlName="password" type="password" [required]="!isEditMode">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>סטטוס</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="active">פעיל</mat-option>
+              <mat-option value="inactive">לא פעיל</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" 
+                (click)="onSubmit()" 
+                [disabled]="userForm.invalid || loading">
+          {{isEditMode ? 'עדכן' : 'הוסף'}}
+        </button>
+        <button mat-button (click)="closeModal()">ביטול</button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>

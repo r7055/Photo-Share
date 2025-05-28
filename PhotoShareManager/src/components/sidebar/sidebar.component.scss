@@ -1,12 +1,35 @@
 .sidebar {
-  width: 250px;
-  background-color: #2c3e50;
-  color: white;
+  width: 280px;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  color: #2d3748;
   overflow-y: auto;
+  position: relative;
+  box-shadow: 
+    25px 0 50px -12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(102, 126, 234, 0.1) 0%, 
+      rgba(118, 75, 162, 0.1) 100%);
+    pointer-events: none;
+  }
 }
 
 .sidebar-nav {
-  padding: 20px 0;
+  padding: 30px 0;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-list {
@@ -16,27 +39,157 @@
 }
 
 .nav-item {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  padding: 0 20px;
   
   a {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
-    color: #ecf0f1;
+    padding: 16px 20px;
+    color: #4a5568;
     text-decoration: none;
-    transition: all 0.3s;
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+    font-size: 15px;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.4), 
+        transparent);
+      transition: left 0.6s ease;
+    }
     
     i {
-      margin-left: 10px;
+      margin-left: 15px;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      width: 24px;
+      text-align: center;
+    }
+    
+    span {
+      transition: all 0.3s ease;
     }
     
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, 
+        rgba(102, 126, 234, 0.15) 0%, 
+        rgba(118, 75, 162, 0.15) 100%);
+      transform: translateX(8px);
+      box-shadow: 
+        0 10px 25px -5px rgba(102, 126, 234, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.2);
+      
+      &::before {
+        left: 100%;
+      }
+      
+      i {
+        transform: scale(1.1) rotate(5deg);
+        color: #667eea;
+      }
+      
+      span {
+        color: #2d3748;
+      }
     }
     
     &.active {
-      background-color: #3498db;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
+      transform: translateX(12px);
+      box-shadow: 
+        0 15px 35px -5px rgba(102, 126, 234, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      
+      i {
+        color: white;
+        transform: scale(1.15);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      }
+      
+      span {
+        color: white;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -10px;
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right: 10px solid rgba(255, 255, 255, 0.1);
+        transform: translateY(-50%);
+      }
     }
+  }
+}
+
+/* Hover glow effect */
+.nav-item:hover a::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 20px rgba(102, 126, 234, 0.2);
+  pointer-events: none;
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #5a67d8, #6b46c1);
+}
+
+/* Animation for nav items */
+.nav-item {
+  animation: slideInLeft 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.nav-item:nth-child(1) { animation-delay: 0.1s; }
+.nav-item:nth-child(2) { animation-delay: 0.2s; }
+.nav-item:nth-child(3) { animation-delay: 0.3s; }
+.nav-item:nth-child(4) { animation-delay: 0.4s; }
+.nav-item:nth-child(5) { animation-delay: 0.5s; }
+.nav-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

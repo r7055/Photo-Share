@@ -1,7 +1,6 @@
 <div class="tags-container">
-  <h2>Tags Management</h2>
+  <h1>ניהול תגיות</h1>
   
-  <!-- Messages -->
   <div *ngIf="error" class="alert alert-error">
     {{ error }}
     <button type="button" class="close-btn" (click)="clearMessages()">×</button>
@@ -12,57 +11,55 @@
     <button type="button" class="close-btn" (click)="clearMessages()">×</button>
   </div>
   
-  <!-- Create Tag Form -->
   <div class="create-tag-section">
-    <h3>Create New Tag</h3>
+    <h3>יצירת תגית חדשה</h3>
     <form [formGroup]="tagForm" (ngSubmit)="createTag()">
       <div class="form-group">
-        <label for="tagName">Tag Name:</label>
+        <label for="tagName">שם תגית:</label>
         <input 
           id="tagName"
           type="text" 
           formControlName="name" 
           class="form-control"
           [class.invalid]="nameControl?.invalid && nameControl?.touched"
-          placeholder="Enter tag name">
+          placeholder="הכנס שם תגית">
         <div *ngIf="nameControl?.invalid && nameControl?.touched" class="error-message">
-          Tag name is required
+          שם תגית נדרש
         </div>
       </div>
       
       <button 
         type="submit" 
-        class="btn btn-primary"
+        class="btn"
         [disabled]="tagForm.invalid || loading">
         <span *ngIf="loading" class="spinner"></span>
-        Create Tag
+        יצירת תגית
       </button>
     </form>
   </div>
   
-  <!-- Tags List -->
   <div class="tags-list-section">
-    <h3>Existing Tags</h3>
+    <h3>תגיות קיימות</h3>
     <div *ngIf="loading && tags.length === 0" class="loading-spinner">
-      Loading tags...
+      טוען תגיות...
     </div>
     
     <div *ngIf="tags.length === 0 && !loading" class="no-tags">
-      No tags found. Create your first tag above.
+      אין תגיות שנמצאו. צור את התגית הראשונה שלך למעלה.
     </div>
     
     <div *ngIf="tags.length > 0" class="tags-grid">
       <div *ngFor="let tag of tags" class="tag-card">
         <div class="tag-info">
           <h4>{{ tag.name }}</h4>
-          <span class="tag-count">{{ tag.count }} photos</span>
+          <span class="tag-count">{{ tag.count }} תמונות</span>
         </div>
         <button 
           type="button" 
           class="btn btn-danger btn-sm"
           (click)="deleteTag(tag.id)"
           [disabled]="loading">
-          Delete
+          מחק
         </button>
       </div>
     </div>

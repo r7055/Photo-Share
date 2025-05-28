@@ -1,4 +1,4 @@
-<div class="main-container">
+<!-- <div class="main-container">
   <app-header></app-header>
   <div class="content-container">
     <app-sidebar></app-sidebar>
@@ -6,4 +6,20 @@
       <router-outlet></router-outlet>
     </div>
   </div>
+</div> -->
+
+
+<div class="app-container">
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer class="sidenav" fixedInViewport mode="side" opened>
+      <app-sidebar></app-sidebar>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <app-header (menuToggle)="drawer.toggle()"></app-header>
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>

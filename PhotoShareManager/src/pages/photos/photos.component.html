@@ -1,4 +1,4 @@
-<div class="photos-page">
+<!-- <div class="photos-page">
   <div class="page-header">
     <div class="header-left">
       <h1>ניהול תמונות</h1>
@@ -53,7 +53,6 @@
     </div>
   </div>
 
-  <!-- Photo Edit Modal -->
   <div class="modal" [class.show]="showPhotoModal">
     <div class="modal-backdrop" (click)="closePhotoModal()"></div>
     <div class="modal-content">
@@ -99,7 +98,6 @@
     </div>
   </div>
 
-  <!-- View Photo Modal -->
   <div class="modal" [class.show]="showViewModal">
     <div class="modal-backdrop" (click)="closeViewModal()"></div>
     <div class="modal-content modal-lg">
@@ -126,11 +124,6 @@
             <span class="detail-value">{{ selectedPhoto?.description || 'אין תיאור' }}</span>
           </div>
 
-          <!-- <div class="detail-item">
-            <span class="detail-label">אלבום:</span>
-            <span class="detail-value">{{ getAlbumName(selectedPhoto!.albumId) }}</span>
-          </div> -->
-
           <div class="detail-item">
             <span class="detail-label">גודל:</span>
             <span class="detail-value">{{ selectedPhoto ? formatFileSize(selectedPhoto.size) : '' }}</span>
@@ -154,4 +147,392 @@
       </div>
     </div>
   </div>
+</div> -->
+
+
+<!-- 
+<div class="photos-container" [@fadeIn]>
+  <mat-card class="page-header-card" [@slideInFromTop]>
+    <mat-card-content>
+      <div class="header-content">
+        <div class="header-left">
+          <h1 class="page-title">
+            <mat-icon>photo</mat-icon>
+            ניהול תמונות
+          </h1>
+          <div *ngIf="currentAlbumId" class="album-filter" [@slideInFromLeft]>
+            <mat-chip-set>
+              <mat-chip color="primary" selected>
+                <mat-icon matChipAvatar>photo_album</mat-icon>
+                מציג תמונות מאלבום: {{ getAlbumName(currentAlbumId!) }}
+                <button matChipRemove [routerLink]="['/photos']">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+        <button mat-fab color="primary" (click)="openUploadModal()" [@fabScale]>
+          <mat-icon>add_a_photo</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="success" class="success-card" [@slideInFromTop]>
+    <mat-card-content>
+      <div class="alert-content">
+        <mat-icon color="primary">check_circle</mat-icon>
+        <span>{{ success }}</span>
+        <button mat-icon-button (click)="success = ''">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="error" class="error-card" [@slideInFromTop]>
+    <mat-card-content>
+      <div class="alert-content">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+        <button mat-icon-button (click)="error = ''">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="photos-grid-container">
+    <div *ngIf="loading" class="loading-container" [@fadeIn]>
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-text">טוען תמונות...</p>
+    </div>
+
+    <div *ngIf="!loading && photos.length > 0" class="photos-grid" [@staggerIn]>
+      <mat-card *ngFor="let photo of photos; trackBy: trackByPhotoId" 
+                [@fadeIn]
+                class="photo-card" 
+                [@cardHover]>
+        <div class="photo-image-container" (click)="openViewModal(photo)">
+          <img [src]="photo.url || '/assets/placeholder-photo.jpg'" 
+               [alt]="photo.name"
+               class="photo-image">
+          <div class="photo-overlay">
+            <mat-icon>zoom_in</mat-icon>
+          </div>
+        </div>
+        
+        <mat-card-content class="photo-details">
+          <h3 class="photo-title">{{ photo.name }}</h3>
+          <div class="photo-meta">
+            <mat-chip-set>
+              <mat-chip>
+                <mat-icon matChipAvatar>storage</mat-icon>
+                {{ formatFileSize(photo.size) }}
+              </mat-chip>
+              <mat-chip>
+                <mat-icon matChipAvatar>schedule</mat-icon>
+                {{ formatDate(photo.createdAt) }}
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions class="photo-actions">
+          <button mat-icon-button 
+                  color="primary" 
+                  (click)="openPhotoModal(photo)"
+                  matTooltip="ערוך תמונה">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  color="warn" 
+                  (click)="deletePhoto(photo)"
+                  matTooltip="מחק תמונה">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div *ngIf="!loading && photos.length === 0" class="empty-state" [@fadeIn]>
+      <mat-icon class="empty-icon">photo</mat-icon>
+      <h3>אין תמונות להצגה</h3>
+      <p>התחל על ידי העלאת תמונות חדשות</p>
+      <button mat-raised-button color="primary" (click)="openUploadModal()">
+        <mat-icon>add_a_photo</mat-icon>
+        העלה תמונות
+      </button>
+    </div>
+  </div>
 </div>
+
+<div class="modal-overlay" [class.show]="showPhotoModal" [@modalBackdrop]>
+  <mat-card class="modal-card" [@modalSlide]>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>edit</mat-icon>
+        ערוך תמונה
+      </mat-card-title>
+      <button mat-icon-button (click)="closePhotoModal()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="photoForm" (ngSubmit)="updatePhoto()" class="photo-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>שם התמונה</mat-label>
+          <input matInput formControlName="name">
+          <mat-error *ngIf="photoForm.get('name')?.invalid && photoForm.get('name')?.touched">
+            שם התמונה נדרש
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>תיאור</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>אלבום</mat-label>
+          <mat-select formControlName="albumId">
+            <mat-option *ngFor="let album of albums" [value]="album.id">
+              {{ album.title }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="photoForm.get('albumId')?.invalid && photoForm.get('albumId')?.touched">
+            אלבום נדרש
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button (click)="closePhotoModal()">ביטול</button>
+      <button mat-raised-button 
+              color="primary" 
+              (click)="updatePhoto()" 
+              [disabled]="photoForm.invalid || loading">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">עדכן</span>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<div class="modal-overlay" [class.show]="showViewModal" [@modalBackdrop]>
+  <mat-card class="modal-card modal-lg" [@modalSlide]>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>photo</mat-icon>
+        {{ selectedPhoto?.name }}
+      </mat-card-title>
+      <button mat-icon-button (click)="closeViewModal()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card-header>
+
+    <mat-card-content class="photo-view-content">
+      <div class="photo-view-image">
+        <img [src]="selectedPhoto?.url || '/assets/placeholder-photo.jpg'" 
+             [alt]="selectedPhoto?.name">
+      </div>
+
+      <div class="photo-view-details">
+        <mat-list>
+          <mat-list-item>
+            <mat-icon matListItemIcon>label</mat-icon>
+            <div matListItemTitle>שם</div>
+            <div matListItemLine>{{ selectedPhoto?.name }}</div>
+          </mat-list-item>
+          
+          <mat-list-item>
+            <mat-icon matListItemIcon>description</mat-icon>
+            <div matListItemTitle>תיאור</div>
+            <div matListItemLine>{{ selectedPhoto?.description || 'אין תיאור' }}</div>
+          </mat-list-item>
+          
+          <mat-list-item>
+            <mat-icon matListItemIcon>storage</mat-icon>
+            <div matListItemTitle>גודל</div>
+            <div matListItemLine>{{ selectedPhoto ? formatFileSize(selectedPhoto.size) : '' }}</div>
+          </mat-list-item>
+          
+          <mat-list-item>
+            <mat-icon matListItemIcon>aspect_ratio</mat-icon>
+            <div matListItemTitle>מידות</div>
+            <div matListItemLine>{{ selectedPhoto?.width }} x {{ selectedPhoto?.height }}</div>
+          </mat-list-item>
+          
+          <mat-list-item>
+            <mat-icon matListItemIcon>schedule</mat-icon>
+            <div matListItemTitle>תאריך העלאה</div>
+            <div matListItemLine>{{ selectedPhoto ? formatDate(selectedPhoto.createdAt) : '' }}</div>
+          </mat-list-item>
+          
+          <mat-list-item>
+            <mat-icon matListItemIcon>update</mat-icon>
+            <div matListItemTitle>עודכן</div>
+            <div matListItemLine>{{ selectedPhoto ? formatDate(selectedPhoto.updatedAt) : '' }}</div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div> -->
+
+
+
+
+
+
+
+
+<div class="photos-page">
+  <div class="page-header">
+    <div class="header-left">
+      <h1>ניהול תמונות</h1>
+      <div *ngIf="currentAlbumId" class="album-filter">
+        <span>מציג תמונות מאלבום: </span>
+        <span class="album-name">{{ getAlbumName(currentAlbumId!) }}</span>
+        <button class="clear-filter-btn" [routerLink]="['/photos']">
+          <i class="material-icons">close</i>
+          הצג הכל
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <mat-card *ngIf="success" class="alert alert-success">{{ success }}</mat-card>
+  <mat-card *ngIf="error" class="alert alert-danger">{{ error }}</mat-card>
+
+  <div class="photos-grid">
+    <div *ngIf="loading" class="loading">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>טוען תמונות...</p>
+    </div>
+
+    <div *ngIf="!loading && photos.length > 0" class="photos-list">
+      <mat-card *ngFor="let photo of photos" class="photo-card">
+        <div class="photo-image" (click)="openViewModal(photo)">
+          <img [src]="photo.url || '/assets/placeholder-photo.jpg'" alt="{{ photo.name }}">
+        </div>
+        <mat-card-content class="photo-details">
+          <h3>{{ photo.name }}</h3>
+          <div class="photo-meta">
+            <span>{{ formatFileSize(photo.size) }}</span>
+            <span>{{ formatDate(photo.createdAt) }}</span>
+          </div>
+        </mat-card-content>
+        <div class="photo-actions">
+          <button mat-mini-fab class="action-btn edit-btn" (click)="openPhotoModal(photo)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-mini-fab class="action-btn delete-btn" (click)="deletePhoto(photo)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </mat-card>
+    </div>
+
+    <div *ngIf="!loading && photos.length === 0" class="empty-state">
+      <mat-icon>photo</mat-icon>
+      <p>אין תמונות להצגה</p>
+      <button mat-raised-button color="primary" class="add-btn" (click)="openUploadModal()">
+        העלה תמונות
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Edit Modal -->
+<ng-template #photoEditDialog>
+  <h2 mat-dialog-title>ערוך תמונה</h2>
+  <mat-dialog-content>
+    <form [formGroup]="photoForm" class="photo-form">
+      <mat-form-field appearance="outline">
+        <mat-label>שם התמונה</mat-label>
+        <input matInput formControlName="name">
+        <mat-error *ngIf="photoForm.get('name')?.hasError('required')">
+          שם התמונה נדרש
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>תיאור</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>אלבום</mat-label>
+        <mat-select formControlName="albumId">
+          <mat-option *ngFor="let album of albums" [value]="album.id">
+            {{ album.title }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="photoForm.get('albumId')?.hasError('required')">
+          אלבום נדרש
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button (click)="closePhotoModal()">ביטול</button>
+    <button mat-raised-button color="primary" 
+            [disabled]="photoForm.invalid || loading" 
+            (click)="updatePhoto()">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      עדכן
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!-- View Photo Modal -->
+<ng-template #photoViewDialog>
+  <h2 mat-dialog-title>{{ selectedPhoto?.name }}</h2>
+  <mat-dialog-content>
+    <div class="photo-view-content">
+      <div class="photo-view-image">
+        <img [src]="selectedPhoto?.url || '/assets/placeholder-photo.jpg'" 
+             alt="{{ selectedPhoto?.name }}">
+      </div>
+
+      <div class="photo-view-details">
+        <div class="detail-item">
+          <span class="detail-label">שם:</span>
+          <span class="detail-value">{{ selectedPhoto?.name }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">תיאור:</span>
+          <span class="detail-value">{{ selectedPhoto?.description || 'אין תיאור' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">גודל:</span>
+          <span class="detail-value">{{ selectedPhoto ? formatFileSize(selectedPhoto.size) : '' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">מידות:</span>
+          <span class="detail-value">{{ selectedPhoto?.width }} x {{ selectedPhoto?.height }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">תאריך העלאה:</span>
+          <span class="detail-value">{{ selectedPhoto ? formatDate(selectedPhoto.createdAt) : '' }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">עודכן:</span>
+          <span class="detail-value">{{ selectedPhoto ? formatDate(selectedPhoto.updatedAt) : '' }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button (click)="closeViewModal()">סגור</button>
+  </mat-dialog-actions>
+</ng-template>

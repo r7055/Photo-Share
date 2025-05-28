@@ -7,10 +7,38 @@ import { TagService, TagDto } from "../../services/tag.service"
 import { UploadService } from "../../services/upload.service"
 import { HttpEventType } from "@angular/common/http"
 import { CommonModule } from "@angular/common"
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+// import { MatErrorModule } from '@angular/material/core';
+// import { MatSpinnerModule } from '@angular/material/progress-spinner';
+// import { MatChipModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: "app-photos",
-  imports: [CommonModule,  RouterModule,ReactiveFormsModule ],
+  imports: [CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    // MatErrorModule,
+    // MatSpinnerModule,
+    MatChipsModule,
+    MatSelectModule,
+    MatListModule,
+  ],
   standalone: true,
   templateUrl: "./photos.component.html",
   styleUrls: ["./photos.component.scss"],
@@ -151,7 +179,9 @@ export class PhotosComponent implements OnInit {
       this.uploadForm.patchValue({ files: event.target.files })
     }
   }
-
+  trackByPhotoId(index: number, photo: any): any {
+    return photo.id;
+  }
 
   updatePhoto(): void {
     if (this.photoForm.invalid || !this.selectedPhoto) {
@@ -182,22 +212,22 @@ export class PhotosComponent implements OnInit {
     })
   }
 
- deletePhoto(photo: PhotoDto): void {
-  if (confirm(`האם אתה בטוח שברצונך למחוק את התמונה ${photo.name}?`)) {
-    this.loading = true
-    this.photoService.deletePhoto(photo.id, photo.albumId).subscribe({
-      next: () => {
-        this.success = "Photo deleted successfully"
-        this.loadPhotos()
-        this.loading = false
-      },
-      error: (error) => {
-        this.error = "Failed to delete photo"
-        this.loading = false
-      },
-    })
+  deletePhoto(photo: PhotoDto): void {
+    if (confirm(`האם אתה בטוח שברצונך למחוק את התמונה ${photo.name}?`)) {
+      this.loading = true
+      this.photoService.deletePhoto(photo.id, photo.albumId).subscribe({
+        next: () => {
+          this.success = "Photo deleted successfully"
+          this.loadPhotos()
+          this.loading = false
+        },
+        error: (error) => {
+          this.error = "Failed to delete photo"
+          this.loading = false
+        },
+      })
+    }
   }
-}
 
   addTagToPhoto(photoId: number, tagId: number): void {
     this.tagService.addTagToPhoto(photoId, tagId).subscribe({
