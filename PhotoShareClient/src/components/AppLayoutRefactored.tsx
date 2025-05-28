@@ -12,8 +12,6 @@ import Sidebar from "./Sidebar"
 import Footer from "./layout/footer"
 import AddAlbum from "./albums/AddAlbum"
 import UploadPhotoComponent from "./photos/UploadPhotoComponent"
-import { Sign } from "crypto"
-import SignIn from "./auth/SignIn"
 
 const AppLayoutRefactored = () => {
   const { theme } = useTheme()
@@ -75,7 +73,6 @@ const AppLayoutRefactored = () => {
           minHeight: "calc(100vh - 120px)", // Adjust for header and footer
         }}
       >
-{/* <SignIn/> */}
         <Outlet />
       </Box>
       <Footer />

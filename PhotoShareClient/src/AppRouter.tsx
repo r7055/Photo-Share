@@ -90,12 +90,14 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import AppLayoutRefactored from './components/AppLayoutRefactored';
 import Settings from './components/Setting';
 import Profile from './components/Profile';
+import Home from './components/Home';
 
 const router = createBrowserRouter([
     {
         path: '/',
         element: <AppLayoutRefactored />, // Use the refactored layout
         children: [
+            { path: '', element: <Home /> },
             { path: 'about', element: <About /> },
             { path: 'auth', element: <Auth /> },
             { path: 'auth/signin', element: <SignIn /> },
