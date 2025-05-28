@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PhotoShare.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class create_db : Migration
+    public partial class createDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,9 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CountViews = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,7 +77,8 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CountViews = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,8 +119,11 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    LastLogin = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    status = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CountUpload = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,7 +139,10 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     AlbumId = table.Column<int>(type: "int", nullable: false),
                     PhotoId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -186,7 +195,13 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     AlbumId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Permission = table.Column<int>(type: "int", nullable: false)
+                    Permission = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -214,7 +229,13 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     PhotoId = table.Column<int>(type: "int", nullable: false),
-                    Permission = table.Column<int>(type: "int", nullable: false)
+                    Permission = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -267,30 +288,44 @@ namespace PhotoShare.Data.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Count = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: true),
-                    PhotoId = table.Column<int>(type: "int", nullable: true),
-                    TagId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tags_Photos_PhotoId",
-                        column: x => x.PhotoId,
-                        principalTable: "Photos",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tags_Tags_TagId",
-                        column: x => x.TagId,
-                        principalTable: "Tags",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Tags_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PhotoTag",
+                columns: table => new
+                {
+                    PhotosId = table.Column<int>(type: "int", nullable: false),
+                    TagsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PhotoTag", x => new { x.PhotosId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_PhotoTag_Photos_PhotosId",
+                        column: x => x.PhotosId,
+                        principalTable: "Photos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PhotoTag_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -335,19 +370,14 @@ namespace PhotoShare.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PhotoTag_TagsId",
+                table: "PhotoTag",
+                column: "TagsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RoleUser_UsersId",
                 table: "RoleUser",
                 column: "UsersId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_PhotoId",
-                table: "Tags",
-                column: "PhotoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_TagId",
-                table: "Tags",
-                column: "TagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_UserId",
@@ -371,10 +401,10 @@ namespace PhotoShare.Data.Migrations
                 name: "PhotoShare");
 
             migrationBuilder.DropTable(
-                name: "RoleUser");
+                name: "PhotoTag");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "RoleUser");
 
             migrationBuilder.DropTable(
                 name: "Albums");
@@ -383,10 +413,13 @@ namespace PhotoShare.Data.Migrations
                 name: "Permission");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "Photos");
 
             migrationBuilder.DropTable(
-                name: "Photos");
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");
