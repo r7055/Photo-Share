@@ -46,7 +46,7 @@ namespace PhotoShare.Api.Controllers
         public async Task<IActionResult> GetAlbumWithImages(int albumId)
         {
             try
-            {
+                {
                 var albums = await _photoService.GetPhotosByAlbumId(albumId);
 
                 if (albums == null || !albums.Any())

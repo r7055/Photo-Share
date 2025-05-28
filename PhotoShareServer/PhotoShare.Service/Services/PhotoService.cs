@@ -34,7 +34,7 @@ namespace PhotoShare.Service.Services
 
             if (album == null || album.AlbumPhotos == null || !album.AlbumPhotos.Any())
             {
-                throw new Exception("Album not found or has no photos.");
+                return new List<PhotoDto>();
             }
             var photos = album.AlbumPhotos.Select(ap => ap.Photo);
             foreach (var photo in photos)

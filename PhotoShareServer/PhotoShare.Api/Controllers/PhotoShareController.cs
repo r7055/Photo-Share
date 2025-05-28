@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace PhotoShare.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/photo-share")]
     [ApiController]
     public class PhotoShareController : ControllerBase
     {

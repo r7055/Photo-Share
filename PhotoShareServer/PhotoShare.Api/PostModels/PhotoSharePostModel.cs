@@ -2,7 +2,7 @@
 {
     public class PhotoSharePostModel
     {
-        public int ImageId { get; set; }
+        public int PhotoId { get; set; }
         public string UserEmailForSharing { get; set; } = null!;
     }
 }
