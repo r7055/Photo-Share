@@ -9,10 +9,10 @@ const downloadUrl = 'http://localhost:5141/api/download/download-url';
 const shareUrl = 'http://localhost:5141/api/photo-share';
 // Async thunk for uploading a photo
 export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',
-    async ({ token, fileName, file }: { token: string; fileName: string; file: File }, thunkAPI) => {
+    async ({ token, fileName, file, fileType }: { token: string; fileName: string; file: File; fileType: string }, thunkAPI) => {
         try {
             const response = await axios.get<{ url: string }>(uploadUrl, {
-                params: { fileName },
+                params: { fileName, fileType }, 
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -32,6 +32,7 @@ export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',
         }
     }
 );
+
 
 // Async thunk for getting download URL by file name
 export const getDownloadUrl = createAsyncThunk('photos/getDownloadUrl',
@@ -167,7 +168,7 @@ export const addPhoto = createAsyncThunk('photos/addPhoto',
 export const sharePhoto = createAsyncThunk('photos/sharePhoto',
     async ({ token, photoId, userEmailForSharing }: { token: string; photoId: number; userEmailForSharing: string }, thunkAPI) => {
         try {
-            const response = await axios.post(`${shareUrl}/share`, {
+            const response = await axios.post(`${shareUrl}`, {
                 photoId,
                 userEmailForSharing
             }, {

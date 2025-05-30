@@ -150,12 +150,11 @@ const UploadDirectoryComponent: React.FC<UploadDirectoryComponentProps> = ({ ope
 
     try {
       for (const file of files) {
-        const fileName = file.name;
 
         if (!token) {
           throw new Error('Token is missing. Please log in again.');
         }
-        const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file })) as { meta: { requestStatus: string }, payload: { fileName: string } };
+        const uploadResponse = await dispatch(uploadPhoto({ token, fileName:file.name, file, fileType: file.type })) as { meta: { requestStatus: string }, payload: { fileName: string } };
 
         if (uploadResponse.meta.requestStatus === 'fulfilled') {
           // const downloadResponse = await dispatch(getDownloadUrl({ token, fileName }));

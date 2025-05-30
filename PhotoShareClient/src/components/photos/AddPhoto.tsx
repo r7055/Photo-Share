@@ -136,7 +136,7 @@ const AddPhotoComponent = () => {
       if (!token) {
         throw new Error('Token is null. Cannot upload photo.');
       }
-      const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file }));
+      const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file ,fileType: file.type}));
 
       if (uploadResponse.meta.requestStatus === 'fulfilled') {
         // 2. Get the download URL

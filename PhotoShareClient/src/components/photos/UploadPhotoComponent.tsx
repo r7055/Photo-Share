@@ -784,22 +784,21 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
 
     return () => clearInterval(interval)
   }
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!file) return;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (!file) return
-
-    setLoading(true)
-    setUploadProgress(0)
-    const fileName = file.name
-    const cleanupProgress = simulateProgress()
+    setLoading(true);
+    setUploadProgress(0);
+    const fileName = file.name;
+    const fileType = file.type; // קבלת סוג הקובץ
+    const cleanupProgress = simulateProgress();
 
     try {
-      if (!token) {
-        throw new Error("Token is required for uploading photos.")
-      }
-
-      const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file }))
+        if (!token) {
+            throw new Error("Token is required for uploading photos.");
+        }
+        const uploadResponse = await dispatch(uploadPhoto({ token, fileName, file, fileType })); // העברת fileType
 
       if (uploadResponse.meta.requestStatus === "fulfilled") {
         setUploadProgress(100)
@@ -849,17 +848,17 @@ const UploadPhotoComponent: React.FC<UploadPhotoComponentProps> = ({ open, onClo
         })
       }
     } catch (error) {
-      console.error("Upload process failed:", error)
-      setSnackbar({
-        open: true,
-        message: "Upload process failed",
-        severity: "error",
-      })
+        console.error("Upload process failed:", error);
+        setSnackbar({
+            open: true,
+            message: "Upload process failed",
+            severity: "error",
+        });
     } finally {
-      cleanupProgress()
-      setLoading(false)
+        cleanupProgress();
+        setLoading(false);
     }
-  }
+};
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false })

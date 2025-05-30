@@ -64,7 +64,7 @@
 //     </div>
 //   );
 // }
-"use client"
+
 import { Typography, Grid, Button, Box, Container, Paper } from "@mui/material"
 import {
   CloudUpload,
