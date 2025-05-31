@@ -6,7 +6,7 @@ import {
   Typography,
   Box,
   Paper,
-  Grid, // Keep Grid import
+  Grid, 
   InputAdornment,
   IconButton,
   Alert,
@@ -30,6 +30,7 @@ import {
   ArrowBack,
   HowToReg,
 } from "@mui/icons-material"
+import { sendWelcomeEmail } from "../../slices/emailSlice"
 
 const Signup = () => {
   const {
@@ -73,35 +74,64 @@ const Signup = () => {
   // }
 
 
+  // const onSubmit = async (data: User) => {
+  //   setLoading(true)
+  //   setMsg("")
+
+  //   try {
+  //     const res = await store.dispatch(registerUser(data))
+  //     console.log(res);
+      
+  //     if ((res.payload as User).id) {
+  //       // if (res.payload && (res.payload as User).id) {
+  //       setMsg("Registration successful! 🎉")
+  //       navigate(`/albums/0`)
+  //     } else {
+  //       setMsg("Registration failed. Please try again.")
+  //     }
+  //   } catch (error: any) {
+  //     if (error.response) {
+  //       if (error.response.status === 409) {
+  //         setMsg("The email is already registered. Please sign in instead.");
+  //       } else {
+  //         setMsg("Server connection error. Please try again later.");
+  //       }
+  //     } else {
+  //       setMsg("Server connection error. Please try again later.");
+  //     }
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
   const onSubmit = async (data: User) => {
-    setLoading(true)
-    setMsg("")
+    setLoading(true);
+    setMsg("");
 
     try {
-      const res = await store.dispatch(registerUser(data))
-      console.log(res);
-      
-      if ((res.payload as User).id) {
-        // if (res.payload && (res.payload as User).id) {
-        setMsg("Registration successful! 🎉")
-        navigate(`/albums/0`)
-      } else {
-        setMsg("Registration failed. Please try again.")
-      }
-    } catch (error: any) {
-      if (error.response) {
-        if (error.response.status === 409) {
-          setMsg("The email is already registered. Please sign in instead.");
+        const res = await store.dispatch(registerUser(data));
+        if ((res.payload as User).id) {
+          const token = sessionStorage.getItem('token');
+            await store.dispatch(sendWelcomeEmail(data, token || ''));
+            setMsg("Registration successful! 🎉");
+            navigate(`/albums/0`);
         } else {
-          setMsg("Server connection error. Please try again later.");
+            setMsg("Registration failed. Please try again.");
         }
-      } else {
-        setMsg("Server connection error. Please try again later.");
-      }
+    } catch (error: any) {
+        if (error.response) {
+            if (error.response.status === 409) {
+                setMsg("The email is already registered. Please sign in instead.");
+            } else {
+                setMsg("Server connection error. Please try again later.");
+            }
+        } else {
+            setMsg("Server connection error. Please try again later.");
+        }
     } finally {
-      setLoading(false)
+        setLoading(false);
     }
-  }
+};
 
   const containerVariants = {
     hidden: { opacity: 0 },

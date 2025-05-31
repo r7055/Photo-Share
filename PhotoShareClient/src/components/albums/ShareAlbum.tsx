@@ -20,9 +20,10 @@ import {
   Email as EmailIcon,
   Person as PersonIcon
 } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '../../store/store';
 import { shareAlbum } from '../../slices/albumSlice';
+import { sendAlbumShareEmail } from '../../slices/emailSlice';
 import type { Album } from '../../types/album';
 
 interface ShareAlbumProps {
@@ -54,6 +55,10 @@ const ShareAlbum: React.FC<ShareAlbumProps> = ({
   const [shareMessage, setShareMessage] = useState('');
 
   const token = sessionStorage.getItem('token');
+  
+  // Get user info for sender name (adjust based on your user slice structure)
+  const currentUser = useSelector((state: any) => state.auth?.user || state.user?.currentUser);
+  const senderName = currentUser?.firstName ? `${currentUser.firstName} ${currentUser.lastName || ''}`.trim() : 'Someone';
 
   // Email validation
   const validateEmail = (email: string): boolean => {
@@ -103,7 +108,23 @@ const ShareAlbum: React.FC<ShareAlbumProps> = ({
         message: shareMessage.trim() || undefined
       };
 
+      // First, share the album via API
       await dispatch(shareAlbum({ token, albumShareData: shareData })).unwrap();
+      
+      // Then send the email notification
+      try {
+        await dispatch(sendAlbumShareEmail(
+          shareEmail.trim(),
+          senderName,
+          album.title,
+          album.photoCount || 0, // Assuming album has photoCount property
+          shareMessage.trim(),
+          token
+        )).unwrap();
+      } catch (emailError) {
+        console.warn('Album shared successfully but email notification failed:', emailError);
+        // Don't fail the entire operation if email fails
+      }
       
       // Add to shared users list (in real app, this would come from API response)
       const newSharedUser: SharedUser = {
@@ -138,6 +159,7 @@ const ShareAlbum: React.FC<ShareAlbumProps> = ({
     setShareMessage('');
     setEmailError('');
     setShareLoading(false);
+    setSharedUsers([]);
     onClose();
   };
 

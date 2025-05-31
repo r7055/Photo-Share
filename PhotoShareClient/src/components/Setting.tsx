@@ -204,7 +204,6 @@ const Settings: React.FC = () => {
               </Paper>
             </motion.div>
           </Grid>
-
           {/* Language Settings */}
           <Grid size={{ xs:12, md:6}}>
             <motion.div variants={itemVariants}>
