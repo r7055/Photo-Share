@@ -6,13 +6,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 
-// export const appConfig: ApplicationConfig = {
-//     providers: [provideRouter(routes), provideClientHydration(), provideAnimationsAsync(), provideHttpClient(withFetch()) ]
-//   // providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay())]
-// };
-// export const appConfig: ApplicationConfig = {
-//   providers: [provideRouter(routes), provideClientHydration(),provideHttpClient(withInterceptors([AuthInterceptor])), provideAnimationsAsync()]
-// };
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
