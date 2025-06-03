@@ -155,6 +155,8 @@ const AddPhotoComponent = () => {
             size: file.size,
             albumId: Number(albumId) || 0,
             name: fileName,
+            countViews: 0, // or another default value as appropriate
+            userId: 0, // replace with the actual user ID if available
           };
           if (token) {
             await dispatch(addPhoto({ token, photo: photoData }));
