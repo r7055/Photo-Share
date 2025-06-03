@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace PhotoShare.Api.Controllers
 {
-    [Route("api/photo-share")]
+    [Route("api/photos")]
     [ApiController]
     public class PhotoShareController : ControllerBase
     {
@@ -21,14 +21,14 @@ namespace PhotoShare.Api.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{userEmail}")]
-        public async Task<ActionResult<IEnumerable<PhotoDto>>> GetSharedImages(int userId)
+        [HttpGet("shared")]
+        public async Task<ActionResult<IEnumerable<PhotoDto>>> GetSharedPhotos(int userId)
         {
             var shares = await _shareService.GetImageSharesByUser(userId);
             return Ok(shares);
         }
 
-        [HttpPost]
+        [HttpPost("share")]
         public async Task<ActionResult> SharePhoto([FromBody] PhotoSharePostModel postModel)
         {
             if (postModel == null) return BadRequest("Invalid request data.");

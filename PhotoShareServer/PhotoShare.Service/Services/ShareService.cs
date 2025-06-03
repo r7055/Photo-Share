@@ -156,14 +156,14 @@ namespace PhotoShare.Services
     public class ShareService : IShareService
     {
         private readonly IRepositoryManager _repositoryManager;
+        private readonly IDownloadService _downloadService;
         private readonly IMapper _mapper;
-        private readonly IEmailService _emailService;
 
-        public ShareService(IRepositoryManager repositoryManager, IMapper mapper, IEmailService emailService)
+        public ShareService(IRepositoryManager repositoryManager, IMapper mapper,IDownloadService downloadService)
         {
             _repositoryManager = repositoryManager;
             _mapper = mapper;
-            _emailService = emailService;
+            _downloadService = downloadService;
         }
 
         public async Task<IEnumerable<AlbumDto>> GetAlbumSharesByUser(int userId)
@@ -188,9 +188,18 @@ namespace PhotoShare.Services
         public async Task<IEnumerable<PhotoDto>> GetImageSharesByUser(int userId)
         {
             var shares = await _repositoryManager.PhotoShare.GetSharesByUserEmailAsync(userId);
-            var photosShare = await Task.WhenAll(shares.Select(s => _repositoryManager.Photo.GetByIdAsync(s.PhotoId)));
+            var photosShare = new List<Photo>();
+
+            foreach (var share in shares)
+            {
+                var photo = await _repositoryManager.Photo.GetByIdAsync(share.PhotoId);
+                photo.Url = await _downloadService.GetDownloadUrlAsync(photo.Name);
+                photosShare.Add(photo);
+            }
+
             return _mapper.Map<IEnumerable<PhotoDto>>(photosShare);
         }
+
 
         public async Task CreateAlbumShare(AlbumShareDto albumShareDto)
         {
@@ -244,25 +253,6 @@ namespace PhotoShare.Services
             await _repositoryManager.AlbumShare.AddAsync(share);
             await _repositoryManager.SaveAsync();
 
-            // שליחת מייל להודעה
-            try
-            {
-                var owner = await _repositoryManager.User.GetByIdAsync(albumShareDto.UserId);
-                // Combine FirstName and LastName for the full owner name
-                var ownerName = owner != null ? $"{owner.FirstName} {owner.LastName}" : "Someone";
-
-                await _emailService.SendAlbumShareEmailAsync(
-                    albumShareDto.UserEmailForSharing,
-                    albumToShare.Title,
-                    ownerName,
-                    albumShareDto.Message
-                );
-            }
-            catch (Exception)
-            {
-                // אם שליחת המייל נכשלה, לא נזרוק שגיאה כי השיתוף עצמו הצליח
-                // ניתן להוסיף לוג כאן
-            }
         }
 
         public async Task CreateImageShare(PhotoShareDto imageShareDto)

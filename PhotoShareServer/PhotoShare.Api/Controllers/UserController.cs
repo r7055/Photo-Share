@@ -10,6 +10,7 @@ using System.Security.Claims;
 
 namespace PhotoShare.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/users")]
     public class UserController : ControllerBase
@@ -60,17 +61,26 @@ namespace PhotoShare.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody] UserDto userDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDto userDto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out int userId) || userId < 1)
             {
                 return BadRequest("User ID is not valid.");
             }
-            userDto.Id = userId;
-            await _userService.UpdateAsync(userDto);
-            return NoContent();
+
+            // ודא שה-ID מה-URL תואם למשתמש המחובר או שזה מנהל
+            if (id != userId)
+            {
+                return Forbid("You can only update your own profile.");
+            }
+
+            userDto.Id = id;
+            var updatedUser = await _userService.UpdateAsync(userDto);
+
+            // החזר את המשתמש המעודכן במקום NoContent
+            return Ok(new { user = updatedUser });
         }
         // מנהל
         [HttpPost]

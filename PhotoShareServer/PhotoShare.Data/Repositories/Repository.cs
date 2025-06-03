@@ -4,6 +4,7 @@ using PhotoShare.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,18 +54,43 @@ namespace PhotoShare.Data.Repositories
             //{
             //    throw new InvalidOperationException("Entity not found.");
             //}
-
             //// נעדכן את המצב של הישות ל-Modified
             //_dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
-
             //// נשמור את השינויים בבסיס הנתונים
             //await _dbContext.SaveChangesAsync();
-
             //// נחזיר את הישות המעודכנת
             //return existingEntity;
             var res = _dbSet.Update(entity);
             return res.Entity;
         }
+
+        //public async Task<T?> UpdateAsync(T entity)
+        //{
+        //    var temp_entity = await GetByIdAsync(entity.Id);
+        //    if (temp_entity == null)
+        //        return entity;
+
+        //    var idProperty = typeof(T).GetProperty("Id");
+        //    if (idProperty != null && idProperty.CanWrite)
+        //    {
+        //        idProperty.SetValue(temp_entity, entity.Id);
+        //    }
+
+
+        //    var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        //                                            .Where(property => property.Name != "Id" && property.Name != "Password");
+
+        //    foreach (var property in properties)
+        //    {
+        //        var value = property.GetValue(entity);
+        //        if (value != null)
+        //        {
+        //            property.SetValue(temp_entity, value);
+        //        }
+        //    }
+
+        //    return temp_entity;
+        //}
 
         public async Task DeleteRangeAsync(IEnumerable<int> ids)
         {

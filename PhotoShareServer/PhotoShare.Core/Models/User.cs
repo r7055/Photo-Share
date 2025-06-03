@@ -28,7 +28,6 @@ public partial class User : IEntity
 
     public int CountUpload { get; set; }
 
-
     public virtual ICollection<Role> Roles { get; set; }=new List<Role>();
 
     public virtual ICollection<AlbumShare> Albums { get; set; } = new List<AlbumShare>();

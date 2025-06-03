@@ -4,6 +4,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using PhotoShare.Core.IServices;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PhotoShare.Api.Controllers
 {
@@ -37,6 +38,7 @@ namespace PhotoShare.Api.Controllers
         //    return Ok(new { url });
         //}
         [HttpGet("presigned-url")]
+        [Authorize]
         public async Task<IActionResult> GetPresignedUrl([FromQuery] string fileName, [FromQuery] string fileType)
         {
             string contentType = fileType.ToLower() switch

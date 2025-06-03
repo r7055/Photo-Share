@@ -12,7 +12,7 @@ namespace PhotoShare.Core.Models
 
         public int AlbumId { get; set; }
 
-        public Album Album { get; set; }
+        public Album Album { get; set; } 
 
         public int PhotoId { get; set; }
 

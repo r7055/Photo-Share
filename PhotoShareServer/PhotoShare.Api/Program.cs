@@ -37,7 +37,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IShareService, ShareService>();
 builder.Services.AddScoped<IDownloadService, DownloadService>();
 builder.Services.AddScoped<IStatisticsService,StatisticsService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
