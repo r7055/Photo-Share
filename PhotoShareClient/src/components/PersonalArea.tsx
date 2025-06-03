@@ -202,8 +202,8 @@ const PersonalArea: React.FC = () => {
                 }}
               >
                 <AlbumOverview onSelectAlbum={setSelectedAlbumId} />
-
-                {selectedAlbumId && (
+                
+                {selectedAlbumId !=null && (
                   <Box sx={{ mt: 4 }}>
                     <PhotoGallery albumId={selectedAlbumId} />
                   </Box>

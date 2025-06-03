@@ -71,6 +71,8 @@ const Profile: React.FC = () => {
 
     try {
       const token = sessionStorage.getItem("token")
+      console.log("user to update:", formData,user)
+
       if (token && user) {
         await dispatch(
           updateUser({
@@ -84,9 +86,7 @@ const Profile: React.FC = () => {
           }),
         )
         setSuccess(true)
-        setEditing(false)
-        alert("Profile updated successfully!")
-      }
+        setEditing(false)      }
     } catch (error) {
       setError("Failed to update profile. Please try again.")
     } finally {

@@ -3,39 +3,45 @@ import axios from 'axios';
 import { UserLogin, User } from '../types/user';
 
 const url = 'http://localhost:5141/api/auth';
+const urlUser = 'http://localhost:5141/api/users';
 
 // Async thunk for logging in a user
 export const loginUser = createAsyncThunk('user/login',
     async (userData: UserLogin, thunkAPI) => {
         try {
             console.log(userData);
-            
+
             const response = await axios.post<{ user: User, token: string }>(`${url}/login`, userData);
             const { user, token } = response.data;
-            sessionStorage.setItem('token', token); 
+            sessionStorage.setItem('token', token);
             return user;
-        } catch (e: any) {  
+        } catch (e: any) {
             return thunkAPI.rejectWithValue(e.message);
         }
     }
 );
 
 
-//do !!!!!!!!!!!
+
 // Async thunk for updating a user
 export const updateUser = createAsyncThunk("user/updateUser",
-  async ({ token, user }: { token: string; user: User }, thunkAPI) => {
+    async ({ token, user }: { token: string; user: User }, thunkAPI) => {
+        console.log("Updating user:", user);
+        console.log("Using token:", token);
         try {
-            const response = await axios.put<{ user: User }>(`${url}/update`, user, {
+            // שלח את ה-ID בנתיב ה-URL במקום רק ב-body
+            const response = await axios.put<{ user: User }>(`${urlUser}/${user.id}`, user, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
             return response.data.user;
         } catch (e: any) {
-            return thunkAPI.rejectWithValue(e.message);
+            console.error("Update user error:", e.response?.data || e.message);
+            return thunkAPI.rejectWithValue(e.response?.data?.message || e.message);
         }
     })
+
 
 // Async thunk for registering a user
 export const registerUser = createAsyncThunk('user/register',
@@ -55,52 +61,52 @@ export const registerUser = createAsyncThunk('user/register',
 
 const userSlice = createSlice({
     name: 'User',
-    initialState: { 
-        user: {} as User, 
-        loading: false, 
+    initialState: {
+        user: {} as User,
+        loading: false,
         msg: ''
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
-        .addCase(loginUser.fulfilled, (state, action) => {
-            state.user = action.payload as User;
-            console.log(state.user);
-            
-            state.loading = false;
-            state.msg = ''; // נקה את המסר במקרה של הצלחה
-        })
-        .addCase(loginUser.rejected, (state, action) => {
-            state.loading = false;
-            state.msg = action.payload as string || "Login failed"; // עדכן את המסר במקרה של שגיאה
-        })
-        .addCase(loginUser.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(registerUser.fulfilled, (state, action) => {
-            state.user = action.payload as User;
-            state.loading = false;
-            state.msg = ''; // נקה את המסר במקרה של הצלחה
-        })
-        .addCase(registerUser.rejected, (state, action) => {
-            state.loading = false;
-            state.msg = action.payload as string || "Registration failed"; // עדכן את המסר במקרה של שגיאה
-        })
-        .addCase(registerUser.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(updateUser.fulfilled, (state, action) => {
-            state.user = action.payload as User;
-            state.loading = false;
-            state.msg = ''; // נקה את המסר במקרה של הצלחה
-        })
-        .addCase(updateUser.rejected, (state, action) => {
-            state.loading = false;
-            state.msg = action.payload as string || "Update failed"; // עדכן את המסר במקרה של שגיאה
-        })
-        .addCase(updateUser.pending, (state) => {
-            state.loading = true;
-        });
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.user = action.payload as User;
+                console.log(state.user);
+
+                state.loading = false;
+                state.msg = ''; // נקה את המסר במקרה של הצלחה
+            })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Login failed"; // עדכן את המסר במקרה של שגיאה
+            })
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(registerUser.fulfilled, (state, action) => {
+                state.user = action.payload as User;
+                state.loading = false;
+                state.msg = ''; // נקה את המסר במקרה של הצלחה
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Registration failed"; // עדכן את המסר במקרה של שגיאה
+            })
+            .addCase(registerUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.user = action.payload as User;
+                state.loading = false;
+                state.msg = ''; // נקה את המסר במקרה של הצלחה
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Update failed"; // עדכן את המסר במקרה של שגיאה
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.loading = true;
+            });
     }
 });
 

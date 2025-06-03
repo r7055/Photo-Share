@@ -819,6 +819,8 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             albumId: Number(albumId) || 0,
             name: fileName,
             tags: photoTags,
+            userId: useSelector((state: {user: { id: number } }) => state.user.id), 
+            countViews: 0,
           }
 
           await dispatch(addPhoto({ token, photo: photoData }))

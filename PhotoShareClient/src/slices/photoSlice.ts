@@ -6,13 +6,14 @@ import { Photo } from '../types/photo';
 const baseUrlPhoto = 'http://localhost:5141/api/photos';
 const uploadUrl = 'http://localhost:5141/api/upload/presigned-url';
 const downloadUrl = 'http://localhost:5141/api/download/download-url';
-const shareUrl = 'http://localhost:5141/api/photo-share';
+const shareUrl = 'http://localhost:5141/api/photos/share';
+
 // Async thunk for uploading a photo
 export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',
     async ({ token, fileName, file, fileType }: { token: string; fileName: string; file: File; fileType: string }, thunkAPI) => {
         try {
             const response = await axios.get<{ url: string }>(uploadUrl, {
-                params: { fileName, fileType }, 
+                params: { fileName, fileType },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -183,11 +184,30 @@ export const sharePhoto = createAsyncThunk('photos/sharePhoto',
     }
 );
 
+// Async thunk for getting shared photos
+export const getSharedPhotos = createAsyncThunk('photos/getSharedPhotos',
+    async ({ token, userId }: { token: string; userId: number }, thunkAPI) => {
+        try {
+            const response = await axios.get<Photo[]>(`${baseUrlPhoto}/shared`, {
+                params: { userId },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data;
+        } catch (e: any) {
+            return thunkAPI.rejectWithValue(e.message);
+        }
+    }
+);
+
+
 const photoSlice = createSlice({
     name: 'photos',
     initialState: {
         photos: [] as Photo[],
         recycledPhotos: [] as Photo[],
+        sharedPhotos: [] as Photo[],
         loading: false,
         msg: '',
     },
@@ -303,6 +323,16 @@ const photoSlice = createSlice({
                 state.msg = action.payload as string || "Failed to share photo";
             })
             .addCase(sharePhoto.pending, (state) => {
+                state.loading = true;
+            }).addCase(getSharedPhotos.fulfilled, (state, action) => {
+                state.sharedPhotos = action.payload; // Assuming you want to store them in the same 'photos' array
+                state.loading = false;
+            })
+            .addCase(getSharedPhotos.rejected, (state, action) => {
+                state.loading = false;
+                state.msg = action.payload as string || "Failed to fetch shared photos";
+            })
+            .addCase(getSharedPhotos.pending, (state) => {
                 state.loading = true;
             });
     },

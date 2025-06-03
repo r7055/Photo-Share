@@ -126,13 +126,14 @@ import SignIn from './components/auth/SignIn';
 import Signup from './components/auth/SignUp';
 import About from './components/About';
 import PersonalArea from './components/PersonalArea';
-import RecycleBin from './components/RecycleBin';
-import SharedAlbums from './components/Share';
+import RecycleBin from './components/bin//RecycleBin';
+import SharedAlbums from './components/SharedAlbums';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AppLayoutRefactored from './components/AppLayoutRefactored';
 import Settings from './components/Setting';
 import Profile from './components/Profile';
 import Home from './components/Home';
+import SharedPhotos from './components/SharedPhotos';
 
 const router = createBrowserRouter([
     // דף הבית עצמאי - בלי layout
@@ -162,6 +163,7 @@ const router = createBrowserRouter([
             { path: 'albums/:albumId', element: <PersonalArea /> },
             { path: 'recycle-bin', element: <RecycleBin /> },
             { path: 'myShares', element: <SharedAlbums /> },
+            { path: 'shared-photos', element: <SharedPhotos /> },
             { path: 'profile', element: <Profile /> },
             { path: 'settings', element: <Settings /> },
         ],

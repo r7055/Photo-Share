@@ -265,21 +265,22 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose, onOpenAddAlbum, onOpenUploadPhoto }) => {
-  const { theme, setTheme } = useAppTheme(); 
+  const { theme, setTheme } = useAppTheme();
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   const location = useLocation();
   const navigate = useNavigate();
 
- useEffect(() => {
+  useEffect(() => {
     console.log(`Theme changed to: ${theme}`);
   }, [theme]);
 
   const menuItems = [
-    { text: "Home", icon: <Home />, path: "/" }, 
-    { text: "My Albums", icon: <PhotoAlbum />, path: "/albums/0" }, 
-    { text: "Shared Albums", icon: <Share />, path: "/myShares" }, 
-    { text: "Recycle Bin", icon: <Delete />, path: "/recycle-bin" }, 
+    { text: "Home", icon: <Home />, path: "/" },
+    { text: "My Albums", icon: <PhotoAlbum />, path: "/albums/0" },
+    { text: "Shared Albums", icon: <Share />, path: "/myShares" },
+    { text: "Shared Photo", icon: <Share />, path: "/shared-photos" },
+    { text: "Recycle Bin", icon: <Delete />, path: "/recycle-bin" }
   ];
 
   const isActive = (path: string) => {
