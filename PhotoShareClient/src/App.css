@@ -42,8 +42,4 @@
 } */
 
 
-body {
-    margin: 0; /* Remove default margin */
-    height: 100vh; /* Set height to full viewport height */
-   background: linear-gradient(90deg, #1a1f36, #252a4b); /* Replace with your desired color */
-}
+

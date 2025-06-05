@@ -278,9 +278,9 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material"
-import { fetchSharedAlbums } from "../slices/albumSlice"
-import type { AppDispatch } from "../store/store"
-import type { Album } from "../types/album"
+import { fetchSharedAlbums } from "../../slices/albumSlice"
+import type { AppDispatch } from "../../store/store"
+import type { Album } from "../../types/album"
 import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
@@ -319,7 +319,8 @@ const SharedAlbums = () => {
   }
 
   const handleViewAlbum = (albumId: number) => {
-    navigate(`/albums/${albumId}`)
+    console.log("Viewing album with ID:", albumId)
+    navigate(`/photos/${albumId}`);
   }
 
   // Animation variants
@@ -352,7 +353,7 @@ const SharedAlbums = () => {
         <Skeleton variant="text" width="40%" height={60} sx={{ mb: 4 }} />
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((item) => (
-            <Grid size={{ xs:12, sm:6, md:4}} key={item}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item}>
               <Skeleton variant="rounded" width="100%" height={300} />
             </Grid>
           ))}
@@ -438,7 +439,7 @@ const SharedAlbums = () => {
         <motion.div variants={containerVariants} initial="hidden" animate="visible">
           <Grid container spacing={3}>
             {sharedAlbums.map((album) => (
-              <Grid size={{ xs:12, sm:6, md:4}} key={album.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={album.id}>
                 <motion.div variants={itemVariants}>
                   <Card
                     sx={{

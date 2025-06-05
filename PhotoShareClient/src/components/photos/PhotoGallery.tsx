@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPhotosByAlbumId } from "../../slices/photoSlice";
 import { Box, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Masonry } from "@mui/lab";
 import PhotoCard from "./PhotoCard";
 import PhotoSearch from "./PhotoSearch";
@@ -10,11 +10,9 @@ import type { AppDispatch } from "../../store/store";
 import type { Photo } from "../../types/photo";
 import PhotoLightbox from "./PhotoLightBox";
 
-interface PhotoGalleryProps {
-  albumId: number;
-}
 
-const PhotoGallery: React.FC<PhotoGalleryProps> = ({ albumId }) => {
+
+const PhotoGallery = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { photos, loading } = useSelector(
     (state: { photo: { photos: Photo[]; loading: boolean } }) => state.photo
@@ -24,10 +22,12 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ albumId }) => {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [openLightbox, setOpenLightbox] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+ const { albumId } = useParams<{ albumId: string }>();
+
 
   useEffect(() => {
-    if (token) {
-      dispatch(getPhotosByAlbumId({ token, albumId }));
+    if (token && albumId !== undefined) {
+      dispatch(getPhotosByAlbumId({ token, albumId: Number(albumId) }));
     } else {
       navigate("/auth");
     }
@@ -62,7 +62,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ albumId }) => {
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
-        Album Photos
+        Photos
       </Typography>
 
       <PhotoSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

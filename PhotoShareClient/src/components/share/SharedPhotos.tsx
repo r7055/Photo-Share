@@ -1634,9 +1634,9 @@ import {
   Download as DownloadIcon,
   PhotoLibrary as PhotoLibraryIcon
 } from '@mui/icons-material';
-import { clearMessage, getSharedPhotos } from '../slices/photoSlice';
-import { AppDispatch } from '../store/store';
-import { Photo } from '../types/photo';
+import { clearMessage, getSharedPhotos } from '../../slices/photoSlice';
+import { AppDispatch } from '../../store/store';
+import { Photo } from '../../types/photo';
 
 // SharedPhotoCard Component
 interface SharedPhotoCardProps {

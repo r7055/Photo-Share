@@ -54,6 +54,7 @@ export const getDownloadUrl = createAsyncThunk('photos/getDownloadUrl',
 // Async thunk for getting photos by album ID
 export const getPhotosByAlbumId = createAsyncThunk('photos/getPhotosByAlbumId',
     async ({ token, albumId }: { token: string; albumId: number }, thunkAPI) => {
+        console.log("getPhotosByAlbumId", token, albumId); // Debugging line
         try {
             const response = await axios.get<Photo[]>(`${baseUrlPhoto}/${albumId}`, {
                 headers: {

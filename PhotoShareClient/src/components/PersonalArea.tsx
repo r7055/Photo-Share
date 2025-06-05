@@ -1,78 +1,205 @@
-// import { useEffect, useState } from 'react';
-// import { Box, Button, Typography } from '@mui/material';
-// import AddAlbum from './albums/AddAlbum';
-// import AlbumOverview from './albums/AlbumOverview';
-// import Sidebar from './Sidebar';
-// import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-// import UploadPhotoComponent from './photos/UploadPhotoComponent';
-// import UploadDirectoryComponent from './photos/UploadDirectoryComponent';
-// import { useNavigate, useParams } from 'react-router-dom';
-// import { Grid } from '@mui/material';
-// import MenuIcon from '@mui/icons-material/Menu';
-// import CloseIcon from '@mui/icons-material/Close';
-// import PhotoGallery from './photos/PhotoGallery'; 
+// import type React from "react"
+
+// import { useEffect, useState } from "react"
+// import { Box, Button, Typography, Container, useMediaQuery, useTheme, Paper } from "@mui/material"
+// import AlbumOverview from "./albums/AlbumOverview"
+// import MenuIcon from "@mui/icons-material/Menu"
+// import CloseIcon from "@mui/icons-material/Close"
+// import PhotoGallery from "./photos/PhotoGallery"
+// import { motion } from "framer-motion"
+// import { useParams } from "react-router-dom"
 
 // const PersonalArea: React.FC = () => {
-//     const [openAddAlbum, setOpenAddAlbum] = useState(false);
-//     const [openUploadPhoto, setOpenUploadPhoto] = useState(false);
-//     const [openUploadDirectory, setOpenUploadDirectory] = useState(false);
-//     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-//     const [selectedAlbumId, setSelectedAlbumId] = useState<number | null>(null); // State to hold selected album ID
-//     const { albumId } = useParams<{ albumId: string }>();
+//   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+//   const [selectedAlbumId, setSelectedAlbumId] = useState<number | null>(null)
+//   const { albumId } = useParams<{ albumId: string }>()
+//   const theme = useTheme()
+//   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
-//     const navigate = useNavigate();
+//   const toggleSidebar = () => {
+//     setIsSidebarOpen(!isSidebarOpen)
+//   }
 
-//     const toggleSidebar = () => {
-//         setIsSidebarOpen(!isSidebarOpen);
-//     };
+//   useEffect(() => {
+//     if (albumId) {
+//       setSelectedAlbumId(Number(albumId))
+//     }
 
-//     useEffect(() => {
-//         if (albumId) {
-//             setSelectedAlbumId(Number(albumId)); // Set the selected album ID from the URL
-//         }
-//     }, [albumId]);
+//     // Auto-close sidebar on mobile
+//     if (isMobile) {
+//       setIsSidebarOpen(false)
+//     } else {
+//       setIsSidebarOpen(true)
+//     }
+//   }, [albumId, isMobile])
 
-//     const handleRecycleBinClick = () => {
-//         navigate('/recycle-bin');
-//     };
+//   const containerVariants = {
+//     hidden: { opacity: 0 },
+//     visible: {
+//       opacity: 1,
+//       transition: {
+//         duration: 0.5,
+//         when: "beforeChildren",
+//         staggerChildren: 0.1,
+//       },
+//     },
+//   }
 
-//     return (
-//         <Box>
-//             <Typography variant="h4" sx={{ textAlign: 'center', mb: 3, fontWeight: 'bold', color: '#3f51b5' }}>
-//                 <EmojiEmotionsIcon sx={{ mr: 1, fontSize: 40, color: '#ff9800' }} /> ברוכים הבאים לאזור האישי
-//             </Typography>
-//             <Button onClick={toggleSidebar}>
-//                 {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
-//             </Button>
+//   const itemVariants = {
+//     hidden: { y: 20, opacity: 0 },
+//     visible: {
+//       y: 0,
+//       opacity: 1,
+//       transition: { duration: 0.5 },
+//     },
+//   }
 
-//             <Grid container spacing={isSidebarOpen ? 2 : 1}>
-//                 {isSidebarOpen && <Grid size={{xs:12,md:3}}>
-//                     <Sidebar
-//                         onOpenAddAlbum={() => setOpenAddAlbum(true)}
-//                         onOpenUploadPhoto={() => setOpenUploadPhoto(true)}
-//                         onOpenUploadDirectory={() => setOpenUploadDirectory(true)}
-//                         onRecycleBinClick={handleRecycleBinClick}
-//                     />
-//                 </Grid>}
-//                 <Grid size={{xs:12,md:9}}>
-//                     <AlbumOverview onSelectAlbum={setSelectedAlbumId} /> {/* Pass the function to set selected album ID */}
-//                     {selectedAlbumId && <PhotoGallery albumId={selectedAlbumId} />} {/* Render PhotoGallery if an album is selected */}
-//                 </Grid>
-//             </Grid>
-//             <AddAlbum open={openAddAlbum} onClose={() => setOpenAddAlbum(false)} />
-//             <UploadPhotoComponent open={openUploadPhoto} onClose={() => setOpenUploadPhoto(false)} />
-//             <UploadDirectoryComponent open={openUploadDirectory} onClose={() => setOpenUploadDirectory(false)} />
+//   // הסרת גלילה רוחבית גלובלית
+//   useEffect(() => {
+//     // הסרת גלילה רוחבית מכל הדף
+//     document.body.style.overflowX = 'hidden'
+//     document.documentElement.style.overflowX = 'hidden'
+//     document.body.style.maxWidth = '100vw'
+//     document.documentElement.style.maxWidth = '100vw'
+
+//     // ניקוי בעת unmount
+//     return () => {
+//       document.body.style.overflowX = ''
+//       document.documentElement.style.overflowX = ''
+//       document.body.style.maxWidth = ''
+//       document.documentElement.style.maxWidth = ''
+//     }
+//   }, [])
+
+//   return (
+//     <Box
+//       sx={{
+//         position: "fixed",
+//         top: 64, // גובה ההדר
+//         bottom: 64, // גובה הפוטר
+//         left: 0,
+//         right: 0,
+//         paddingLeft: isMobile ? 0 : (isSidebarOpen ? "250px" : 0),
+//         transition: "padding-left 0.3s ease",
+//         overflow: "hidden",
+//         width: "100%",
+//         maxWidth: "100%",
+//         boxSizing: "border-box",
+//       }}
+//     >
+//       {/* Main Content */}
+//       <Box
+//         sx={{
+//           width: "100%",
+//           height: "100%",
+//           overflowY: "auto",
+//           overflowX: "hidden",
+//           boxSizing: "border-box",
+//         }}
+//       >
+//         <Box 
+//           sx={{ 
+//             p: { xs: 2, sm: 3, md: 4 },
+//             width: "100%",
+//             maxWidth: "100%",
+//             boxSizing: "border-box",
+//           }}
+//         >
+//           <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+//             <Box sx={{ 
+//               display: "flex", 
+//               justifyContent: "space-between", 
+//               alignItems: "center", 
+//               mb: 3,
+//               width: "100%",
+//               maxWidth: "100%",
+//               boxSizing: "border-box",
+//             }}>
+//               <motion.div variants={itemVariants}>
+//                 <Typography
+//                   variant="h4"
+//                   component="h1"
+//                   sx={{
+//                     fontWeight: 700,
+//                     background: "linear-gradient(90deg, #3f51b5, #2196f3)",
+//                     backgroundClip: "text",
+//                     WebkitBackgroundClip: "text",
+//                     WebkitTextFillColor: "transparent",
+//                     textAlign: { xs: "center", md: "left" },
+//                     fontSize: { xs: "1.75rem", sm: "2rem", md: "2.125rem" },
+//                   }}
+//                 >
+//                   My Photo Gallery
+//                 </Typography>
+//               </motion.div>
+
+//               <motion.div variants={itemVariants}>
+//                 <Button
+//                   onClick={toggleSidebar}
+//                   variant="outlined"
+//                   sx={{
+//                     minWidth: "auto",
+//                     p: 1,
+//                     borderRadius: "12px",
+//                     display: { md: "none" },
+//                     flexShrink: 0,
+//                   }}
+//                 >
+//                   {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
+//                 </Button>
+//               </motion.div>
+//             </Box>
+
+//             <motion.div variants={itemVariants}>
+//               <Paper
+//                 elevation={0}
+//                 sx={{
+//                   p: { xs: 2, sm: 3 },
+//                   borderRadius: "16px",
+//                   background: "linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(240,242,245,0.9) 100%)",
+//                   backdropFilter: "blur(5px)",
+//                   boxShadow: "0 4px 30px rgba(0, 0, 0, 0.05)",
+//                   height: "calc(100vh - 240px)", // מותאם לגובה הנכון
+//                   width: "100%",
+//                   maxWidth: "100%",
+//                   boxSizing: "border-box",
+//                   overflow: "hidden",
+//                   display: "flex",
+//                   flexDirection: "column",
+//                 }}
+//               >
+//                 <Box
+//                   sx={{
+//                     flexGrow: 1,
+//                     overflowY: "auto",
+//                     overflowX: "hidden",
+//                     width: "100%",
+//                     maxWidth: "100%",
+//                     boxSizing: "border-box",
+//                   }}
+//                 >
+//                   <AlbumOverview onSelectAlbum={setSelectedAlbumId} />
+
+//                   {selectedAlbumId != null && (
+//                     <Box sx={{ mt: 4, width: "100%", maxWidth: "100%" }}>
+//                       <PhotoGallery albumId={selectedAlbumId} />
+//                     </Box>
+//                   )}
+//                 </Box>
+//               </Paper>
+//             </motion.div>
+//           </motion.div>
 //         </Box>
-//     );
+//       </Box>
+//     </Box>
+//   )
 // }
 
-// export default PersonalArea;
-
+// export default PersonalArea
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
-import { Box, Button, Typography, Container, Grid, useMediaQuery, useTheme, Paper } from "@mui/material"
+import { Box, Button, Typography, useMediaQuery, useTheme, Paper } from "@mui/material"
 import AlbumOverview from "./albums/AlbumOverview"
 import MenuIcon from "@mui/icons-material/Menu"
 import CloseIcon from "@mui/icons-material/Close"
@@ -81,16 +208,12 @@ import { motion } from "framer-motion"
 import { useParams } from "react-router-dom"
 
 const PersonalArea: React.FC = () => {
-  // const [openAddAlbum, setOpenAddAlbum] = useState(false)
-  // const [openUploadPhoto, setOpenUploadPhoto] = useState(false)
-  // const [openUploadDirectory, setOpenUploadDirectory] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [selectedAlbumId, setSelectedAlbumId] = useState<number | null>(null)
   const { albumId } = useParams<{ albumId: string }>()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  // const navigate = useNavigate()
- 
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
@@ -98,6 +221,7 @@ const PersonalArea: React.FC = () => {
   useEffect(() => {
     if (albumId) {
       setSelectedAlbumId(Number(albumId))
+      // navigate('/photos/' + albumId)
     }
 
     // Auto-close sidebar on mobile
@@ -107,10 +231,6 @@ const PersonalArea: React.FC = () => {
       setIsSidebarOpen(true)
     }
   }, [albumId, isMobile])
-
-  // const handleRecycleBinClick = () => {
-  //   navigate("/recycle-bin")
-  // }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -134,92 +254,115 @@ const PersonalArea: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-          <motion.div variants={itemVariants}>
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{
-                fontWeight: 700,
-                background: "linear-gradient(90deg, #3f51b5, #2196f3)",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                textAlign: { xs: "center", md: "left" },
-              }}
-            >
-              My Photo Gallery
-            </Typography>
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <Button
-              onClick={toggleSidebar}
-              variant="outlined"
-              sx={{
-                minWidth: "auto",
-                p: 1,
-                borderRadius: "12px",
-                display: { md: "none" },
-              }}
-            >
-              {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
-            </Button>
-          </motion.div>
-        </Box>
-
-        {/* <Grid container spacing={2}> */}
-          {/* {(isSidebarOpen || !isMobile) && (
-            <Fade in={isSidebarOpen} timeout={300}>
-              <Grid size={{ xs:12, md:3, lg:2.5}}>
-                <motion.div variants={itemVariants}>
-                  <Sidebar
-                    onOpenAddAlbum={() => setOpenAddAlbum(true)}
-                    onOpenUploadPhoto={() => setOpenUploadPhoto(true)}
-                    // onOpenUploadDirectory={() => setOpenUploadDirectory(true)}
-                    // onRecycleBinClick={handleRecycleBinClick}
-                  />
-                  
-                </motion.div>
-              </Grid>
-            </Fade>
-          )} */}
-
-          <Grid size={{ xs:12, md:isSidebarOpen ? 9 : 12,lg:isSidebarOpen ? 9.5 : 12}}>
+    <Box 
+    >
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden"
+        }}
+      >
+        {/* Header */}
+        <Box sx={{
+          p: { xs: 2, sm: 3, md: 4 },
+          pb: 0,
+          width: "100%",
+          flexShrink: 0,
+        }}>
+          <Box sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+          }}>
             <motion.div variants={itemVariants}>
-              <Paper
-                elevation={0}
+              <Typography
+                variant="h4"
+                component="h1"
                 sx={{
-                  p: 3,
-                  borderRadius: "16px",
-                  background: "linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(240,242,245,0.9) 100%)",
-                  backdropFilter: "blur(5px)",
-                  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.05)",
-                  height: "100%",
-                  minHeight: "80vh",
+                  fontWeight: 700,
+                  background: "linear-gradient(90deg, #3f51b5, #2196f3)",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  textAlign: { xs: "center", md: "left" },
+                  fontSize: { xs: "1.75rem", sm: "2rem", md: "2.125rem" },
                 }}
               >
-                <AlbumOverview onSelectAlbum={setSelectedAlbumId} />
-                
-                {selectedAlbumId !=null && (
-                  <Box sx={{ mt: 4 }}>
-                    <PhotoGallery albumId={selectedAlbumId} />
+                My Photo Gallery
+              </Typography>
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <Button
+                onClick={toggleSidebar}
+                variant="outlined"
+                sx={{
+                  minWidth: "auto",
+                  p: 1,
+                  borderRadius: "12px",
+                  display: { md: "none" },
+                  flexShrink: 0,
+                }}
+              >
+                {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
+              </Button>
+            </motion.div>
+          </Box>
+        </Box>
+
+        {/* Content Area */}
+          <motion.div variants={itemVariants} style={{ height: "100%" }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2, sm: 3 },
+                borderRadius: "16px",
+                background: "linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(240,242,245,0.9) 100%)",
+                backdropFilter: "blur(5px)",
+                boxShadow: "0 4px 30px rgba(0, 0, 0, 0.05)",
+                height: "100%",
+                width: "100%",
+                boxSizing: "border-box",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Box
+                sx={{
+                  height: "100%",
+                  width: "100%",
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Box sx={{ flexShrink: 0 }}>
+                  <AlbumOverview onSelectAlbum={setSelectedAlbumId} />
+                </Box>
+
+                {selectedAlbumId != null && (
+                  <Box sx={{
+                    mt: 4,
+                    flex: 1,
+                    overflow: "hidden",
+                    width: "100%",
+                  }}>
+                    <PhotoGallery />
                   </Box>
                 )}
-              </Paper>
-            </motion.div>
-          </Grid>
-        {/* </Grid> */}
+              </Box>
+            </Paper>
+          </motion.div>
       </motion.div>
-
-      {/* <AddAlbum open={openAddAlbum} onClose={() => setOpenAddAlbum(false)} />
-      <UploadPhotoComponent open={openUploadPhoto} onClose={() => setOpenUploadPhoto(false)} />
-      <UploadDirectoryComponent open={openUploadDirectory} onClose={() => setOpenUploadDirectory(false)} /> */}
-         {/* <AddAlbum open={addAlbumOpen} onClose={handleCloseAddAlbum} /> */}
-      {/* <UploadPhotoComponent open={uploadPhotoOpen} onClose={handleCloseUploadPhoto} /> */}
-    </Container>
+    </Box>
   )
 }
 
