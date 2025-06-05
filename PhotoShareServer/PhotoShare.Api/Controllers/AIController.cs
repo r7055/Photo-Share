@@ -2,168 +2,224 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace PhotoShare.Api.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using System.Text.Json;
-    using System.Text;
-    using System.Web;
 
-    namespace YourApp.Controllers
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AiController : ControllerBase
     {
-        [ApiController]
-        [Route("api/[controller]")]
-        public class ImageController : ControllerBase
+        private readonly HttpClient _httpClient;
+        private readonly string _openAiApiKey;
+        private readonly ILogger<AiController> _logger;
+
+        public AiController(HttpClient httpClient, IConfiguration configuration, ILogger<AiController> logger)
         {
-            private readonly HttpClient _httpClient;
-            private readonly string _openAiApiKey;
-            private readonly string _googleTranslateApiKey;
+            _httpClient = httpClient;
+            _openAiApiKey = configuration["OpenAI:ApiKey"] ?? throw new ArgumentNullException("OpenAI API Key (API_KEY) not configured in environment variables.");
+            _logger = logger;
+        }
 
-            public ImageController(HttpClient httpClient, IConfiguration configuration)
+        [HttpPost("generate")]
+        public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request)
+        {
+            try
             {
-                _httpClient = httpClient;
-                _openAiApiKey = configuration["OpenAI:ApiKey"] ?? throw new ArgumentNullException("OpenAI API Key not configured");
-                _googleTranslateApiKey = configuration["GoogleTranslate:ApiKey"] ?? throw new ArgumentNullException("Google Translate API Key not configured");
+                if (string.IsNullOrEmpty(request.Prompt))
+                {
+                    _logger.LogWarning("GenerateImage: Prompt is required.");
+                    return BadRequest(new { error = "Prompt is required" });
+                }
+
+                _logger.LogInformation($"Attempting to translate prompt: '{request.Prompt}'");
+                string promptEn = await TranslateToEnglish(request.Prompt);
+                _logger.LogInformation($"Translated prompt to English: '{promptEn}'");
+
+                // Prepare OpenAI API request for DALL-E
+                var dalleRequest = new
+                {
+                    prompt = promptEn,
+                    n = 1,
+                    size = "1024x1024",
+                    response_format = "b64_json"
+                };
+
+                var json = System.Text.Json.JsonSerializer.Serialize(dalleRequest);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAiApiKey}");
+
+                _logger.LogInformation("Sending DALL-E API request...");
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
+                _logger.LogInformation($"Received DALL-E API response with status code: {response.StatusCode}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError($"DALL-E API returned error status: {response.StatusCode}. Content: {errorResponseContent}");
+                    return StatusCode((int)response.StatusCode, new { error = "DALL-E API error", details = errorResponseContent });
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation(responseContent);
+                return Ok(responseContent); // Return the raw response content
+                //try
+                //{
+                //    var imageResponse = JsonConvert.DeserializeObject<ImageResponse>(responseContent);
+
+                //    if (imageResponse == null || imageResponse.Data == null || imageResponse.Data.Count == 0)
+                //    {
+                //        _logger.LogError("Failed to deserialize image response or data is empty.");
+                //        return BadRequest(new { error = "Failed to retrieve image data." });
+                //    }
+
+                //    var base64Image = imageResponse.Data[0].B64Json;
+                //    // החזרת התמונה בפורמט JSON
+                //    return Ok(new { image = base64Image });
+                //}
+                //catch (System.Text.Json.JsonException jsonEx)
+                //{
+                //    _logger.LogError(jsonEx, "JSON deserialization error.");
+                //    return BadRequest(new { error = "Invalid JSON format." });
+                //}
+
+                // אם אתה רוצה להחזיר את התמונה כקובץ, תוכל להמיר את ה-Base64 ל-binary:
+                // var imageBytes = Convert.FromBase64String(base64Image);
+                // return File(imageBytes, "image/png", "generated_image.png");
             }
-
-            [HttpPost("generate")]
-            public async Task<IActionResult> GenerateImage([FromBody] ImageRequest request)
+            catch (HttpRequestException ex)
             {
-                try
-                {
-                    if (string.IsNullOrEmpty(request.Prompt))
-                    {
-                        return BadRequest(new { error = "Prompt is required" });
-                    }
-
-                    // Translate prompt to English (you'll need to implement translation service)
-                    string promptEn = await TranslateToEnglish(request.Prompt);
-
-                    // Prepare OpenAI API request
-                    var dalleRequest = new
-                    {
-                        prompt = promptEn,
-                        n = 1,
-                        size = "512x512"
-                    };
-
-                    var json = JsonSerializer.Serialize(dalleRequest);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    _httpClient.DefaultRequestHeaders.Clear();
-                    _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAiApiKey}");
-
-                    // Call OpenAI API
-                    var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
-                    response.EnsureSuccessStatusCode();
-
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var dalleResponse = JsonSerializer.Deserialize<DalleResponse>(responseContent);
-
-                    if (dalleResponse?.Data?.FirstOrDefault()?.Url == null)
-                    {
-                        return StatusCode(500, new { error = "Failed to generate image" });
-                    }
-
-                    string imageUrl = dalleResponse.Data.First().Url;
-                    Console.WriteLine($"Generated image URL: {imageUrl}");
-
-                    // Download the image
-                    var imageResponse = await _httpClient.GetAsync(imageUrl);
-                    imageResponse.EnsureSuccessStatusCode();
-
-                    var imageBytes = await imageResponse.Content.ReadAsByteArrayAsync();
-
-                    // Optional: Save temporary file
-                    string tempPath = Path.Combine(Path.GetTempPath(), $"temp_image_{Guid.NewGuid()}.png");
-                    await System.IO.File.WriteAllBytesAsync(tempPath, imageBytes);
-
-                    // Return image as response
-                    return File(imageBytes, "image/png", "generated_image.png");
-                }
-                catch (HttpRequestException ex)
-                {
-                    return StatusCode(500, new { error = $"API request failed: {ex.Message}" });
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
-                }
+                _logger.LogError(ex, $"API request failed: {ex.Message}");
+                return StatusCode(500, new { error = $"API request failed: {ex.Message}" });
             }
-
-            private async Task<string> TranslateToEnglish(string text)
+            catch (Exception ex)
             {
-                try
+                _logger.LogError(ex, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
+
+        private async Task<string> TranslateToEnglish(string text)
+        {
+            try
+            {
+                string url = "https://api.openai.com/v1/chat/completions";
+
+                var translateRequest = new
                 {
-                    // Auto-detect language and translate to English
-                    string url = $"https://translation.googleapis.com/language/translate/v2?key={_googleTranslateApiKey}";
-
-                    var translateRequest = new
+                    model = "gpt-3.5-turbo",
+                    messages = new[]
                     {
-                        q = text,
-                        target = "en",
-                        format = "text"
-                    };
+                        new { role = "system", content = "You are a translator. Translate the given text to English and return ONLY the translated text, nothing else." },
+                        new { role = "user", content = text }
+                    },
+                    max_tokens = 100,
+                    temperature = 0
+                };
 
-                    var json = JsonSerializer.Serialize(translateRequest);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = System.Text.Json.JsonSerializer.Serialize(translateRequest);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await _httpClient.PostAsync(url, content);
-                    response.EnsureSuccessStatusCode();
+                _httpClient.DefaultRequestHeaders.Clear();
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAiApiKey}");
 
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var translateResponse = JsonSerializer.Deserialize<GoogleTranslateResponse>(responseContent);
+                _logger.LogInformation($"Sending OpenAI Translation API request for text: '{text}'");
+                var response = await _httpClient.PostAsync(url, content);
+                _logger.LogInformation($"Received OpenAI Translation API response status: {response.StatusCode}");
 
-                    if (translateResponse?.Data?.Translations?.FirstOrDefault()?.TranslatedText != null)
-                    {
-                        return HttpUtility.HtmlDecode(translateResponse.Data.Translations.First().TranslatedText);
-                    }
-
-                    // If translation fails, return original text
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorResponseContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError($"OpenAI Translation API returned error status: {response.StatusCode}. Content: {errorResponseContent}");
                     return text;
                 }
-                catch (Exception ex)
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation($"OpenAI Translation API successful response content: {responseContent}");
+
+                var options = new JsonSerializerOptions
                 {
-                    Console.WriteLine($"Translation failed: {ex.Message}");
-                    // If translation fails, return original text
-                    return text;
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                var openAiResponse = System.Text.Json.JsonSerializer.Deserialize<OpenAIChatCompletionResponse>(responseContent, options);
+                string? translatedText = openAiResponse?.Choices?.FirstOrDefault()?.Message?.Content?.Trim();
+
+                if (!string.IsNullOrEmpty(translatedText))
+                {
+                    // הסרת ציטוטים אם קיימים
+                    if (translatedText.StartsWith("\"") && translatedText.EndsWith("\""))
+                    {
+                        translatedText = translatedText.Substring(1, translatedText.Length - 2);
+                    }
+
+                    _logger.LogInformation($"Successfully extracted translated text: '{translatedText}'");
+                    return translatedText;
                 }
+
+                _logger.LogWarning("OpenAI Translation API response did not contain extractable translated text.");
+                return text;
             }
-        }
-
-        // Request/Response models
-        public class ImageRequest
-        {
-            public string Prompt { get; set; } = string.Empty;
-        }
-
-        public class DalleResponse
-        {
-            public List<DalleImageData>? Data { get; set; }
-        }
-
-        public class DalleImageData
-        {
-            public string? Url { get; set; }
-        }
-
-        // Google Translate response models
-        public class GoogleTranslateResponse
-        {
-            public GoogleTranslateData? Data { get; set; }
-        }
-
-        public class GoogleTranslateData
-        {
-            public List<GoogleTranslation>? Translations { get; set; }
-        }
-
-        public class GoogleTranslation
-        {
-            public string? TranslatedText { get; set; }
-            public string? DetectedSourceLanguage { get; set; }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Translation failed with OpenAI: {ex.Message}");
+                return text;
+            }
         }
     }
 
+    // Request/Response models
+    public class ImageRequest
+    {
+        public string Prompt { get; set; } = string.Empty;
+    }
+
+    public class DalleResponse
+    {
+        public List<DalleImageData>? Data { get; set; }
+    }
+
+    public class DalleImageData
+    {
+        public string? Url { get; set; }
+    }
+
+    public class OpenAIChatCompletionResponse
+    {
+        public List<OpenAIChoice>? Choices { get; set; }
+    }
+
+    public class OpenAIChoice
+    {
+        public OpenAIMessage? Message { get; set; }
+        public int Index { get; set; }
+        public string? FinishReason { get; set; }
+    }
+
+    public class OpenAIMessage
+    {
+        public string? Role { get; set; }
+        public string? Content { get; set; }
+    }
+    public class ImageResponse
+    {
+        public int Created { get; set; }
+        public List<ImageData> Data { get; set; }
+    }
+
+    public class ImageData
+    {
+        public string B64Json { get; set; }
+    }
+
+
 }
+
+

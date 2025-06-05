@@ -38,11 +38,13 @@ builder.Services.AddScoped<IShareService, ShareService>();
 builder.Services.AddScoped<IDownloadService, DownloadService>();
 builder.Services.AddScoped<IStatisticsService,StatisticsService>();
 
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddAutoMapper(typeof(MappingPostProfile), typeof(MappingProfile));
+
 
 builder.Services.AddControllers();
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
