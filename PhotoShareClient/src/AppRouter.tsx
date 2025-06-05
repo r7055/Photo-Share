@@ -162,7 +162,7 @@ const router = createBrowserRouter([
         children: [
             { path: 'home', element: <Home /> },
             { path: 'albums/:albumId', element: <PersonalArea /> },
-            { path: 'photos/:alubmId', element: <PhotoGallery /> },
+            { path: 'photos/:albumId', element: <PhotoGallery /> },
             { path: 'recycle-bin', element: <RecycleBin /> },
             { path: 'myShares', element: <SharedAlbums /> },
             { path: 'shared-photos', element: <SharedPhotos /> },
