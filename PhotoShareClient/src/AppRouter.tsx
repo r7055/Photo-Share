@@ -126,7 +126,7 @@ import SignIn from './components/auth/SignIn';
 import Signup from './components/auth/SignUp';
 
 import PersonalArea from './components/PersonalArea';
-import RecycleBin from './components/bin//RecycleBin';
+import RecycleBin from './components/recycle-bin/RecycleBin';
 import SharedAlbums from './components/share/SharedAlbums';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AppLayoutRefactored from './components/AppLayoutRefactored';
