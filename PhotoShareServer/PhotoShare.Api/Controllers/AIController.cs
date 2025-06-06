@@ -44,8 +44,7 @@ namespace PhotoShare.Api.Controllers
                 {
                     prompt = promptEn,
                     n = 1,
-                    size = "1024x1024",
-                    response_format = "b64_json"
+                    size = "1024x1024" // שונה ל-1024x1024 עבור DALL-E 3
                 };
 
                 var json = System.Text.Json.JsonSerializer.Serialize(dalleRequest);
@@ -55,7 +54,8 @@ namespace PhotoShare.Api.Controllers
                 _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAiApiKey}");
 
                 _logger.LogInformation("Sending DALL-E API request...");
-                var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
+                var response = await _httpClient.PostAsync("https://api.deepai.org/api/text2img", content);
+                //var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
                 _logger.LogInformation($"Received DALL-E API response with status code: {response.StatusCode}");
 
                 if (!response.IsSuccessStatusCode)
@@ -66,31 +66,38 @@ namespace PhotoShare.Api.Controllers
                 }
 
                 var responseContent = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation(responseContent);
-                return Ok(responseContent); // Return the raw response content
-                //try
-                //{
-                //    var imageResponse = JsonConvert.DeserializeObject<ImageResponse>(responseContent);
+                _logger.LogInformation($"DALL-E API successful response content: {responseContent}");
 
-                //    if (imageResponse == null || imageResponse.Data == null || imageResponse.Data.Count == 0)
-                //    {
-                //        _logger.LogError("Failed to deserialize image response or data is empty.");
-                //        return BadRequest(new { error = "Failed to retrieve image data." });
-                //    }
+                // תיקון ה-Deserialization עם אפשרויות נכונות
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
 
-                //    var base64Image = imageResponse.Data[0].B64Json;
-                //    // החזרת התמונה בפורמט JSON
-                //    return Ok(new { image = base64Image });
-                //}
-                //catch (System.Text.Json.JsonException jsonEx)
-                //{
-                //    _logger.LogError(jsonEx, "JSON deserialization error.");
-                //    return BadRequest(new { error = "Invalid JSON format." });
-                //}
+                var dalleResponse = System.Text.Json.JsonSerializer.Deserialize<DalleResponse>(responseContent, options);
 
-                // אם אתה רוצה להחזיר את התמונה כקובץ, תוכל להמיר את ה-Base64 ל-binary:
-                // var imageBytes = Convert.FromBase64String(base64Image);
-                // return File(imageBytes, "image/png", "generated_image.png");
+                string? imageUrl = dalleResponse?.Data?.FirstOrDefault()?.Url;
+
+                if (string.IsNullOrEmpty(imageUrl))
+                {
+                    _logger.LogError("DALL-E API response did not contain a valid image URL.");
+                    _logger.LogError($"Raw response for debugging: {responseContent}");
+                    return StatusCode(500, new { error = "Failed to generate image: No URL in response." });
+                }
+
+                _logger.LogInformation($"Generated image URL: {imageUrl}");
+
+                return Ok(imageUrl);
+                // Download the image
+                //_logger.LogInformation($"Attempting to download image from: {imageUrl}");
+                //var imageResponse = await _httpClient.GetAsync(imageUrl);
+                //_logger.LogInformation($"Image download response status: {imageResponse.StatusCode}");
+                //imageResponse.EnsureSuccessStatusCode();
+
+                //var imageBytes = await imageResponse.Content.ReadAsByteArrayAsync();
+
+                //return File(imageBytes, "image/png", "generated_image.png");
             }
             catch (HttpRequestException ex)
             {
@@ -103,8 +110,6 @@ namespace PhotoShare.Api.Controllers
                 return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
         }
-
-
         private async Task<string> TranslateToEnglish(string text)
         {
             try
