@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Album, AlbumSharePostModel } from '../types/album';
-import { env } from 'process';
 
-const url = env.REACT_APP_API_URL + '/api/albums';
+const url = import.meta.env.REACT_APP_API_URL + '/api/albums';
 
 // const urlReal='https://photo-share-xko7.onrender.com/api/albums';
 // Async thunk for fetching albums

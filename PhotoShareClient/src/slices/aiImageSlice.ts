@@ -83,7 +83,6 @@
 // export const { openModal, closeModal, clearError, clearGeneratedImage } = aiImageSlice.actions
 // export default aiImageSlice.reducer
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit"
-import { env } from "process"
 
 // Types
 export interface AIImageState {
@@ -98,7 +97,12 @@ export const generateImage = createAsyncThunk(
   "aiImage/generateImage", 
   async (prompt: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(env.REACT_APP_API_URL+'/Ai/generate', {
+      const apiUrl = import.meta.env.REACT_APP_API_URL;
+      console.log("API URL:", apiUrl); // Debugging line to check the API URL
+      if (!apiUrl) {
+        throw new Error("REACT_APP_API_URL environment variable is not defined");
+      }
+      const response = await fetch(apiUrl + '/Ai/generate', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

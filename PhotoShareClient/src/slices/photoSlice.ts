@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Photo } from '../types/photo';
-import { env } from 'process';
+
 // import { photo } from '../types/photo';
 
 
-const baseUrlPhoto =  env.REACT_APP_API_URL+'/photos';
-const uploadUrl = env.REACT_APP_API_URL+'/upload/presigned-url';
-const downloadUrl = env.REACT_APP_API_URL+'/download/download-url';
-const shareUrl = env.REACT_APP_API_URL+'/photos/share';
+const baseUrlPhoto =  import.meta.env.REACT_APP_API_URL+'/photos';
+const uploadUrl = import.meta.env.REACT_APP_API_URL+'/upload/presigned-url';
+const downloadUrl = import.meta.env.REACT_APP_API_URL+'/download/download-url';
+const shareUrl = import.meta.env.REACT_APP_API_URL+'/photos/share';
 
 // Async thunk for uploading a photo
 export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',
