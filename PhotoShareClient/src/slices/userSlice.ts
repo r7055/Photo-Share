@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { UserLogin, User } from '../types/user';
+import { env } from 'process';
 
-const url = 'http://localhost:5141/api/auth';
-const urlUser = 'http://localhost:5141/api/users';
+const url = env.REACT_APP_API_URL+'/auth';
+const urlUser = env.REACT_APP_API_URL+'/users';
 
 // Async thunk for logging in a user
 export const loginUser = createAsyncThunk('user/login',

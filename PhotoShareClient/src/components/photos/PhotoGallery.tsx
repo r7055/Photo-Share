@@ -9,6 +9,7 @@ import PhotoSearch from "./PhotoSearch";
 import type { AppDispatch } from "../../store/store";
 import type { Photo } from "../../types/photo";
 import PhotoLightbox from "./PhotoLightBox";
+import { red } from "@mui/material/colors";
 
 
 
@@ -61,15 +62,18 @@ const PhotoGallery = () => {
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
-        Photos
-      </Typography>
-
-      <PhotoSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Box>
+        <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold", color: "rgba(63, 81, 181, 0.9)" }}>
+          Photos
+        </Typography>
+        <Box>
+          <PhotoSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        </Box>
+      </Box>
 
       {filteredPhotos.length === 0 ? (
         <Box>
-          <Typography variant="h6">No photos in this album</Typography>
+          <Typography variant="h6" sx={{ color: "rgba(63, 81, 181, 0.9)" }}>No photos in this album</Typography>
         </Box>
       ) : (
         <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4 }} spacing={3}>

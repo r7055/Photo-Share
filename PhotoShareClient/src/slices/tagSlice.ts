@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Tag } from '../types/tag';
+import { env } from 'process';
 
-const baseUrl = 'http://localhost:5141/api/tags';
+const baseUrl = env.REACT_APP_API_URL+'/tags';
 
 // Async thunk for creating a tag
 export const createTag = createAsyncThunk('tags/createTag',

@@ -332,6 +332,7 @@ const AppLayoutRefactored = () => {
       {/* Dialogs */}
       <AddAlbum open={addAlbumOpen} onClose={handleCloseAddAlbum} />
       <UploadPhotoComponent open={uploadPhotoOpen} onClose={handleCloseUploadPhoto} />
+    
     </Box>
   )
 }

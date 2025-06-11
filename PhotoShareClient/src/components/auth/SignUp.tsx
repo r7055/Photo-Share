@@ -205,7 +205,7 @@ const Signup = () => {
                   <StepLabel
                     sx={{
                       "& .MuiStepLabel-label": {
-                        color: "rgba(255, 255, 255, 0.7)",
+                        color: "rgba(244, 21, 21, 0.7)",
                         "&.Mui-active": { color: "#00c6ff" },
                         "&.Mui-completed": { color: "#4caf50" },
                       },
