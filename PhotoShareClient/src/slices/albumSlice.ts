@@ -28,9 +28,7 @@ const url = import.meta.env.VITE_API_URL + '/albums';
 export const createAlbum = createAsyncThunk('albums/createAlbum',
     async ({ token, album }: { token: string; album: Album }, thunkAPI) => {
         try {
-            console.log("create: ",token, album);
-            
-            const response = await axios.post(`${url}`, album, {
+                const response = await axios.post(`${url}`, album, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -78,15 +76,13 @@ export const deleteAlbum = createAsyncThunk('albums/deleteAlbum',
 export const fetchAlbumsByParent = createAsyncThunk('albums/fetchAlbumsByParent',
     async ({ token, albumId }: { token: string; albumId: number }, thunkAPI) => {
         try {
-            console.log("fetchAlbumsByParent: ",token, albumId);
-            
+           
             const response = await axios.get<Album[]>(`${url}/parent/${albumId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("albums ",response.data);
-            
+           
             return response.data;
         } catch (e: any) {
             return thunkAPI.rejectWithValue(e.message);
@@ -99,7 +95,6 @@ export const updateAlbum = createAsyncThunk('albums/updateAlbum',
     async ({ token, album }: { token: string; album: Album }, thunkAPI) => {
         try {
             const albumResponse={title:album.title,description:album.description,albumId:album.parentId? album.parentId:0};
-            console.log("update: ",token, album,`${url}/${album.id}`,albumResponse);
             const response = await axios.put(`${url}/${album.id}`, albumResponse, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -116,14 +111,12 @@ export const updateAlbum = createAsyncThunk('albums/updateAlbum',
 export const fetchSharedAlbums = createAsyncThunk('albums/fetchSharedAlbums',
     async ({ token }: { token: string }, thunkAPI) => {
         try {
-            console.log("shared albums");
             
             const response = await axios.get<Album[]>(`${url}/shared`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("response shared albums: ",response);
             
             return response.data;
         } catch (e: any) {
@@ -135,14 +128,11 @@ export const fetchSharedAlbums = createAsyncThunk('albums/fetchSharedAlbums',
 export const shareAlbum = createAsyncThunk('albums/shareAlbum',
     async ({ token, albumShareData }: { token: string|null; albumShareData: AlbumSharePostModel }, thunkAPI) => {
         try {
-            console.log(albumShareData,token);
-            
             const response = await axios.post(`${url}/share`, albumShareData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("response share: ",response);
             
             return response.data;
         } catch (e: any) {
@@ -170,15 +160,11 @@ export const restoreAlbum = createAsyncThunk('albums/restoreAlbum',
 export const fetchRecycleAlbums = createAsyncThunk('albums/fetchRecycleAlbums',
     async ({ token }: { token: string }, thunkAPI) => {
         try {
-            console.log("getch recycle albums");
-            
             const response = await axios.get<Album[]>(`${url}/recycle`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data);
-            
             
             return response.data;
         } catch (e: any) {
@@ -247,8 +233,6 @@ const albumsSlice = createSlice({
             })
             .addCase(fetchAlbumsByParent.fulfilled, (state, action) => {
                 state.myAlbums = action.payload;
-                console.log(state);
-                
                 state.loading = false;
                 state.msg = '';
             })
@@ -309,7 +293,6 @@ const albumsSlice = createSlice({
                 state.loading = true;
             })
             .addCase(fetchRecycleAlbums.fulfilled, (state, action) => {
-                console.log("Recycle albums fetched: ", action.payload);
                 state.recycledAlbums = action.payload;
                 state.loading = false;
                 state.msg = '';

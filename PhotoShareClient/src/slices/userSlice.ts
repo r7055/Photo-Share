@@ -9,8 +9,6 @@ const urlUser = import.meta.env.VITE_API_URL+'/users';
 export const loginUser = createAsyncThunk('user/login',
     async (userData: UserLogin, thunkAPI) => {
         try {
-            console.log(userData);
-
             const response = await axios.post<{ user: User, token: string }>(`${url}/login`, userData);
             const { user, token } = response.data;
             sessionStorage.setItem('token', token);

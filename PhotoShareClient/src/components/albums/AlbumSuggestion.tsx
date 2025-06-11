@@ -45,12 +45,12 @@ const AlbumSuggestion: React.FC<AlbumSuggestionProps> = ({ open, onClose, imageU
     if (suggestedAlbum) {
       const token = sessionStorage.getItem("token")
       if (token) {
-        const photoData = {
-          url: imageUrl,
-          albumId: suggestedAlbum,
-          // Add additional details if needed
-        }
-        console.log("Adding photo to album:", photoData)
+        // const photoData = {
+        //   url: imageUrl,
+        //   albumId: suggestedAlbum,
+        //   // Add additional details if needed
+        // }
+        // console.log("Adding photo to album:", photoData)
         // Here you would add the code to add the photo to the album
         // await dispatch(addPhoto({ token, photo: photoData }));
         onClose() // Close the message after adding

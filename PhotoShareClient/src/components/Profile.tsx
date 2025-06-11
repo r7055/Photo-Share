@@ -71,7 +71,6 @@ const Profile: React.FC = () => {
 
     try {
       const token = sessionStorage.getItem("token")
-      console.log("user to update:", formData,user)
 
       if (token && user) {
         await dispatch(

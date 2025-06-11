@@ -56,7 +56,6 @@ export const getDownloadUrl = createAsyncThunk('photos/getDownloadUrl',
 // Async thunk for getting photos by album ID
 export const getPhotosByAlbumId = createAsyncThunk('photos/getPhotosByAlbumId',
     async ({ token, albumId }: { token: string; albumId: number }, thunkAPI) => {
-        console.log("getPhotosByAlbumId", token, albumId); // Debugging line
         try {
             const response = await axios.get<Photo[]>(`${baseUrlPhoto}/${albumId}`, {
                 headers: {
@@ -107,8 +106,6 @@ export const getRecyclePhotos = createAsyncThunk(
 export const restorePhoto = createAsyncThunk('photos/restorePhoto',
     async ({ token, photoId, albumId }: { token: string; photoId: number; albumId: number }, thunkAPI) => {
         try {
-            console.log("restorePhoto", token, photoId, albumId); // Debugging line
-
             await axios.post(
                 `${baseUrlPhoto}/restore`,
                 photoId,
@@ -152,15 +149,11 @@ export const deletePhoto = createAsyncThunk('photos/deletePhoto',
 export const addPhoto = createAsyncThunk('photos/addPhoto',
     async ({ token, photo }: { token: string; photo: Photo }, thunkAPI) => {
         try {
-            console.log(token, photo);
-
             const response = await axios.post<Photo>(baseUrlPhoto, photo, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data);
-
             return response.data;
         } catch (e: any) {
             return thunkAPI.rejectWithValue(e.message);
@@ -295,7 +288,6 @@ const photoSlice = createSlice({
                 state.loading = true;
             })
             .addCase(getRecyclePhotos.fulfilled, (state, action) => {
-                console.log("Recycle photos fetched: ", action.payload);
                 state.recycledPhotos = action.payload;
                 state.loading = false;
             })
