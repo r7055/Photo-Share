@@ -3,7 +3,7 @@ import axios from 'axios';
 import { User } from '../types/user';
 import { EmailData, EmailResponse } from '../types/email';
 
-const url =  import.meta.env.REACT_APP_API_URL+'/mail/send-email';
+const url =  import.meta.env.VITE_REACT_APP_API_URL+'/mail/send-email';
 
 export const sendWelcomeEmail = (user: User, token: string) => {
     const subject = `🎉 Welcome to PhotoShare, ${user.firstName}! Your Journey Starts Here`;

@@ -97,10 +97,10 @@ export const generateImage = createAsyncThunk(
   "aiImage/generateImage", 
   async (prompt: string, { rejectWithValue }) => {
     try {
-      const apiUrl = import.meta.env.REACT_APP_API_URL;
+      const apiUrl = import.meta.env.VITE_REACT_APP_API_URL;
       console.log("API URL:", apiUrl); // Debugging line to check the API URL
       if (!apiUrl) {
-        throw new Error("REACT_APP_API_URL environment variable is not defined");
+        throw new Error("VITE_REACT_APP_API_URL environment variable is not defined");
       }
       const response = await fetch(apiUrl + '/Ai/generate', {
         method: "POST",

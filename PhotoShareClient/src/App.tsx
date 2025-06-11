@@ -3,13 +3,19 @@ import './App.css'
 import AppRouter from './AppRouter'
 import store from './store/store'
 import { ThemeProvider } from './components/themeProvider'
+import { useEffect } from 'react'
 
 function App() {
+  useEffect(() => {
+    console.log(import.meta.env);
+    console.log(import.meta.env.VITE_REACT_APP_API_URL);
+
+  }, []);
   return (
     <ThemeProvider defaultTheme="dark">
-    <Provider store={store}>
+      <Provider store={store}>
         <AppRouter />
-    </Provider>
+      </Provider>
     </ThemeProvider>
   )
 }
