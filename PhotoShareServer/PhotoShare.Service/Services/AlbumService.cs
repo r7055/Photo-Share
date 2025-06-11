@@ -157,6 +157,8 @@ namespace PhotoShare.Service.Services
         public async Task<ICollection<AlbumDto>> GetRecycleAlbumsAsync(int userId)
         {
             var albumsRecycle = await _repositoryManager.Album.GetRecycleAlbumsAsync(userId);
+            if(albumsRecycle == null)
+                return new List<AlbumDto>();
             return _mapper.Map<ICollection<AlbumDto>>(albumsRecycle);
         }
         public async Task<ICollection<AlbumDto>> GetTopAlbumsAsync()

@@ -54,8 +54,7 @@ namespace PhotoShare.Api.Controllers
                 _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openAiApiKey}");
 
                 _logger.LogInformation("Sending DALL-E API request...");
-                var response = await _httpClient.PostAsync("https://api.deepai.org/api/text2img", content);
-                //var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/images/generations", content);
                 _logger.LogInformation($"Received DALL-E API response with status code: {response.StatusCode}");
 
                 if (!response.IsSuccessStatusCode)
