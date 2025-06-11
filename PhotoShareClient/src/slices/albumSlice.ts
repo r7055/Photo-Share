@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Album, AlbumSharePostModel } from '../types/album';
 
-const url = import.meta.env.VITE_API_URL + '/api/albums';
+const url = import.meta.env.VITE_API_URL + '/albums';
 
 // const urlReal='https://photo-share-xko7.onrender.com/api/albums';
 // Async thunk for fetching albums
