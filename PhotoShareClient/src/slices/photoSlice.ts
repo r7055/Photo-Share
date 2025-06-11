@@ -5,10 +5,10 @@ import { Photo } from '../types/photo';
 // import { photo } from '../types/photo';
 
 
-const baseUrlPhoto =  import.meta.env.VITE_REACT_APP_API_URL+'/photos';
-const uploadUrl = import.meta.env.VITE_REACT_APP_API_URL+'/upload/presigned-url';
-const downloadUrl = import.meta.env.VITE_REACT_APP_API_URL+'/download/download-url';
-const shareUrl = import.meta.env.VITE_REACT_APP_API_URL+'/photos/share';
+const baseUrlPhoto =  import.meta.env.VITE_API_URL+'/photos';
+const uploadUrl = import.meta.env.VITE_API_URL+'/upload/presigned-url';
+const downloadUrl = import.meta.env.VITE_API_URL+'/download/download-url';
+const shareUrl = import.meta.env.VITE_API_URL+'/photos/share';
 
 // Async thunk for uploading a photo
 export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',

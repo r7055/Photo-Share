@@ -2,8 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { UserLogin, User } from '../types/user';
 
-const url = import.meta.env.VITE_REACT_APP_API_URL+'/auth';
-const urlUser = import.meta.env.VITE_REACT_APP_API_URL+'/users';
+const url = import.meta.env.VITE_API_URL+'/auth';
+const urlUser = import.meta.env.VITE_API_URL+'/users';
 
 // Async thunk for logging in a user
 export const loginUser = createAsyncThunk('user/login',
