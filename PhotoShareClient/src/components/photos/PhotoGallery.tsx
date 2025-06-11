@@ -9,7 +9,6 @@ import PhotoSearch from "./PhotoSearch";
 import type { AppDispatch } from "../../store/store";
 import type { Photo } from "../../types/photo";
 import PhotoLightbox from "./PhotoLightBox";
-import { red } from "@mui/material/colors";
 
 
 
