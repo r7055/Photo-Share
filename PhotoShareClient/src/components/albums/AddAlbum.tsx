@@ -18,6 +18,7 @@ import {
 } from "@mui/material"
 import { useParams } from "react-router-dom"
 import { Close, CreateNewFolder, Description } from "@mui/icons-material"
+import { useTheme } from "../themeProvider"
 
 interface AddAlbumProps {
   open: boolean
@@ -26,6 +27,7 @@ interface AddAlbumProps {
 
 const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const { theme } = useTheme()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const { albumId } = useParams<{ albumId: string }>()
@@ -41,7 +43,7 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
         title,
         description,
         parentId: Number(albumId),
-        photoCount: 0
+        photoCount: 0,
       }
 
       await dispatch(createAlbum({ token, album: newAlbum }))
@@ -62,14 +64,19 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
         sx: {
           borderRadius: "16px",
           overflow: "hidden",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+          boxShadow: theme === "dark" ? "0 8px 32px rgba(0, 0, 0, 0.4)" : "0 8px 32px rgba(0, 0, 0, 0.1)",
+          background:
+            theme === "dark"
+              ? "linear-gradient(145deg, #1e293b, #334155)"
+              : "linear-gradient(145deg, #f8fafc, #e2e8f0)",
         },
       }}
     >
       <DialogTitle
         sx={{
-          background: "linear-gradient(90deg, #1a1f36, #252a4b)",
-          color: "white",
+          background:
+            theme === "dark" ? "linear-gradient(90deg, #1a1f36, #252a4b)" : "linear-gradient(90deg, #e2e8f0, #cbd5e1)",
+          color: theme === "dark" ? "white" : "#1e293b",
           p: 3,
           display: "flex",
           alignItems: "center",
@@ -77,17 +84,18 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <CreateNewFolder sx={{ mr: 1.5, color: "#00c6ff" }} />
+          <CreateNewFolder sx={{ mr: 1.5, color: theme === "dark" ? "#00c6ff" : "#3b82f6" }} />
           <Typography variant="h6">Add New Album</Typography>
         </Box>
-        <IconButton onClick={onClose} sx={{ color: "white" }}>
+        <IconButton onClick={onClose} sx={{ color: theme === "dark" ? "white" : "#1e293b" }}>
           <Close />
         </IconButton>
       </DialogTitle>
 
       <DialogContent
         sx={{
-          background: "linear-gradient(90deg, #1a1f36, #252a4b)",
+          background:
+            theme === "dark" ? "linear-gradient(90deg, #1a1f36, #252a4b)" : "linear-gradient(90deg, #f8fafc, #e2e8f0)",
           p: 3,
         }}
       >
@@ -103,21 +111,35 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <CreateNewFolder sx={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                <CreateNewFolder
+                  sx={{ color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(30, 41, 59, 0.7)" }}
+                />
               </InputAdornment>
             ),
           }}
           sx={{
             mb: 3,
             "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
-              "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.5)" },
-              "&.Mui-focused fieldset": { borderColor: "#00c6ff" },
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              "& fieldset": {
+                borderColor: theme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+              },
+              "&:hover fieldset": {
+                borderColor: theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: theme === "dark" ? "#00c6ff" : "#3b82f6",
+              },
+              backgroundColor: theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)",
             },
-            "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.7)" },
-            "& .MuiInputBase-input": { color: "white" },
-            "& .MuiInputAdornment-root": { color: "rgba(255, 255, 255, 0.7)" },
+            "& .MuiInputLabel-root": {
+              color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(30, 41, 59, 0.7)",
+            },
+            "& .MuiInputBase-input": {
+              color: theme === "dark" ? "white" : "#1e293b",
+            },
+            "& .MuiInputAdornment-root": {
+              color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(30, 41, 59, 0.7)",
+            },
           }}
         />
 
@@ -134,21 +156,31 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Description sx={{ color: "rgba(255, 255, 255, 0.7)" }} />
+                <Description sx={{ color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(30, 41, 59, 0.7)" }} />
               </InputAdornment>
             ),
           }}
           sx={{
             "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
-              "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.5)" },
-              "&.Mui-focused fieldset": { borderColor: "#00c6ff" },
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              "& fieldset": {
+                borderColor: theme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+              },
+              "&:hover fieldset": {
+                borderColor: theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: theme === "dark" ? "#00c6ff" : "#3b82f6",
+              },
+              backgroundColor: theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)",
             },
-            "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.7)" },
-            "& .MuiInputBase-input": { color: "white" },
+            "& .MuiInputLabel-root": {
+              color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(30, 41, 59, 0.7)",
+            },
+            "& .MuiInputBase-input": {
+              color: theme === "dark" ? "white" : "#1e293b",
+            },
             "& .MuiInputAdornment-root": {
-              color: "rgba(255, 255, 255, 0.7)",
+              color: theme === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(30, 41, 59, 0.7)",
               alignSelf: "flex-start",
               mt: 2,
             },
@@ -158,7 +190,8 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
 
       <DialogActions
         sx={{
-          background: "linear-gradient(90deg, #1a1f36, #252a4b)",
+          background:
+            theme === "dark" ? "linear-gradient(90deg, #1a1f36, #252a4b)" : "linear-gradient(90deg, #f8fafc, #e2e8f0)",
           p: 3,
           pt: 1,
         }}
@@ -167,11 +200,11 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
           onClick={onClose}
           variant="outlined"
           sx={{
-            color: "white",
-            borderColor: "rgba(255, 255, 255, 0.3)",
+            color: theme === "dark" ? "white" : "#1e293b",
+            border: `2px solid ${theme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)"}`,
             "&:hover": {
-              borderColor: "white",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              border: `2px solid ${theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)"}`,
+              backgroundColor: theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.02)",
             },
           }}
         >
@@ -183,15 +216,25 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
           disabled={!title.trim() || loading}
           sx={{
             ml: 2,
-            background: "linear-gradient(100deg, #00c6ff, #0072ff, #7209b7, #d400ff)",
+            background:
+              theme === "dark"
+                ? "linear-gradient(135deg, #00c6ff, #0072ff)"
+                : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
             color: "white",
+            boxShadow: theme === "dark" ? "0 4px 15px rgba(0, 198, 255, 0.3)" : "0 4px 15px rgba(59, 130, 246, 0.3)",
             "&:hover": {
-              background: "linear-gradient(100deg, #0072ff, #7209b7, #d400ff)",
+              background:
+                theme === "dark"
+                  ? "linear-gradient(135deg, #0072ff, #00c6ff)"
+                  : "linear-gradient(135deg, #1d4ed8, #3b82f6)",
+              transform: "translateY(-1px)",
+              boxShadow: theme === "dark" ? "0 6px 20px rgba(0, 198, 255, 0.4)" : "0 6px 20px rgba(59, 130, 246, 0.4)",
             },
             "&.Mui-disabled": {
-              background: "rgba(255, 255, 255, 0.12)",
-              color: "rgba(255, 255, 255, 0.3)",
+              background: theme === "dark" ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.12)",
+              color: theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(30, 41, 59, 0.3)",
             },
+            transition: "all 0.2s ease-in-out",
           }}
         >
           {loading ? "Creating..." : "Create Album"}
@@ -202,3 +245,4 @@ const AddAlbum: React.FC<AddAlbumProps> = ({ open, onClose }) => {
 }
 
 export default AddAlbum
+

@@ -15,7 +15,7 @@ export const uploadPhoto = createAsyncThunk('photos/uploadPhoto',
     async ({ token, fileName, file, fileType }: { token: string; fileName: string; file: File; fileType: string }, thunkAPI) => {
         try {
             const response = await axios.get<{ url: string }>(uploadUrl, {
-                params: { fileName, fileType },
+                params: { fileName: fileName, fileType: fileType },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

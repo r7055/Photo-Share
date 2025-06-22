@@ -12,11 +12,11 @@ import {
   AutoAwesome,
 } from "@mui/icons-material"
 import { useLocation, useNavigate } from "react-router-dom"
-import { useTheme as useAppTheme } from "./themeProvider"
+import { useTheme as useAppTheme } from "../themeProvider"
 import { useDispatch, useSelector } from "react-redux"
-import { closeModal, openModal } from "../slices/aiImageSlice"
-import { AppDispatch, RootState } from "../store/store"
-import ImageGenerator from "./photos/AIImageGenerator"
+import { closeModal, openModal } from "../../slices/aiImageSlice"
+import { AppDispatch, RootState } from "../../store/store"
+import ImageGenerator from "../photos/AIImageGenerator"
 
 interface SidebarProps {
   open: boolean
