@@ -7,12 +7,12 @@ import PersonalArea from './components/PersonalArea';
 import RecycleBin from './components/recycle-bin/RecycleBin';
 import SharedAlbums from './components/share/SharedAlbums';
 import PrivacyPolicy from './components/PrivacyPolicy';
-import AppLayoutRefactored from './components/AppLayoutRefactored';
 import Settings from './components/Setting';
 import Profile from './components/Profile';
 import Home from './components/Home';
 import SharedPhotos from './components/share/SharedPhotos';
 import PhotoGallery from './components/photos/PhotoGallery';
+import AppLayout from './components/appLayout';
 
 const router = createBrowserRouter([
     // דף הבית עצמאי - בלי layout
@@ -36,7 +36,7 @@ const router = createBrowserRouter([
 
     {
         path: '/',
-        element: <AppLayoutRefactored />,
+        element: <AppLayout />,
         children: [
             { path: 'home', element: <Home /> },
             { path: 'albums/:albumId', element: <PersonalArea /> },

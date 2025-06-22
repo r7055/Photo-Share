@@ -1220,32 +1220,6 @@ const AlbumOverview: React.FC<{ onSelectAlbum: (albumId: number) => void }> = ({
                 >
                   Create your first album to start organizing your photos
                 </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<FolderIcon />}
-                  onClick={() => document.getElementById("add-album-button")?.click()}
-                  sx={{
-                    background:
-                      theme === "dark"
-                        ? "linear-gradient(135deg, #00c6ff, #0072ff)"
-                        : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-                    color: "white",
-                    boxShadow:
-                      theme === "dark" ? "0 4px 15px rgba(0, 198, 255, 0.3)" : "0 4px 15px rgba(59, 130, 246, 0.3)",
-                    "&:hover": {
-                      background:
-                        theme === "dark"
-                          ? "linear-gradient(135deg, #0072ff, #00c6ff)"
-                          : "linear-gradient(135deg, #1d4ed8, #3b82f6)",
-                      transform: "translateY(-1px)",
-                      boxShadow:
-                        theme === "dark" ? "0 6px 20px rgba(0, 198, 255, 0.4)" : "0 6px 20px rgba(59, 130, 246, 0.4)",
-                    },
-                    transition: "all 0.2s ease-in-out",
-                  }}
-                >
-                  Create Album
-                </Button>
               </Box>
             </Grid>
           )}
