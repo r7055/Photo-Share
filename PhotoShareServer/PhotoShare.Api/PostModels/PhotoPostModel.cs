@@ -6,7 +6,7 @@ namespace PhotoShare.Api.PostModels
     {
         public string Name { get; set; }
         public int Size { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string Url { get; set; } = null!;
         public int AlbumId { get; set; }
         public List<TagDto>? Tags { get; set; }
