@@ -309,7 +309,7 @@
 "use client"
 
 import React from "react"
-
+import { LightMode, DarkMode } from "@mui/icons-material"
 import type { ReactElement } from "react"
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Avatar, Menu, MenuItem, Divider } from "@mui/material"
 import { Menu as MenuIcon, Person, Settings, Logout } from "@mui/icons-material"
@@ -326,7 +326,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, user }): ReactElement =>
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const navigate = useNavigate()
   const token = sessionStorage.getItem("token")
-  const { theme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -408,7 +408,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, user }): ReactElement =>
           }}
         >
           <img
-            src="./../../assets/logo-blue-small.jpg"
+            src="../../public/logo.png"
             alt="PhotoShare Logo"
             style={{
               height: "40px",
@@ -472,6 +472,20 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, user }): ReactElement =>
               flexShrink: 0,
             }}
           >
+
+            <IconButton
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              sx={{
+                ml: 1,
+                color: theme === "dark" ? "#ffeb3b" : "#0f172a",
+                "&:hover": {
+                  backgroundColor: theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(79, 195, 247, 0.15)",
+                },
+              }}
+            >
+              {theme === "dark" ? <LightMode /> : <DarkMode />}
+            </IconButton>
+
             <IconButton
               onClick={handleProfileMenuOpen}
               sx={{
