@@ -316,7 +316,7 @@ import { Menu as MenuIcon, Person, Settings, Logout } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
 import type { User } from "../../types/user"
 import { useTheme } from "../themeProvider"
-
+import logo from '../../../public/logo.png';
 interface HeaderProps {
   toggleSidebar: () => void
   user: User | null
@@ -408,7 +408,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, user }): ReactElement =>
           }}
         >
           <img
-            src="../../public/logo.png"
+            src={logo}
             alt="PhotoShare Logo"
             style={{
               height: "40px",
